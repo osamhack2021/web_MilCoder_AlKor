@@ -257,5 +257,5 @@ export const m = {
   UserHomeserSubmissions: '提交次數',
   UserHomeScore: '分數',
   List_Solved_Problems: '已完成題目的列表',
-  UserHomeIntro: '這個使用者尚未解題...'
-}
+  UserHomeIntro: '這個使用者尚未解題...',
+};

@@ -37,9 +37,9 @@ export const m = {
   Compiler: 'Compiler',
   Result_Explanation: 'Result Explanation',
   Pending_Judging_Description: 'You solution will be judged soon, please wait for result.',
-  Compile_Error_Description: "Failed to compile your source code. Click on the link to see compiler's output.",
+  Compile_Error_Description: 'Failed to compile your source code. Click on the link to see compiler\'s output.',
   Accepted_Description: 'Congratulations. Your solution is correct.',
-  Wrong_Answer_Description: "Your program's output doesn't match judger's answer.",
+  Wrong_Answer_Description: 'Your program\'s output doesn\'t match judger\'s answer.',
   Runtime_Error_Description: 'Your program terminated abnormally. Possible reasons are: segment fault, divided by zero or exited with code other than 0.',
   Time_Limit_Exceeded_Description: 'The CPU time your program used has exceeded limit.',
   Memory_Limit_Exceeded_Description: 'The memory your program actually used has exceeded limit.',
@@ -257,5 +257,5 @@ export const m = {
   UserHomeserSubmissions: 'Submissions',
   UserHomeScore: 'Score',
   List_Solved_Problems: 'List of solved problems',
-  UserHomeIntro: 'The guy is so lazy that has not solved any problem yet.'
-}
+  UserHomeIntro: 'The guy is so lazy that has not solved any problem yet.',
+};
