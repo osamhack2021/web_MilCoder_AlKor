@@ -42,9 +42,6 @@ VENDOR_APPS = [
     'django_dbconn_retry',
 ]
 
-if is_production:
-    VENDOR_APPS.append('raven.contrib.django.raven_compat')
-
 LOCAL_APPS = [
     'account',
     'announcement',
@@ -156,11 +153,6 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'standard'
         },
-        'sentry': {
-            'level': 'ERROR',
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-            'formatter': 'standard'
-        }
     },
     'loggers': {
         'django.request': {
@@ -240,10 +232,6 @@ DRAMATIQ_RESULT_BACKEND = {
     "MIDDLEWARE_OPTIONS": {
         "result_ttl": None
     }
-}
-
-RAVEN_CONFIG = {
-    'dsn': 'https://b200023b8aed4d708fb593c5e0a6ad3d:1fddaba168f84fcf97e0d549faaeaff0@sentry.io/263057'
 }
 
 IP_HEADER = "HTTP_X_REAL_IP"
