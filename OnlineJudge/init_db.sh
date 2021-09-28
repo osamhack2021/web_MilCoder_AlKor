@@ -1,6 +1,9 @@
 #! /bin/bash
 set -x
 
+dirname=$(dirname "$(realpath "$0")")
+pushd $dirname
+
 if [[ ! -f manage.py ]]; then
     echo "No manage.py, wrong location"
     exit 1
@@ -17,3 +20,5 @@ if [ "$1" = "--migrate" ]; then
     python manage.py migrate
     python manage.py inituser --username root --password rootroot --action create_super_admin
 fi
+
+popd
