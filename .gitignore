@@ -1,2 +1,5 @@
 # editor
 .idea
+
+# Python Virtual Environment
+venv/**
