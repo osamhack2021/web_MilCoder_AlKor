@@ -1,5 +1,8 @@
 # editor
 .idea
 
+# Docker
+/data
+
 # Python Virtual Environment
 venv/**
