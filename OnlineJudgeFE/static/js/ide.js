@@ -132,8 +132,7 @@ function localStorageGetItem(key) {
 }
 
 function showMessages() {
-    var width = $updates.offset().left - parseFloat($updates.css("padding-left")) -
-                $navigationMessage.parent().offset().left - parseFloat($navigationMessage.parent().css("padding-left")) - 5;
+    var width = window.innerWidth - $navigationMessage.parent().offset().left - parseFloat($navigationMessage.parent().css("padding-left")) - 5;
 
     if (width < 200 || messagesData === undefined) {
         return;
@@ -491,7 +490,6 @@ $(document).ready(function () {
     });
 
     $navigationMessage = $("#navigation-message span");
-    $updates = $("#judge0-more");
 
     $(`input[name="editor-mode"][value="${editorMode}"]`).prop("checked", true);
     $("input[name=\"editor-mode\"]").on("change", function(e) {

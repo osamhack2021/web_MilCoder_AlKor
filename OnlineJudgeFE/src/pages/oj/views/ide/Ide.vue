@@ -1,11 +1,35 @@
 <template>
 <div>
+    <!--
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js" integrity="sha256-t8GepnyPmw9t+foMh3mKNvcorqNHamSKtKRxxpUEgFI=" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/goldenlayout.min.js" integrity="sha256-NhJAZDfGgv4PiB+GVlSrPdh3uc75XXYSM4su8hgTchI=" crossorigin="anonymous"></script>
+    <script>
+        var require = {
+            paths: {
+                "vs": "https://unpkg.com/monaco-editor/min/vs",
+                "monaco-vim": "https://unpkg.com/monaco-vim/dist/monaco-vim",
+                "monaco-emacs": "https://unpkg.com/monaco-emacs/dist/monaco-emacs"
+            }
+        };
+    </script>
+    <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
+    <script src="https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.nls.js"></script>
+    <script src="https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.js"></script>
+
+    <script type="text/javascript" src="third_party/download.js"></script>
+
+    <script type="text/javascript" src="js/ide.js"></script>
+
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    -->
+
     <div id="site-navigation" class="ui small inverted menu">
         <div id="site-header" class="header item">
-            <a href="/">
-                <img id="site-icon" src="./mil-icon.png">
-                <h2>MilCoder</h2>
-            </a>
+            <img id="site-icon" src="mil-icon.png">
+            <h2>MilCoder</h2>
         </div>
         <div class="left menu">
             <div class="ui dropdown item site-links on-hover">
@@ -19,83 +43,9 @@
             </div>
             <div class="link item" onclick="$('#site-settings').modal('show')"><i class="cog icon"></i> Settings</div>
             <div class="item borderless">
-                <select id="select-language" class="ui dropdown">
-                    <option value="45" mode="UNKNOWN">Assembly (NASM 2.14.02)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="46" mode="shell">Bash (5.0.0)</option>
-                    <option value="47" mode="UNKNOWN">Basic (FBC 1.07.1)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="1011" mode="UNKNOWN">Bosque (latest)</option>  <!-- Unknown mode. Help needed. -->
-                    <option value="75" mode="c">C (Clang 7.0.1)</option>
-                    <option value="1013" mode="c">C (Clang 9.0.1)</option>
-                    <option value="1001" mode="c">C (Clang 10.0.1)</option>
-                    <option value="48" mode="c">C (GCC 7.4.0)</option>
-                    <option value="49" mode="c">C (GCC 8.3.0)</option>
-                    <option value="50" mode="c">C (GCC 9.2.0)</option>
-                    <option value="51" mode="csharp">C# (Mono 6.6.0.161)</option>
-                    <option value="1022" mode="csharp">C# (Mono 6.10.0.104)</option>
-                    <option value="1021" mode="csharp">C# (.NET Core SDK 3.1.302)</option>
-                    <option value="1023" mode="csharp">C# Test (.NET Core SDK 3.1.302, NUnit 3.12.0)</option>
-                    <option value="76" mode="cpp">C++ (Clang 7.0.1)</option>
-                    <option value="1014" mode="cpp">C++ (Clang 9.0.1)</option>
-                    <option value="1002" mode="cpp">C++ (Clang 10.0.1)</option>
-                    <option value="52" mode="cpp">C++ (GCC 7.4.0)</option>
-                    <option value="53" mode="cpp">C++ (GCC 8.3.0)</option>
-                    <option value="54" mode="cpp">C++ (GCC 9.2.0)</option>
-                    <option value="1015" mode="cpp">C++ Test (Clang 10.0.1, Google Test 1.8.1)</option>
-                    <option value="1012" mode="cpp">C++ Test (GCC 8.4.0, Google Test 1.8.1)</option>
-                    <option value="1003" mode="c">C3 (latest)</option> <!-- Replacement mode. Help needed. -->
-                    <option value="86" mode="clojure">Clojure (1.10.1)</option>
-                    <option value="77" mode="UNKNOWN">COBOL (GnuCOBOL 2.2)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="55" mode="UNKNOWN">Common Lisp (SBCL 2.0.0)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="56" mode="UNKNOWN">D (DMD 2.089.1)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="57" mode="UNKNOWN">Elixir (1.9.4)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="58" mode="UNKNOWN">Erlang (OTP 22.2)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="44" mode="plaintext">Executable</option>
-                    <option value="87" mode="fsharp">F# (.NET Core SDK 3.1.202)</option>
-                    <option value="1024" mode="fsharp">F# (.NET Core SDK 3.1.302)</option>
-                    <option value="59" mode="UNKNOWN">Fortran (GFortran 9.2.0)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="60" mode="go">Go (1.13.5)</option>
-                    <option value="88" mode="UNKNOWN">Groovy (3.0.3)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="61" mode="UNKNOWN">Haskell (GHC 8.8.1)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="62" mode="java">Java (OpenJDK 13.0.1)</option>
-                    <option value="1004" mode="java">Java (OpenJDK 14.0.1)</option>
-                    <option value="1005" mode="java">Java Test (OpenJDK 14.0.1, JUnit Platform Console Standalone 1.6.2)</option>
-                    <option value="63" mode="javascript">JavaScript (Node.js 12.14.0)</option>
-                    <option value="78" mode="kotlin">Kotlin (1.3.70)</option>
-                    <option value="64" mode="lua">Lua (5.3.5)</option>
-                    <option value="1006" mode="c">MPI (OpenRTE 3.1.3) with C (GCC 8.3.0)</option>
-                    <option value="1007" mode="cpp">MPI (OpenRTE 3.1.3) with C++ (GCC 8.3.0)</option>
-                    <option value="1008" mode="python">MPI (OpenRTE 3.1.3) with Python (3.7.3)</option>
-                    <option value="1009" mode="python">Nim (stable)</option> <!-- Replacement mode. Help needed. -->
-                    <option value="79" mode="objective-c">Objective-C (Clang 7.0.1)</option>
-                    <option value="65" mode="UNKNOWN">OCaml (4.09.0)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="66" mode="UNKNOWN">Octave (5.1.0)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="67" mode="pascal">Pascal (FPC 3.0.4)</option>
-                    <option value="85" mode="perl">Perl (5.28.1)</option>
-                    <option value="68" mode="php">PHP (7.4.1)</option>
-                    <option value="43" mode="plaintext">Plain Text</option>
-                    <option value="69" mode="UNKNOWN">Prolog (GNU Prolog 1.4.5)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="70" mode="python">Python (2.7.17)</option>
-                    <option value="71" mode="python">Python (3.8.1)</option>
-                    <option value="1010" mode="python">Python for ML (3.7.3)</option>
-                    <option value="80" mode="r">R (4.0.0)</option>
-                    <option value="72" mode="ruby">Ruby (2.7.0)</option>
-                    <option value="73" mode="rust">Rust (1.40.0)</option>
-                    <option value="81" mode="UNKNOWN">Scala (2.13.2)</option> <!-- Unknown mode. Help needed. -->
-                    <option value="82" mode="sql">SQL (SQLite 3.27.2)</option>
-                    <option value="83" mode="swift">Swift (5.2.3)</option>
-                    <option value="74" mode="typescript">TypeScript (3.7.4)</option>
-                    <option value="84" mode="vb">Visual Basic.Net (vbnc 0.0.0.5943)</option> <!-- (vbnc 0.0.0.5943) -->
+                <select v-model="selectedLang" id="select-language" class="ui dropdown">
+                    <option v-for="lang in supportedLangs" :value=lang.value :mode=lang.mode :key=lang.value>{{lang.name}}</option>
                 </select>
-            </div>
-            <div class="item fitted borderless wide screen only">
-                <div class="ui input">
-                    <input id="compiler-options" type="text" placeholder="Compiler options"></input>
-                </div>
-            </div>
-            <div class="item borderless wide screen only">
-                <div class="ui input">
-                    <input id="command-line-arguments" type="text" placeholder="Command line arguments"></input>
-                </div>
             </div>
             <div class="item no-left-padding borderless">
                 <button id="run-btn" class="ui primary labeled icon button"><i class="play icon"></i>Run (F9)</button>
@@ -106,7 +56,23 @@
         </div>
     </div>
 
-    <div id="site-content"></div>
+    <div id="site-content">
+        <golden-layout>
+            <gl-col>
+                <gl-component componentName="source" title="소스코드">
+                    <MonacoEditor class="editor" v-model="code" language="javascript" />
+                </gl-component>
+                <gl-row>
+                    <gl-compoment componentName="stdin" title="입력(STDIN)"></gl-compoment>
+                    <gl-stack>
+                        <gl-compoment componentName="stdout" title="실행 결과(STDOUT)"></gl-compoment>
+                        <gl-compoment componentName="stderr" title="오류(STDERR)"></gl-compoment>
+                        <gl-compoment componentName="compile output" title="컴파일 결과"></gl-compoment>
+                    </gl-stack>
+                </gl-row>
+            </gl-col>
+        </golden-layout>
+    </div>
 
     <div id="site-modal" class="ui modal">
         <div class="header">
@@ -160,44 +126,127 @@
             </div>
         </div>
     </div>
+
     <div id="site-footer">
         <div id="editor-status-line"></div>
         <span id="status-line"></span>
     </div>
+</body>
 </div>
-
 </template>
 
-
 <script>
-var require = {
-  paths: {
-    vs: 'https://unpkg.com/monaco-editor/min/vs',
-    'monaco-vim': 'https://unpkg.com/monaco-vim/dist/monaco-vim',
-    'monaco-emacs': 'https://unpkg.com/monaco-emacs/dist/monaco-emacs',
-  },
-};
+import { defineComponent } from '@vue/composition-api';
+import MonacoEditor from 'vue-monaco';
 
-export default {
+const supportedLangs = [
+  { value: '45', mode: 'UNKNOWN', name: 'Assembly (NASM 2.14.02)' },
+  { value: '46', mode: 'shell', name: 'Bash (5.0.0)' },
+  { value: '47', mode: 'UNKNOWN', name: 'Basic (FBC 1.07.1)' },
+  { value: '1011', mode: 'UNKNOWN', name: 'Bosque (latest)' },
+  { value: '75', mode: 'c', name: 'C (Clang 7.0.1)' },
+  { value: '1013', mode: 'c', name: 'C (Clang 9.0.1)' },
+  { value: '1001', mode: 'c', name: 'C (Clang 10.0.1)' },
+  { value: '48', mode: 'c', name: 'C (GCC 7.4.0)' },
+  { value: '49', mode: 'c', name: 'C (GCC 8.3.0)' },
+  { value: '50', mode: 'c', name: 'C (GCC 9.2.0)' },
+  { value: '51', mode: 'csharp', name: 'C# (Mono 6.6.0.161)' },
+  { value: '1022', mode: 'csharp', name: 'C# (Mono 6.10.0.104)' },
+  { value: '1021', mode: 'csharp', name: 'C# (.NET Core SDK 3.1.302)' },
+  {
+    value: '1023',
+    mode: 'csharp',
+    name: 'C# Test (.NET Core SDK 3.1.302, NUnit 3.12.0)',
+  },
+  { value: '76', mode: 'cpp', name: 'C++ (Clang 7.0.1)' },
+  { value: '1014', mode: 'cpp', name: 'C++ (Clang 9.0.1)' },
+  { value: '1002', mode: 'cpp', name: 'C++ (Clang 10.0.1)' },
+  { value: '52', mode: 'cpp', name: 'C++ (GCC 7.4.0)' },
+  { value: '53', mode: 'cpp', name: 'C++ (GCC 8.3.0)' },
+  { value: '54', mode: 'cpp', name: 'C++ (GCC 9.2.0)' },
+  {
+    value: '1015',
+    mode: 'cpp',
+    name: 'C++ Test (Clang 10.0.1, Google Test 1.8.1)',
+  },
+  {
+    value: '1012',
+    mode: 'cpp',
+    name: 'C++ Test (GCC 8.4.0, Google Test 1.8.1)',
+  },
+  { value: '1003', mode: 'c', name: 'C3 (latest)' },
+  { value: '86', mode: 'clojure', name: 'Clojure (1.10.1)' },
+  { value: '77', mode: 'UNKNOWN', name: 'COBOL (GnuCOBOL 2.2)' },
+  { value: '55', mode: 'UNKNOWN', name: 'Common Lisp (SBCL 2.0.0)' },
+  { value: '56', mode: 'UNKNOWN', name: 'D (DMD 2.089.1)' },
+  { value: '57', mode: 'UNKNOWN', name: 'Elixir (1.9.4)' },
+  { value: '58', mode: 'UNKNOWN', name: 'Erlang (OTP 22.2)' },
+  { value: '44', mode: 'plaintext', name: 'Executable' },
+  { value: '87', mode: 'fsharp', name: 'F# (.NET Core SDK 3.1.202)' },
+  { value: '1024', mode: 'fsharp', name: 'F# (.NET Core SDK 3.1.302)' },
+  { value: '59', mode: 'UNKNOWN', name: 'Fortran (GFortran 9.2.0)' },
+  { value: '60', mode: 'go', name: 'Go (1.13.5)' },
+  { value: '88', mode: 'UNKNOWN', name: 'Groovy (3.0.3)' },
+  { value: '61', mode: 'UNKNOWN', name: 'Haskell (GHC 8.8.1)' },
+  { value: '62', mode: 'java', name: 'Java (OpenJDK 13.0.1)' },
+  { value: '1004', mode: 'java', name: 'Java (OpenJDK 14.0.1)' },
+  {
+    value: '1005',
+    mode: 'java',
+    name: 'Java Test (OpenJDK 14.0.1, JUnit Platform Console Standalone 1.6.2)',
+  },
+  { value: '63', mode: 'javascript', name: 'JavaScript (Node.js 12.14.0)' },
+  { value: '78', mode: 'kotlin', name: 'Kotlin (1.3.70)' },
+  { value: '64', mode: 'lua', name: 'Lua (5.3.5)' },
+  { value: '1006', mode: 'c', name: 'MPI (OpenRTE 3.1.3) with C (GCC 8.3.0)' },
+  {
+    value: '1007',
+    mode: 'cpp',
+    name: 'MPI (OpenRTE 3.1.3) with C++ (GCC 8.3.0)',
+  },
+  {
+    value: '1008',
+    mode: 'python',
+    name: 'MPI (OpenRTE 3.1.3) with Python (3.7.3)',
+  },
+  { value: '1009', mode: 'python', name: 'Nim (stable)' },
+  { value: '79', mode: 'objective-c', name: 'Objective-C (Clang 7.0.1)' },
+  { value: '65', mode: 'UNKNOWN', name: 'OCaml (4.09.0)' },
+  { value: '66', mode: 'UNKNOWN', name: 'Octave (5.1.0)' },
+  { value: '67', mode: 'pascal', name: 'Pascal (FPC 3.0.4)' },
+  { value: '85', mode: 'perl', name: 'Perl (5.28.1)' },
+  { value: '68', mode: 'php', name: 'PHP (7.4.1)' },
+  { value: '43', mode: 'plaintext', name: 'Plain Text' },
+  { value: '69', mode: 'UNKNOWN', name: 'Prolog (GNU Prolog 1.4.5)' },
+  { value: '70', mode: 'python', name: 'Python (2.7.17)' },
+  { value: '71', mode: 'python', name: 'Python (3.8.1)' },
+  { value: '1010', mode: 'python', name: 'Python for ML (3.7.3)' },
+  { value: '80', mode: 'r', name: 'R (4.0.0)' },
+  { value: '72', mode: 'ruby', name: 'Ruby (2.7.0)' },
+  { value: '73', mode: 'rust', name: 'Rust (1.40.0)' },
+  { value: '81', mode: 'UNKNOWN', name: 'Scala (2.13.2)' },
+  { value: '82', mode: 'sql', name: 'SQL (SQLite 3.27.2)' },
+  { value: '83', mode: 'swift', name: 'Swift (5.2.3)' },
+  { value: '74', mode: 'typescript', name: 'TypeScript (3.7.4)' },
+  { value: '84', mode: 'vb', name: 'Visual Basic.Net (vbnc 0.0.0.5943)' },
+];
+
+export default defineComponent({
   setup() {},
-  mounted() {
-    this.$nextTick(function () {
-      var srcList = [
-        'https://unpkg.com/monaco-editor/min/vs/loader.js',
-        'https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.nls.js',
-        'https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.js',
-        '/static/js/ide.js',
-        'third_party/download.js',
-      ];
-      for (var i = 0; i < srcList.length; i++) {
-        let scriptBlock = document.createElement('script');
-        scriptBlock.setAttribute('src', srcList[i]);
-        document.head.appendChild(scriptBlock);
-      }
-    });
+
+  data() {
+    return {
+      supportedLangs: supportedLangs,
+      selectedLang: '54',
+    };
+  },
+
+  components: {
+    MonacoEditor,
   },
 
   metaInfo: {
+    meta: [{ charset: 'utf-8' }],
     link: [
       {
         rel: 'stylesheet',
@@ -227,23 +276,6 @@ export default {
         href: 'https://fonts.googleapis.com/css?family=Exo+2',
       },
     ],
-    script: [
-      {
-        src: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js',
-        integrity: 'sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=',
-        crossorigin: 'anonymous',
-      },
-      {
-        src: 'https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/goldenlayout.min.js',
-        integrity: 'sha256-NhJAZDfGgv4PiB+GVlSrPdh3uc75XXYSM4su8hgTchI=',
-        crossorigin: 'anonymous',
-      },
-      {
-        src: 'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js',
-        integrity: 'sha256-t8GepnyPmw9t+foMh3mKNvcorqNHamSKtKRxxpUEgFI=',
-        crossorigin: 'anonymous',
-      },
-    ],
   },
-};
+});
 </script>
