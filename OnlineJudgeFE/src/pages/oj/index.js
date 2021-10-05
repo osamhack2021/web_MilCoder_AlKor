@@ -27,6 +27,7 @@ import 'iview/dist/styles/iview.css';
 import Vue from 'vue';
 import VueAnalytics from 'vue-analytics';
 import VueClipboard from 'vue-clipboard2';
+import VueMeta from 'vue-meta';
 
 import ECharts from 'vue-echarts/components/ECharts.vue';
 import App from './App.vue';
@@ -42,6 +43,7 @@ Vue.use(iView, {
   i18n: (key, value) => i18n.t(key, value),
 });
 
+Vue.use(VueMeta);
 Vue.use(VueClipboard);
 Vue.use(highlight);
 Vue.use(katex);

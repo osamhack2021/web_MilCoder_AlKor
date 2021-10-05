@@ -3,7 +3,7 @@
     <div id="site-navigation" class="ui small inverted menu">
         <div id="site-header" class="header item">
             <a href="/">
-                <img id="site-icon" src="./images/mil-icon.png">
+                <img id="site-icon" src="./mil-icon.png">
                 <h2>MilCoder</h2>
             </a>
         </div>
@@ -168,33 +168,75 @@
 
 </template>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/goldenlayout.min.js" integrity="sha256-NhJAZDfGgv4PiB+GVlSrPdh3uc75XXYSM4su8hgTchI=" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-base.css" integrity="sha256-oIDR18yKFZtfjCJfDsJYpTBv1S9QmxYopeqw2dO96xM=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-dark-theme.css" integrity="sha256-ygw8PvSDJJUGLf6Q9KIQsYR3mOmiQNlDaxMLDOx9xL0=" crossorigin="anonymous" />
 
 <script>
-    var require = {
-        paths: {
-            "vs": "https://unpkg.com/monaco-editor/min/vs",
-            "monaco-vim": "https://unpkg.com/monaco-vim/dist/monaco-vim",
-            "monaco-emacs": "https://unpkg.com/monaco-emacs/dist/monaco-emacs"
-        }
-    };
+var require = {
+  paths: {
+    vs: 'https://unpkg.com/monaco-editor/min/vs',
+    'monaco-vim': 'https://unpkg.com/monaco-vim/dist/monaco-vim',
+    'monaco-emacs': 'https://unpkg.com/monaco-emacs/dist/monaco-emacs',
+  },
+};
+
+export default {
+  setup() {},
+
+  metaInfo: {
+    link: [
+      {
+        rel: 'stylesheet',
+        href: 'https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-base.css',
+        integrity: 'sha256-oIDR18yKFZtfjCJfDsJYpTBv1S9QmxYopeqw2dO96xM=',
+        crossorigin: 'anonymous',
+      },
+      {
+        rel: 'stylesheet',
+        href: 'https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-dark-theme.css',
+        integrity: 'sha256-ygw8PvSDJJUGLf6Q9KIQsYR3mOmiQNlDaxMLDOx9xL0=',
+        crossorigin: 'anonymous',
+      },
+      {
+        rel: 'stylesheet',
+        href: 'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css',
+        integrity: 'sha256-9mbkOfVho3ZPXfM7W8sV2SndrGDuh7wuyLjtsWeTI1Q=',
+        crossorigin: 'anonymous',
+      },
+      {
+        rel: 'stylesheet',
+        href: 'css/ide.css',
+        type: 'text/css',
+      },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css?family=Exo+2',
+      },
+    ],
+    script: [
+      {
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js',
+        integrity: 'sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=',
+        crossorigin: 'anonymous',
+      },
+      {
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/goldenlayout.min.js',
+        integrity: 'sha256-NhJAZDfGgv4PiB+GVlSrPdh3uc75XXYSM4su8hgTchI=',
+        crossorigin: 'anonymous',
+      },
+      {
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js',
+        integrity: 'sha256-t8GepnyPmw9t+foMh3mKNvcorqNHamSKtKRxxpUEgFI=',
+        crossorigin: 'anonymous',
+      },
+      { src: 'https://unpkg.com/monaco-editor/min/vs/loader.js' },
+      {
+        src: 'https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.nls.js',
+      },
+      {
+        src: 'https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.js',
+      },
+      { src: 'Ide.js' },
+      { src: 'third_party/download.js' },
+    ],
+  },
+};
 </script>
-<script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
-<script src="https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.nls.js"></script>
-<script src="https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.js"></script>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha256-9mbkOfVho3ZPXfM7W8sV2SndrGDuh7wuyLjtsWeTI1Q=" crossorigin="anonymous" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js" integrity="sha256-t8GepnyPmw9t+foMh3mKNvcorqNHamSKtKRxxpUEgFI=" crossorigin="anonymous"></script>
-
-<link href="https://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet">
-
-<script type="text/javascript" src="third_party/download.js"></script>
-
-<script type="text/javascript" src="ide.js"></script>
-
-<link type="text/css" rel="stylesheet" href="css/ide.css">
-

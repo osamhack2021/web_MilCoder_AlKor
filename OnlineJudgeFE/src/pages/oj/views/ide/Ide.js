@@ -117,18 +117,18 @@ function decode(bytes) {
 }
 
 function localStorageSetItem(key, value) {
-  try {
-    localStorage.setItem(key, value);
-  } catch (ignorable) {
-  }
+    try {
+        localStorage.setItem(key, value);
+    } catch (ignorable) {
+    }
 }
 
 function localStorageGetItem(key) {
-  try {
-    return localStorage.getItem(key);
-  } catch (ignorable) {
-    return null;
-  }
+    try {
+        return localStorage.getItem(key);
+    } catch (ignorable) {
+        return null;
+    }
 }
 
 function showMessages() {
