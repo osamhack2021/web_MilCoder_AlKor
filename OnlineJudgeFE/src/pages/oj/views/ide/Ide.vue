@@ -180,6 +180,22 @@ var require = {
 
 export default {
   setup() {},
+  mounted() {
+    this.$nextTick(function () {
+      var srcList = [
+        'https://unpkg.com/monaco-editor/min/vs/loader.js',
+        'https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.nls.js',
+        'https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.js',
+        '/static/js/ide.js',
+        'third_party/download.js',
+      ];
+      for (var i = 0; i < srcList.length; i++) {
+        let scriptBlock = document.createElement('script');
+        scriptBlock.setAttribute('src', srcList[i]);
+        document.head.appendChild(scriptBlock);
+      }
+    });
+  },
 
   metaInfo: {
     link: [
@@ -203,7 +219,7 @@ export default {
       },
       {
         rel: 'stylesheet',
-        href: 'css/ide.css',
+        href: 'static/css/ide.css',
         type: 'text/css',
       },
       {
@@ -227,15 +243,6 @@ export default {
         integrity: 'sha256-t8GepnyPmw9t+foMh3mKNvcorqNHamSKtKRxxpUEgFI=',
         crossorigin: 'anonymous',
       },
-      { src: 'https://unpkg.com/monaco-editor/min/vs/loader.js' },
-      {
-        src: 'https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.nls.js',
-      },
-      {
-        src: 'https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.js',
-      },
-      { src: 'Ide.js' },
-      { src: 'third_party/download.js' },
     ],
   },
 };
