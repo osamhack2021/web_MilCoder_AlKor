@@ -20,7 +20,6 @@ var stdinEditor;
 var stdoutEditor;
 var stderrEditor;
 var compileOutputEditor;
-var sandboxMessageEditor;
 
 var isEditorDirty = false;
 var currentLanguageId;
@@ -49,24 +48,24 @@ var layoutConfig = {
         headerHeight: 22
     },
     content: [{
-        type: "row",
+        type: "column",
         content: [{
             type: "component",
             componentName: "source",
-            title: "SOURCE",
+            title: "소스코드",
             isClosable: false,
             componentState: {
                 readOnly: false
             },
             width: 60
         }, {
-            type: "column",
+            type: "row",
             content: [{
                 type: "stack",
                 content: [{
                     type: "component",
                     componentName: "stdin",
-                    title: "STDIN",
+                    title: "입력(STDIN)",
                     isClosable: false,
                     componentState: {
                         readOnly: false
@@ -77,7 +76,7 @@ var layoutConfig = {
                 content: [{
                         type: "component",
                         componentName: "stdout",
-                        title: "STDOUT",
+                        title: "실행 결과(STDOUT)",
                         isClosable: false,
                         componentState: {
                             readOnly: true
@@ -85,7 +84,7 @@ var layoutConfig = {
                     }, {
                         type: "component",
                         componentName: "stderr",
-                        title: "STDERR",
+                        title: "오류(STDERR)",
                         isClosable: false,
                         componentState: {
                             readOnly: true
@@ -93,15 +92,7 @@ var layoutConfig = {
                     }, {
                         type: "component",
                         componentName: "compile output",
-                        title: "COMPILE OUTPUT",
-                        isClosable: false,
-                        componentState: {
-                            readOnly: true
-                        }
-                    }, {
-                        type: "component",
-                        componentName: "sandbox message",
-                        title: "SANDBOX MESSAGE",
+                        title: "컴파일 결과",
                         isClosable: false,
                         componentState: {
                             readOnly: true
@@ -201,7 +192,6 @@ function handleResult(data) {
     var stdout = decode(data.stdout);
     var stderr = decode(data.stderr);
     var compile_output = decode(data.compile_output);
-    var sandbox_message = decode(data.message);
     var time = (data.time === null ? "-" : data.time + "s");
     var memory = (data.memory === null ? "-" : data.memory + "KB");
 
@@ -219,7 +209,6 @@ function handleResult(data) {
     stdoutEditor.setValue(stdout);
     stderrEditor.setValue(stderr);
     compileOutputEditor.setValue(compile_output);
-    sandboxMessageEditor.setValue(sandbox_message);
 
     if (stdout !== "") {
         var dot = document.getElementById("stdout-dot");
@@ -235,12 +224,6 @@ function handleResult(data) {
     }
     if (compile_output !== "") {
         var dot = document.getElementById("compile-output-dot");
-        if (!dot.parentElement.classList.contains("lm_active")) {
-            dot.hidden = false;
-        }
-    }
-    if (sandbox_message !== "") {
-        var dot = document.getElementById("sandbox-message-dot");
         if (!dot.parentElement.classList.contains("lm_active")) {
             dot.hidden = false;
         }
@@ -275,7 +258,6 @@ function loadSavedSource() {
                 stdoutEditor.setValue(decode(data["stdout"]));
                 stderrEditor.setValue(decode(data["stderr"]));
                 compileOutputEditor.setValue(decode(data["compile_output"]));
-                sandboxMessageEditor.setValue(decode(data["message"]));
                 var time = (data.time === null ? "-" : data.time + "s");
                 var memory = (data.memory === null ? "-" : data.memory + "KB");
                 $statusLine.html(`${data.status.description}, ${time}, ${memory}`);
@@ -299,12 +281,10 @@ function run() {
     document.getElementById("stdout-dot").hidden = true;
     document.getElementById("stderr-dot").hidden = true;
     document.getElementById("compile-output-dot").hidden = true;
-    document.getElementById("sandbox-message-dot").hidden = true;
 
     stdoutEditor.setValue("");
     stderrEditor.setValue("");
     compileOutputEditor.setValue("");
-    sandboxMessageEditor.setValue("");
 
     var sourceValue = encode(sourceEditor.getValue());
     var stdinValue = encode(stdinEditor.getValue());
@@ -465,7 +445,6 @@ function editorsUpdateFontSize(fontSize) {
     stdoutEditor.updateOptions({fontSize: fontSize});
     stderrEditor.updateOptions({fontSize: fontSize});
     compileOutputEditor.updateOptions({fontSize: fontSize});
-    sandboxMessageEditor.updateOptions({fontSize: fontSize});
 }
 
 function updateScreenElements() {
@@ -669,26 +648,6 @@ $(document).ready(function () {
 
             container.on("tab", function(tab) {
                 tab.element.append("<span id=\"compile-output-dot\" class=\"dot\" hidden></span>");
-                tab.element.on("mousedown", function(e) {
-                    e.target.closest(".lm_tab").children[3].hidden = true;
-                });
-            });
-        });
-
-        layout.registerComponent("sandbox message", function (container, state) {
-            sandboxMessageEditor = monaco.editor.create(container.getElement()[0], {
-                automaticLayout: true,
-                theme: "vs-dark",
-                scrollBeyondLastLine: false,
-                readOnly: state.readOnly,
-                language: "plaintext",
-                minimap: {
-                    enabled: false
-                }
-            });
-
-            container.on("tab", function(tab) {
-                tab.element.append("<span id=\"sandbox-message-dot\" class=\"dot\" hidden></span>");
                 tab.element.on("mousedown", function(e) {
                     e.target.closest(".lm_tab").children[3].hidden = true;
                 });
