@@ -1,5 +1,5 @@
 <template>
-<div id="ide-main">
+<div id="ide-main" style="height:800px">
     <!--
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/goldenlayout.min.js" integrity="sha256-NhJAZDfGgv4PiB+GVlSrPdh3uc75XXYSM4su8hgTchI=" crossorigin="anonymous"></script>
@@ -22,8 +22,8 @@
 
     -->
 
-    <div id="site-navigation" class="ui small inverted menu">
-        <div id="site-header" class="header item">
+    <div id="ide-navigation" class="ui small inverted menu">
+        <div id="ide-header" class="header item">
             <img id="site-icon" src="/static/images/mil-icon.png">
             <h2 id="ide-title">MilCoder Soure Editor</h2>
         </div>
@@ -49,11 +49,12 @@
         <golden-layout id="ide-layout" reorderEnabled="false">
             <gl-col>
                 <gl-component componentName="source" title="소스코드">
-                    <MonacoEditor id="source-editor" class="editor" automaticLayout="true" style="height:400px" v-model="code" language="javascript" />
+                    <MonacoEditor class="editor" v-model="code" language="javascript" :options=monacoOption> </MonacoEditor>
                 </gl-component>
                 <gl-row>
                     <gl-stack>
-                        <gl-component componentName="stdin" title="입력(STDIN)"></gl-component>
+                        <gl-component componentName="stdin" title="입력(STDIN)">
+                        </gl-component>
                     </gl-stack>
                     <gl-stack>
                         <gl-component componentName="stdout" title="실행 결과(STDOUT)"></gl-component>
@@ -143,15 +144,12 @@ const supportedLangs = [
   { value: '51', mode: 'csharp', name: 'C# (Mono 6.6.0.161)' },
   { value: '1022', mode: 'csharp', name: 'C# (Mono 6.10.0.104)' },
   { value: '1021', mode: 'csharp', name: 'C# (.NET Core SDK 3.1.302)' },
-  { value: '1023', mode: 'csharp', name: 'C# Test (.NET Core SDK 3.1.302, NUnit 3.12.0)' },
   { value: '76', mode: 'cpp', name: 'C++ (Clang 7.0.1)' },
   { value: '1014', mode: 'cpp', name: 'C++ (Clang 9.0.1)' },
   { value: '1002', mode: 'cpp', name: 'C++ (Clang 10.0.1)' },
   { value: '52', mode: 'cpp', name: 'C++ (GCC 7.4.0)' },
   { value: '53', mode: 'cpp', name: 'C++ (GCC 8.3.0)' },
   { value: '54', mode: 'cpp', name: 'C++ (GCC 9.2.0)' },
-  { value: '1015', mode: 'cpp', name: 'C++ Test (Clang 10.0.1, Google Test 1.8.1)' },
-  { value: '1012', mode: 'cpp', name: 'C++ Test (GCC 8.4.0, Google Test 1.8.1)' },
   { value: '1003', mode: 'c', name: 'C3 (latest)' },
   { value: '86', mode: 'clojure', name: 'Clojure (1.10.1)' },
   { value: '77', mode: 'UNKNOWN', name: 'COBOL (GnuCOBOL 2.2)' },
@@ -168,25 +166,10 @@ const supportedLangs = [
   { value: '61', mode: 'UNKNOWN', name: 'Haskell (GHC 8.8.1)' },
   { value: '62', mode: 'java', name: 'Java (OpenJDK 13.0.1)' },
   { value: '1004', mode: 'java', name: 'Java (OpenJDK 14.0.1)' },
-  {
-    value: '1005',
-    mode: 'java',
-    name: 'Java Test (OpenJDK 14.0.1, JUnit Platform Console Standalone 1.6.2)',
-  },
   { value: '63', mode: 'javascript', name: 'JavaScript (Node.js 12.14.0)' },
   { value: '78', mode: 'kotlin', name: 'Kotlin (1.3.70)' },
   { value: '64', mode: 'lua', name: 'Lua (5.3.5)' },
   { value: '1006', mode: 'c', name: 'MPI (OpenRTE 3.1.3) with C (GCC 8.3.0)' },
-  {
-    value: '1007',
-    mode: 'cpp',
-    name: 'MPI (OpenRTE 3.1.3) with C++ (GCC 8.3.0)',
-  },
-  {
-    value: '1008',
-    mode: 'python',
-    name: 'MPI (OpenRTE 3.1.3) with Python (3.7.3)',
-  },
   { value: '1009', mode: 'python', name: 'Nim (stable)' },
   { value: '79', mode: 'objective-c', name: 'Objective-C (Clang 7.0.1)' },
   { value: '65', mode: 'UNKNOWN', name: 'OCaml (4.09.0)' },
@@ -223,6 +206,10 @@ export default ({
 
   data() {
     return {
+      monacoOption: {
+        automaticLayout: true,
+        scrollBeyondLastLine: true
+      },
       supportedLangs: supportedLangs,
       selectedLang: '54',
       code: 'hello world'
@@ -256,11 +243,6 @@ export default ({
       },
       {
         rel: 'stylesheet',
-        href: 'static/css/ide.css',
-        type: 'text/css',
-      },
-      {
-        rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/css?family=Exo+2',
       },
     ],
@@ -282,34 +264,41 @@ export default ({
 
 
 <style scoped>
-
-#ide-title
-{
-    margin: 0
+#ide-navigation {
+    border-radius: 0;
+    margin: 0;
+    background: #1e1e1e;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    height: 45px;
 }
 
-#ide-main
-{
+#ide-header {
+    padding-left: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#ide-title {
+    margin: 0;
+    display: inline;
+    vertical-align: middle;
+    font-family: 'Exo 2', sans-serif;
+}
+
+#ide-main {
+    width: 100%;
+    height: 100%;
+    min-height: 800px;
+}
+
+#ide-content {
     width: 100%;
     height: 100%;
 }
 
-#ide-content
-{
-    width: 100%;
-    height: 100%;
-}
-
-#ide-settings
-{
+#ide-settings {
     height: 300px;
     width: 600px;
     position: relative;
-}
-
-.editor
-{
-    width: 100%;
-    height: 100%;
 }
 </style>
