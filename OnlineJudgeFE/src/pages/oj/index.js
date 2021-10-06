@@ -33,6 +33,10 @@ import App from './App.vue';
 import router from './router';
 
 import VueMeta from 'vue-meta';
+import BootstrapVue from 'bootstrap-vue';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
+
 import vgl from 'vue-golden-layout';
 
 // register global utility filters.
@@ -46,6 +50,7 @@ Vue.use(iView, {
 });
 
 Vue.use(vgl);
+Vue.use(BootstrapVue);
 Vue.use(VueMeta);
 Vue.use(VueClipboard);
 Vue.use(highlight);

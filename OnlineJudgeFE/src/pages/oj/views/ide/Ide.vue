@@ -1,8 +1,6 @@
 <template>
-<div>
+<div id="ide-main">
     <!--
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js" integrity="sha256-t8GepnyPmw9t+foMh3mKNvcorqNHamSKtKRxxpUEgFI=" crossorigin="anonymous"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/goldenlayout.min.js" integrity="sha256-NhJAZDfGgv4PiB+GVlSrPdh3uc75XXYSM4su8hgTchI=" crossorigin="anonymous"></script>
     <script>
@@ -22,26 +20,17 @@
 
     <script type="text/javascript" src="js/ide.js"></script>
 
-    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
     -->
 
     <div id="site-navigation" class="ui small inverted menu">
         <div id="site-header" class="header item">
-            <img id="site-icon" src="mil-icon.png">
-            <h2>MilCoder</h2>
+            <img id="site-icon" src="/static/images/mil-icon.png">
+            <h2 id="ide-title">MilCoder Soure Editor</h2>
         </div>
         <div class="left menu">
-            <div class="ui dropdown item site-links on-hover">
-                File <i class="dropdown icon"></i>
-                <div class="menu">
-                    <a class="item" target="_blank" href="/"><i class="file code icon"></i> New File</a>
-                    <div class="item" onclick="downloadSource()"><i class="download icon"></i> Download</div>
-                    <div id="insert-template-btn" class="item"><i class="file code outline icon"></i> Insert template
-                        for current language</div>
-                </div>
+            <div class="ui dropdown item site-links on-hover"> 코드 초기화 <i class="new icon"></i>
             </div>
-            <div class="link item" onclick="$('#site-settings').modal('show')"><i class="cog icon"></i> Settings</div>
+            <div class="link item" onclick="$('#ide-settings').modal('show')"><i class="cog icon"></i> 설정</div>
             <div class="item borderless">
                 <select v-model="selectedLang" id="select-language" class="ui dropdown">
                     <option v-for="lang in supportedLangs" :value=lang.value :mode=lang.mode :key=lang.value>{{lang.name}}</option>
@@ -56,18 +45,20 @@
         </div>
     </div>
 
-    <div id="site-content">
-        <golden-layout>
+    <div id="ide-content">
+        <golden-layout id="ide-layout" reorderEnabled="false">
             <gl-col>
                 <gl-component componentName="source" title="소스코드">
-                    <MonacoEditor class="editor" v-model="code" language="javascript" />
+                    <MonacoEditor id="source-editor" class="editor" automaticLayout="true" style="height:400px" v-model="code" language="javascript" />
                 </gl-component>
                 <gl-row>
-                    <gl-compoment componentName="stdin" title="입력(STDIN)"></gl-compoment>
                     <gl-stack>
-                        <gl-compoment componentName="stdout" title="실행 결과(STDOUT)"></gl-compoment>
-                        <gl-compoment componentName="stderr" title="오류(STDERR)"></gl-compoment>
-                        <gl-compoment componentName="compile output" title="컴파일 결과"></gl-compoment>
+                        <gl-component componentName="stdin" title="입력(STDIN)"></gl-component>
+                    </gl-stack>
+                    <gl-stack>
+                        <gl-component componentName="stdout" title="실행 결과(STDOUT)"></gl-component>
+                        <gl-component componentName="stderr" title="오류(STDERR)"></gl-component>
+                        <gl-component componentName="compile output" title="컴파일 결과"></gl-component>
                     </gl-stack>
                 </gl-row>
             </gl-col>
@@ -88,11 +79,11 @@
         </div>
     </div>
 
-    <div id="site-settings" class="ui modal">
+    <div id="ide-settings" class="ui modal">
         <i class="close icon"></i>
         <div class="header">
             <i class="cog icon"></i>
-            Settings
+            설정
         </div>
         <div class="content">
             <div class="ui form">
@@ -120,7 +111,7 @@
                 <div class="inline field">
                     <div class="ui checkbox">
                         <input type="checkbox" name="redirect-output">
-                        <label>Redirect stderr to stdout</label>
+                        <label>표준 오류(stderr)를 표준 출력(stdout)으로 전달</label>
                     </div>
                 </div>
             </div>
@@ -131,12 +122,11 @@
         <div id="editor-status-line"></div>
         <span id="status-line"></span>
     </div>
-</body>
 </div>
 </template>
 
 <script>
-import { defineComponent } from '@vue/composition-api';
+import $ from 'jquery';
 import MonacoEditor from 'vue-monaco';
 
 const supportedLangs = [
@@ -153,27 +143,15 @@ const supportedLangs = [
   { value: '51', mode: 'csharp', name: 'C# (Mono 6.6.0.161)' },
   { value: '1022', mode: 'csharp', name: 'C# (Mono 6.10.0.104)' },
   { value: '1021', mode: 'csharp', name: 'C# (.NET Core SDK 3.1.302)' },
-  {
-    value: '1023',
-    mode: 'csharp',
-    name: 'C# Test (.NET Core SDK 3.1.302, NUnit 3.12.0)',
-  },
+  { value: '1023', mode: 'csharp', name: 'C# Test (.NET Core SDK 3.1.302, NUnit 3.12.0)' },
   { value: '76', mode: 'cpp', name: 'C++ (Clang 7.0.1)' },
   { value: '1014', mode: 'cpp', name: 'C++ (Clang 9.0.1)' },
   { value: '1002', mode: 'cpp', name: 'C++ (Clang 10.0.1)' },
   { value: '52', mode: 'cpp', name: 'C++ (GCC 7.4.0)' },
   { value: '53', mode: 'cpp', name: 'C++ (GCC 8.3.0)' },
   { value: '54', mode: 'cpp', name: 'C++ (GCC 9.2.0)' },
-  {
-    value: '1015',
-    mode: 'cpp',
-    name: 'C++ Test (Clang 10.0.1, Google Test 1.8.1)',
-  },
-  {
-    value: '1012',
-    mode: 'cpp',
-    name: 'C++ Test (GCC 8.4.0, Google Test 1.8.1)',
-  },
+  { value: '1015', mode: 'cpp', name: 'C++ Test (Clang 10.0.1, Google Test 1.8.1)' },
+  { value: '1012', mode: 'cpp', name: 'C++ Test (GCC 8.4.0, Google Test 1.8.1)' },
   { value: '1003', mode: 'c', name: 'C3 (latest)' },
   { value: '86', mode: 'clojure', name: 'Clojure (1.10.1)' },
   { value: '77', mode: 'UNKNOWN', name: 'COBOL (GnuCOBOL 2.2)' },
@@ -225,19 +203,29 @@ const supportedLangs = [
   { value: '72', mode: 'ruby', name: 'Ruby (2.7.0)' },
   { value: '73', mode: 'rust', name: 'Rust (1.40.0)' },
   { value: '81', mode: 'UNKNOWN', name: 'Scala (2.13.2)' },
-  { value: '82', mode: 'sql', name: 'SQL (SQLite 3.27.2)' },
   { value: '83', mode: 'swift', name: 'Swift (5.2.3)' },
   { value: '74', mode: 'typescript', name: 'TypeScript (3.7.4)' },
   { value: '84', mode: 'vb', name: 'Visual Basic.Net (vbnc 0.0.0.5943)' },
 ];
 
-export default defineComponent({
+export default ({
   setup() {},
+
+  mounted() {
+    $('#ide-layout').width($('#ide-content').width());
+    $('#ide-layout').height($('#ide-content').height());
+
+    $(window).resize(function () {
+      $('#ide-layout').width($('#ide-content').width());
+      $('#ide-layout').height($('#ide-content').height());
+    });
+  },
 
   data() {
     return {
       supportedLangs: supportedLangs,
       selectedLang: '54',
+      code: 'hello world'
     };
   },
 
@@ -276,6 +264,52 @@ export default defineComponent({
         href: 'https://fonts.googleapis.com/css?family=Exo+2',
       },
     ],
+    script: [
+      {
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js',
+        integrity: 'sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=',
+        crossorigin: 'anonymous'
+      },
+      {
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js',
+        integrity: 'sha256-t8GepnyPmw9t+foMh3mKNvcorqNHamSKtKRxxpUEgFI=',
+        crossorigin: 'anonymous'
+      }
+    ]
   },
 });
 </script>
+
+
+<style scoped>
+
+#ide-title
+{
+    margin: 0
+}
+
+#ide-main
+{
+    width: 100%;
+    height: 100%;
+}
+
+#ide-content
+{
+    width: 100%;
+    height: 100%;
+}
+
+#ide-settings
+{
+    height: 300px;
+    width: 600px;
+    position: relative;
+}
+
+.editor
+{
+    width: 100%;
+    height: 100%;
+}
+</style>
