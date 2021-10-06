@@ -1,5 +1,5 @@
 <template>
-<div id="ide-main" style="height:800px">
+<div id="ide-main" style="height: 600px">
     <!--
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/goldenlayout.min.js" integrity="sha256-NhJAZDfGgv4PiB+GVlSrPdh3uc75XXYSM4su8hgTchI=" crossorigin="anonymous"></script>
@@ -30,7 +30,6 @@
         <div class="left menu">
             <div class="ui dropdown item site-links on-hover"> 코드 초기화 <i class="new icon"></i>
             </div>
-            <div class="link item" onclick="$('#ide-settings').modal('show')"><i class="cog icon"></i> 설정</div>
             <div class="item borderless">
                 <select v-model="selectedLang" id="select-language" class="ui dropdown">
                     <option v-for="lang in supportedLangs" :value=lang.value :mode=lang.mode :key=lang.value>{{lang.name}}</option>
@@ -49,17 +48,24 @@
         <golden-layout id="ide-layout" reorderEnabled="false">
             <gl-col>
                 <gl-component componentName="source" title="소스코드">
-                    <MonacoEditor class="editor" v-model="code" language="javascript" :options=monacoOption> </MonacoEditor>
+                    <MonacoEditor class="editor" v-model="code.source" language="cpp" :options=monacoOption> </MonacoEditor>
                 </gl-component>
                 <gl-row>
                     <gl-stack>
                         <gl-component componentName="stdin" title="입력(STDIN)">
+                            <MonacoEditor class="editor" v-model="code.stdin" language="plaintext" :options=monacoOption> </MonacoEditor>
                         </gl-component>
                     </gl-stack>
                     <gl-stack>
-                        <gl-component componentName="stdout" title="실행 결과(STDOUT)"></gl-component>
-                        <gl-component componentName="stderr" title="오류(STDERR)"></gl-component>
-                        <gl-component componentName="compile output" title="컴파일 결과"></gl-component>
+                        <gl-component componentName="stdout" title="실행 결과(STDOUT)">
+                            <MonacoEditor class="editor" v-model="code.stdout" language="plaintext" :options=monacoOption> </MonacoEditor>
+                        </gl-component>
+                        <gl-component componentName="stderr" title="오류(STDERR)">
+                            <MonacoEditor class="editor" v-model="code.stderr" language="plaintext" :options=monacoOption> </MonacoEditor>
+                        </gl-component>
+                        <gl-component componentName="compile output" title="컴파일 결과">
+                            <MonacoEditor class="editor" v-model="code.compileOutput" language="plaintext" :options=monacoOption> </MonacoEditor>
+                        </gl-component>
                     </gl-stack>
                 </gl-row>
             </gl-col>
@@ -207,12 +213,22 @@ export default ({
   data() {
     return {
       monacoOption: {
+        theme: 'vs-dark',
         automaticLayout: true,
-        scrollBeyondLastLine: true
+        scrollBeyondLastLine: true,
+        minimap: {
+          enabled: false
+        }
       },
       supportedLangs: supportedLangs,
       selectedLang: '54',
-      code: 'hello world'
+      code: {
+        source: 'hello',
+        stdin: '',
+        stdout: '',
+        stderr: '',
+        compileOutput: ''
+      }
     };
   },
 
@@ -288,7 +304,7 @@ export default ({
 #ide-main {
     width: 100%;
     height: 100%;
-    min-height: 800px;
+    min-height: 600px;
 }
 
 #ide-content {
@@ -300,5 +316,10 @@ export default ({
     height: 300px;
     width: 600px;
     position: relative;
+}
+
+.editor {
+    width: 100%;
+    height: 100%;
 }
 </style>
