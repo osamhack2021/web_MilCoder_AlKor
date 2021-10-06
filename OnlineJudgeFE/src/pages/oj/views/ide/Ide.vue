@@ -1,34 +1,16 @@
 <template>
 <div id="ide-main" style="height: 600px">
     <!--
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/goldenlayout.min.js" integrity="sha256-NhJAZDfGgv4PiB+GVlSrPdh3uc75XXYSM4su8hgTchI=" crossorigin="anonymous"></script>
-    <script>
-        var require = {
-            paths: {
-                "vs": "https://unpkg.com/monaco-editor/min/vs",
-                "monaco-vim": "https://unpkg.com/monaco-vim/dist/monaco-vim",
-                "monaco-emacs": "https://unpkg.com/monaco-emacs/dist/monaco-emacs"
-            }
-        };
-    </script>
-    <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
-    <script src="https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.nls.js"></script>
-    <script src="https://unpkg.com/monaco-editor@0.23.0/min/vs/editor/editor.main.js"></script>
-
     <script type="text/javascript" src="third_party/download.js"></script>
-
-    <script type="text/javascript" src="js/ide.js"></script>
-
     -->
 
     <div id="ide-navigation" class="ui small inverted menu">
         <div id="ide-header" class="header item">
             <img id="site-icon" src="/static/images/mil-icon.png">
-            <h2 id="ide-title">MilCoder Soure Editor</h2>
+            <h2 id="ide-title" class="wide screen only">MilCoder Soure Editor</h2>
         </div>
         <div class="left menu">
-            <div class="ui dropdown item site-links on-hover"> 코드 초기화 <i class="new icon"></i>
+            <div class="ui dropdown item site-links on-hover wide screen only"> 코드 초기화 <i class="new icon"></i>
             </div>
             <div class="item borderless">
                 <select v-model="selectedLang" id="select-language" class="ui dropdown">
@@ -86,45 +68,6 @@
         </div>
     </div>
 
-    <div id="ide-settings" class="ui modal">
-        <i class="close icon"></i>
-        <div class="header">
-            <i class="cog icon"></i>
-            설정
-        </div>
-        <div class="content">
-            <div class="ui form">
-                <div class="inline fields">
-                    <label>Editor Mode</label>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" name="editor-mode" value="normal" checked="checked">
-                            <label>Normal</label>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" name="editor-mode" value="vim">
-                            <label>Vim</label>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" name="editor-mode" value="emacs">
-                            <label>Emacs</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <input type="checkbox" name="redirect-output">
-                        <label>표준 오류(stderr)를 표준 출력(stdout)으로 전달</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div id="site-footer">
         <div id="editor-status-line"></div>
         <span id="status-line"></span>
@@ -175,7 +118,6 @@ const supportedLangs = [
   { value: '63', mode: 'javascript', name: 'JavaScript (Node.js 12.14.0)' },
   { value: '78', mode: 'kotlin', name: 'Kotlin (1.3.70)' },
   { value: '64', mode: 'lua', name: 'Lua (5.3.5)' },
-  { value: '1006', mode: 'c', name: 'MPI (OpenRTE 3.1.3) with C (GCC 8.3.0)' },
   { value: '1009', mode: 'python', name: 'Nim (stable)' },
   { value: '79', mode: 'objective-c', name: 'Objective-C (Clang 7.0.1)' },
   { value: '65', mode: 'UNKNOWN', name: 'OCaml (4.09.0)' },
@@ -197,16 +139,23 @@ const supportedLangs = [
   { value: '84', mode: 'vb', name: 'Visual Basic.Net (vbnc 0.0.0.5943)' },
 ];
 
+function updateResize() {
+  $('#ide-layout').width($('#ide-content').width());
+  $('#ide-layout').height($('#ide-content').height());
+  var display = window.innerWidth <= 800 ? 'none' : '';
+  $('.wide.screen.only').each(function (index) {
+    $(this).css('display', display);
+  });
+}
+
 export default ({
   setup() {},
 
   mounted() {
-    $('#ide-layout').width($('#ide-content').width());
-    $('#ide-layout').height($('#ide-content').height());
+    updateResize();
 
     $(window).resize(function () {
-      $('#ide-layout').width($('#ide-content').width());
-      $('#ide-layout').height($('#ide-content').height());
+      updateResize();
     });
   },
 
