@@ -1,9 +1,5 @@
 <template>
 <div id="ide-main" style="height: 600px">
-    <!--
-    <script type="text/javascript" src="third_party/download.js"></script>
-    -->
-
     <div id="ide-navigation" class="ui small inverted menu">
         <div id="ide-header" class="header item">
             <img id="site-icon" src="/static/images/mil-icon.png">
@@ -18,7 +14,7 @@
                 </select>
             </div>
             <div class="item no-left-padding borderless">
-                <button id="run-btn" class="ui primary labeled icon button"><i class="play icon"></i>Run (F9)</button>
+                <button id="run-btn" class="ui primary labeled icon button" v-on:click="run()"><i class="play icon"></i>Run (F9)</button>
             </div>
             <div id="navigation-message" class="item borderless">
                 <span class="navigation-message-text"></span>
@@ -35,18 +31,18 @@
                 <gl-row>
                     <gl-stack>
                         <gl-component componentName="stdin" title="입력(STDIN)">
-                            <MonacoEditor class="editor" v-model="code.stdin" language="plaintext" :options=monacoOption> </MonacoEditor>
+                            <MonacoEditor id="monaco-stdin" class="editor" v-model="code.stdin" language="plaintext" :options=monacoOption> </MonacoEditor>
                         </gl-component>
                     </gl-stack>
                     <gl-stack>
                         <gl-component componentName="stdout" title="실행 결과(STDOUT)">
-                            <MonacoEditor class="editor" v-model="code.stdout" language="plaintext" :options=monacoOption> </MonacoEditor>
+                            <MonacoEditor id="monaco-stdout" class="editor" v-model="code.stdout" language="plaintext" :options=monacoOption> </MonacoEditor>
                         </gl-component>
                         <gl-component componentName="stderr" title="오류(STDERR)">
-                            <MonacoEditor class="editor" v-model="code.stderr" language="plaintext" :options=monacoOption> </MonacoEditor>
+                            <MonacoEditor id="monaco-stderr" class="editor" v-model="code.stderr" language="plaintext" :options=monacoOption> </MonacoEditor>
                         </gl-component>
                         <gl-component componentName="compile output" title="컴파일 결과">
-                            <MonacoEditor class="editor" v-model="code.compileOutput" language="plaintext" :options=monacoOption> </MonacoEditor>
+                            <MonacoEditor id="monaco-compileOutput" class="editor" v-model="code.compileOutput" language="plaintext" :options=monacoOption> </MonacoEditor>
                         </gl-component>
                     </gl-stack>
                 </gl-row>
@@ -78,66 +74,6 @@
 <script>
 import $ from 'jquery';
 import MonacoEditor from 'vue-monaco';
-
-const supportedLangs = [
-  { value: '45', mode: 'UNKNOWN', name: 'Assembly (NASM 2.14.02)' },
-  { value: '46', mode: 'shell', name: 'Bash (5.0.0)' },
-  { value: '47', mode: 'UNKNOWN', name: 'Basic (FBC 1.07.1)' },
-  { value: '1011', mode: 'UNKNOWN', name: 'Bosque (latest)' },
-  { value: '75', mode: 'c', name: 'C (Clang 7.0.1)' },
-  { value: '1013', mode: 'c', name: 'C (Clang 9.0.1)' },
-  { value: '1001', mode: 'c', name: 'C (Clang 10.0.1)' },
-  { value: '48', mode: 'c', name: 'C (GCC 7.4.0)' },
-  { value: '49', mode: 'c', name: 'C (GCC 8.3.0)' },
-  { value: '50', mode: 'c', name: 'C (GCC 9.2.0)' },
-  { value: '51', mode: 'csharp', name: 'C# (Mono 6.6.0.161)' },
-  { value: '1022', mode: 'csharp', name: 'C# (Mono 6.10.0.104)' },
-  { value: '1021', mode: 'csharp', name: 'C# (.NET Core SDK 3.1.302)' },
-  { value: '76', mode: 'cpp', name: 'C++ (Clang 7.0.1)' },
-  { value: '1014', mode: 'cpp', name: 'C++ (Clang 9.0.1)' },
-  { value: '1002', mode: 'cpp', name: 'C++ (Clang 10.0.1)' },
-  { value: '52', mode: 'cpp', name: 'C++ (GCC 7.4.0)' },
-  { value: '53', mode: 'cpp', name: 'C++ (GCC 8.3.0)' },
-  { value: '54', mode: 'cpp', name: 'C++ (GCC 9.2.0)' },
-  { value: '1003', mode: 'c', name: 'C3 (latest)' },
-  { value: '86', mode: 'clojure', name: 'Clojure (1.10.1)' },
-  { value: '77', mode: 'UNKNOWN', name: 'COBOL (GnuCOBOL 2.2)' },
-  { value: '55', mode: 'UNKNOWN', name: 'Common Lisp (SBCL 2.0.0)' },
-  { value: '56', mode: 'UNKNOWN', name: 'D (DMD 2.089.1)' },
-  { value: '57', mode: 'UNKNOWN', name: 'Elixir (1.9.4)' },
-  { value: '58', mode: 'UNKNOWN', name: 'Erlang (OTP 22.2)' },
-  { value: '44', mode: 'plaintext', name: 'Executable' },
-  { value: '87', mode: 'fsharp', name: 'F# (.NET Core SDK 3.1.202)' },
-  { value: '1024', mode: 'fsharp', name: 'F# (.NET Core SDK 3.1.302)' },
-  { value: '59', mode: 'UNKNOWN', name: 'Fortran (GFortran 9.2.0)' },
-  { value: '60', mode: 'go', name: 'Go (1.13.5)' },
-  { value: '88', mode: 'UNKNOWN', name: 'Groovy (3.0.3)' },
-  { value: '61', mode: 'UNKNOWN', name: 'Haskell (GHC 8.8.1)' },
-  { value: '62', mode: 'java', name: 'Java (OpenJDK 13.0.1)' },
-  { value: '1004', mode: 'java', name: 'Java (OpenJDK 14.0.1)' },
-  { value: '63', mode: 'javascript', name: 'JavaScript (Node.js 12.14.0)' },
-  { value: '78', mode: 'kotlin', name: 'Kotlin (1.3.70)' },
-  { value: '64', mode: 'lua', name: 'Lua (5.3.5)' },
-  { value: '1009', mode: 'python', name: 'Nim (stable)' },
-  { value: '79', mode: 'objective-c', name: 'Objective-C (Clang 7.0.1)' },
-  { value: '65', mode: 'UNKNOWN', name: 'OCaml (4.09.0)' },
-  { value: '66', mode: 'UNKNOWN', name: 'Octave (5.1.0)' },
-  { value: '67', mode: 'pascal', name: 'Pascal (FPC 3.0.4)' },
-  { value: '85', mode: 'perl', name: 'Perl (5.28.1)' },
-  { value: '68', mode: 'php', name: 'PHP (7.4.1)' },
-  { value: '43', mode: 'plaintext', name: 'Plain Text' },
-  { value: '69', mode: 'UNKNOWN', name: 'Prolog (GNU Prolog 1.4.5)' },
-  { value: '70', mode: 'python', name: 'Python (2.7.17)' },
-  { value: '71', mode: 'python', name: 'Python (3.8.1)' },
-  { value: '1010', mode: 'python', name: 'Python for ML (3.7.3)' },
-  { value: '80', mode: 'r', name: 'R (4.0.0)' },
-  { value: '72', mode: 'ruby', name: 'Ruby (2.7.0)' },
-  { value: '73', mode: 'rust', name: 'Rust (1.40.0)' },
-  { value: '81', mode: 'UNKNOWN', name: 'Scala (2.13.2)' },
-  { value: '83', mode: 'swift', name: 'Swift (5.2.3)' },
-  { value: '74', mode: 'typescript', name: 'TypeScript (3.7.4)' },
-  { value: '84', mode: 'vb', name: 'Visual Basic.Net (vbnc 0.0.0.5943)' },
-];
 
 function updateResize() {
   $('#ide-layout').width($('#ide-content').width());
@@ -172,7 +108,7 @@ export default ({
       supportedLangs: supportedLangs,
       selectedLang: '54',
       code: {
-        source: 'hello',
+        source: cppSource,
         stdin: '',
         stdout: '',
         stderr: '',
@@ -183,6 +119,17 @@ export default ({
 
   components: {
     MonacoEditor,
+  },
+
+  watch: {
+    selectedLang: function(newVal, oldVal){
+      for(var lang of supportedLangs){
+        if(lang.value == this.selectedLang){
+          this.code.source = lang.template;
+          break
+        }
+      }
+    }
   },
 
   metaInfo: {
@@ -224,11 +171,134 @@ export default ({
       }
     ]
   },
+
+  methods: {
+    run() {
+      $('#run-btn').addClass("loading");
+
+      this.code.stdout = 'loading...';
+      this.code.stderr = 'loading...';
+      this.code.compileOutput = 'loading...';
+
+      var sourceValue = this.code.source;
+      var stdinValue = this.code.stdin;
+      var languageId = this.selectedLang;
+
+      var data = {
+          source_code: sourceValue,
+          language_id: languageId,
+          stdin: stdinValue,
+          compiler_options: '',
+          command_line_arguments: '',
+          redirect_stderr_to_stdout: false
+      };
+
+      $.ajax({
+          url: judgeURL + `/submissions`,
+          type: "POST",
+          async: true,
+          contentType: "application/json",
+          data: JSON.stringify(data),
+          xhrFields: {
+              withCredentials: judgeURL.indexOf("/secure") != -1 ? true : false
+          },
+          success: function (data, textStatus, jqXHR) {
+              console.log(`Your submission token is: ${data.token}`);
+              setTimeout(function(){this.fetchSubmission(data.token)}.bind(this), check_timeout);
+          }.bind(this)
+      });
+    },
+    handleResult(data) {
+      console.log('handle result');
+      console.log(data);
+      $('#run-btn').removeClass("loading");
+
+      var time = (data.time === null ? "-" : data.time + "s");
+      var memory = (data.memory === null ? "-" : data.memory + "KB");
+      var status = data.status || '';
+      var stdout = data.stdout|| '';
+      var stderr = data.stderr|| '';
+      var compile_output = data.compile_output || '';
+      
+      stdout += '\n\nFinished in '+time+', with '+memory+' memory.';
+
+      this.code.stdout = stdout;
+      this.code.stderr = stderr;
+      this.code.compileOutput = compile_output;
+    },
+    fetchSubmission(submission_token) {
+      console.log('fetch submission');
+      console.log(submission_token);
+      $.ajax({
+          url: judgeURL + "/submissions/" + submission_token,
+          type: "GET",
+          async: true,
+          success: function (data, textStatus, jqXHR) {
+              console.log(data);
+              if (data.status.id <= 2) { // In Queue or Processing
+                  setTimeout(function(){this.fetchSubmission(submission_token)}.bind(this), check_timeout);
+                  return;
+              }
+              this.handleResult.bind(this, data)();
+          }.bind(this)
+        });
+    }
+  }
 });
+
+var check_timeout = 300;
+var judgeURL = "https://ce.judge0.com";
+
+// Template Sources
+var cSource = "\
+#include <stdio.h>\n\
+\n\
+int main(void) {\n\
+    printf(\"Hello Judge0!\\n\");\n\
+    return 0;\n\
+}\n\
+";
+
+var cppSource = "\
+#include <iostream>\n\
+\n\
+int main() {\n\
+    std::cout << \"hello, world\" << std::endl;\n\
+    return 0;\n\
+}\n\
+";
+
+var javaSource = "\
+public class Main {\n\
+    public static void main(String[] args) {\n\
+        System.out.println(\"hello, world\");\n\
+    }\n\
+}\n\
+";
+
+var javaScriptSource = "console.log(\"hello, world\");";
+
+var pythonSource = "print(\"hello, world\")";
+
+var supportedLangs = [
+  { value: '50', mode: 'c', name: 'C (GCC 9.2.0)', template: cSource },
+  { value: '54', mode: 'cpp', name: 'C++ (GCC 9.2.0)', template: cppSource},
+  { value: '62', mode: 'java', name: 'Java (OpenJDK 13.0.1)', template: javaSource },
+  { value: '63', mode: 'javascript', name: 'JavaScript (Node.js 12.14.0)', template: javaScriptSource },
+  { value: '70', mode: 'python', name: 'Python (2.7.17)', template: pythonSource },
+  { value: '71', mode: 'python', name: 'Python (3.8.1)', template: pythonSource },
+];
+
 </script>
 
 
 <style scoped>
+#ide-main {
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
+}
+
 #ide-navigation {
     border-radius: 0;
     margin: 0;
@@ -248,12 +318,6 @@ export default ({
     display: inline;
     vertical-align: middle;
     font-family: 'Exo 2', sans-serif;
-}
-
-#ide-main {
-    width: 100%;
-    height: 100%;
-    min-height: 600px;
 }
 
 #ide-content {
