@@ -25,24 +25,24 @@
     <div id="ide-content">
         <golden-layout id="ide-layout" reorderEnabled="false">
             <gl-col>
-                <gl-component componentName="source" title="소스코드">
-                    <MonacoEditor class="editor" v-model="code.source" language="cpp" :options=monacoOption> </MonacoEditor>
+                <gl-component componentName="source" title="소스코드" style="overflow:hidden">
+                    <MonacoEditor ref="monacoSource" class="editor" v-model="code.source" language="cpp" :options=monacoOption> </MonacoEditor>
                 </gl-component>
                 <gl-row>
                     <gl-stack>
-                        <gl-component componentName="stdin" title="입력(STDIN)">
-                            <MonacoEditor id="monaco-stdin" class="editor" v-model="code.stdin" language="plaintext" :options=monacoOption> </MonacoEditor>
+                        <gl-component componentName="stdin" title="입력(STDIN)" style="overflow:hidden">
+                            <MonacoEditor ref="monacoStdin" class="editor" v-model="code.stdin" language="plaintext" :options=monacoOption> </MonacoEditor>
                         </gl-component>
                     </gl-stack>
                     <gl-stack>
-                        <gl-component componentName="stdout" title="실행 결과(STDOUT)">
-                            <MonacoEditor id="monaco-stdout" class="editor" v-model="code.stdout" language="plaintext" :options=monacoOption> </MonacoEditor>
+                        <gl-component componentName="stdout" title="실행 결과(STDOUT)" style="overflow:hidden">
+                            <MonacoEditor ref="monacoStdout" class="editor" v-model="code.stdout" language="plaintext" :options=monacoOption> </MonacoEditor>
                         </gl-component>
-                        <gl-component componentName="stderr" title="오류(STDERR)">
-                            <MonacoEditor id="monaco-stderr" class="editor" v-model="code.stderr" language="plaintext" :options=monacoOption> </MonacoEditor>
+                        <gl-component componentName="stderr" title="오류(STDERR)" style="overflow:hidden">
+                            <MonacoEditor ref="monacoStderr" class="editor" v-model="code.stderr" language="plaintext" :options=monacoOption> </MonacoEditor>
                         </gl-component>
-                        <gl-component componentName="compile output" title="컴파일 결과">
-                            <MonacoEditor id="monaco-compileOutput" class="editor" v-model="code.compileOutput" language="plaintext" :options=monacoOption> </MonacoEditor>
+                        <gl-component componentName="compile output" title="컴파일 결과" style="overflow:hidden">
+                            <MonacoEditor ref="monacoCompileOutput" class="editor" v-model="code.compileOutput" language="plaintext" :options=monacoOption> </MonacoEditor>
                         </gl-component>
                     </gl-stack>
                 </gl-row>
@@ -76,23 +76,33 @@ import $ from 'jquery';
 import MonacoEditor from 'vue-monaco';
 
 function updateResize() {
-  $('#ide-layout').width($('#ide-content').width());
-  $('#ide-layout').height($('#ide-content').height());
-  var display = window.innerWidth <= 800 ? 'none' : '';
-  $('.wide.screen.only').each(function (index) {
-    $(this).css('display', display);
-  });
+  
 }
 
 export default ({
   setup() {},
 
   mounted() {
-    updateResize();
-
     $(window).resize(function () {
-      updateResize();
-    });
+      $('#ide-layout').width($('#ide-content').width());
+      $('#ide-layout').height($('#ide-content').height());
+      var display = window.innerWidth <= 800 ? 'none' : '';
+      $('.wide.screen.only').each(function (index) {
+        $(this).css('display', display);
+      });
+       /*
+      setTimeout(function(){
+        this.$refs.monacoSource.getMonaco().layout();
+        this.$refs.monacoStdin.getMonaco().layout();
+        this.$refs.monacoStdout.getMonaco().layout();
+        this.$refs.monacoStderr.getMonaco().layout();
+        this.$refs.monacoCompileOutput.getMonaco().layout();
+        console.log("monaco resize");
+      }.bind(this), 1000);
+      */
+    }.bind(this));
+
+    setInterval(function(){window.dispatchEvent(new Event('resize'));}, 1000);
   },
 
   data() {
@@ -334,5 +344,7 @@ var supportedLangs = [
 .editor {
     width: 100%;
     height: 100%;
+    margin: 0;
+    padding: 0;
 }
 </style>
