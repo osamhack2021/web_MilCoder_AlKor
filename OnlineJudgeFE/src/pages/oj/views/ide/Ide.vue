@@ -1,5 +1,5 @@
 <template>
-<div id="ide-main" style="height: 600px">
+<div id="ide-main">
     <div id="ide-navigation" class="ui small inverted menu">
         <div id="ide-header" class="header item">
             <img id="site-icon" src="/static/images/mil-icon.png">
@@ -305,8 +305,8 @@ var supportedLangs = [
 <style scoped>
 #ide-main {
     width: 100%;
-    height: 100%;
-    min-height: 600px;
+    height: 80vh;
+    min-height: 300px;
 }
 
 #ide-navigation {
@@ -333,12 +333,6 @@ var supportedLangs = [
 #ide-content {
     width: 100%;
     height: 100%;
-}
-
-#ide-settings {
-    height: 300px;
-    width: 600px;
-    position: relative;
 }
 
 .editor {
