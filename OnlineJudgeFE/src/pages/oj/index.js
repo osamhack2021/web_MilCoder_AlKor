@@ -32,6 +32,13 @@ import ECharts from 'vue-echarts/components/ECharts.vue';
 import App from './App.vue';
 import router from './router';
 
+import VueMeta from 'vue-meta';
+import BootstrapVue from 'bootstrap-vue';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
+
+import vgl from 'vue-golden-layout';
+
 // register global utility filters.
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key]);
@@ -42,6 +49,9 @@ Vue.use(iView, {
   i18n: (key, value) => i18n.t(key, value),
 });
 
+Vue.use(vgl);
+Vue.use(BootstrapVue);
+Vue.use(VueMeta);
 Vue.use(VueClipboard);
 Vue.use(highlight);
 Vue.use(katex);

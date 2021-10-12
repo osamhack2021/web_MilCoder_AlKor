@@ -17,9 +17,16 @@ import {
   SubmissionDetails,
   SubmissionList,
   UserHome,
+  Ide
 } from '../views';
 
 export default [
+  {
+    name: 'ide-test',
+    path: '/ide',
+    meta: { title: 'IDE Test' },
+    component: Ide,
+  },
   {
     name: 'home',
     path: '/',
