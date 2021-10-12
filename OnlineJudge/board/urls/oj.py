@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from ..views.oj import BoardArticleAPI
 from ..views.oj import BoardListAPI
-from ..views.oj import BoardWriteAPI, BoardRemoveAPI
+#from ..views.oj import BoardWriteAPI, BoardRemoveAPI
 
 urlpatterns = [
     url(r"^board/?$", BoardArticleAPI.as_view(), name="board_article_api"),
