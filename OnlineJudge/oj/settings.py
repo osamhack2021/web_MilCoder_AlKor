@@ -119,7 +119,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-if not is_production and sys.platform == 'darwin':
+if not is_production:
     USE_TZ = False
 else:
     USE_TZ = True
