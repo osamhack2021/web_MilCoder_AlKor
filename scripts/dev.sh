@@ -28,7 +28,10 @@ function setup() {
     # Check PostgresQL is running
     lsof -nP -i4TCP:$POSTGRESQL_PORT | grep LISTEN > /dev/null
     if [[ $? -eq 1 ]] ; then
-      echo "PostgresQL is not running." && exit 1
+      sudo lsof -nP -i4TCP:$POSTGRESQL_PORT | grep LISTEN > /dev/null
+      if [[ $? -eq 1 ]] ; then
+        echo "PostgresQL is not running." && exit 1
+      fi
     fi
 
     $PY manage.py migrate --no-input
