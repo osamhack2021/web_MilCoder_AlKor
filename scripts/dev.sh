@@ -49,6 +49,7 @@ function start() {
 
   echo "Launching FRONT..."
   pushd $FRONT_ROOT
+    npm run build:dll 2>/dev/null
     NODE_ENV=development TARGET=http://127.0.0.1:$API_PORT npm run dev >> $FRONT_OUT 2>&1 &
     echo $! > $FRONT_PID_FILE
     sleep 4
