@@ -19,6 +19,10 @@ class EditArticleSerializer(serializers.Serializer):
     content = serializers.CharField(max_length=Const.MAX_CONTENT_LEN)
 
 
+class RemoveArticleSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+
+
 class ArticleAdminSerializer(serializers.ModelSerializer):
     created_by = UsernameSerializer()
 
@@ -29,3 +33,4 @@ class ArticleAdminSerializer(serializers.ModelSerializer):
 
 class ArticleSerializer(ArticleAdminSerializer):
     pass
+

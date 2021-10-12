@@ -3,7 +3,7 @@ from utils.api import APIView, validate_serializer
 from utils.shortcuts import check_is_id
 
 from ..models import Article
-from ..serializers import ArticleSerializer
+from ..serializers import ArticleSerializer, CreateArticleSerializer
 
 
 class BoardArticleAPI(APIView):
@@ -23,3 +23,17 @@ class BoardListAPI(APIView):
     def get(self, request):
         articles = Article.objects.all()
         return self.success(self.paginate_data(request, article, ArticleSerializer))
+
+
+class BoardWriteAPI(APIView):
+    @validate_serializer(CreateArticleSerializer)
+    @login_required
+    def post(self, request):
+        data = request.data
+        article = Article.objects.create(
+            title=data["title"],
+            content=data["content"],
+            created_by=request.user,
+        )
+        return self.success({"id": article.id})
+
