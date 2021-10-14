@@ -1,10 +1,7 @@
-from utils.constants import ContestRuleType  # noqa
 from django.db import models
 from django.utils.timezone import now
 
-from utils.constants import ContestStatus, ContestType
-
-from account.models import User
+from account.models import User, AdminType
 from problem.models import Problem
 #from board.models import Board
 
@@ -17,13 +14,17 @@ class Course(models.Model) :
     title = models.TextField()
     description = RichTextField()
 
-    member = models.ManyToManyField(User)
+    students = models.ManyToManyField(User, related_name="course_student")
 
     create_time = models.DateTimeField(auto_now_add=True)
     last_update_time = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.SET(get_super_admin))
     
     visible = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "course"
+        ordering = ("-create_time",)
 
 
 class Assignment(models.Model) :
@@ -40,6 +41,10 @@ class Assignment(models.Model) :
     last_update_time = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.SET(get_super_admin))
 
+    class Meta:
+        db_table = "assignment"
+        ordering = ("-create_time",)
+
 
 class CourseAnnouncement(models.Model):
     contest = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -52,5 +57,5 @@ class CourseAnnouncement(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "contest_announcement"
+        db_table = "course_announcement"
         ordering = ("-create_time",)

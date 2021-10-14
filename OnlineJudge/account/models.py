@@ -62,9 +62,16 @@ class User(AbstractBaseUser):
     def is_contest_admin(self, contest):
         return self.is_authenticated and (contest.created_by == self or self.admin_type == AdminType.SUPER_ADMIN)
 
+    def is_course_admin(self, course):
+        return self.is_authenticated and (course.created_by == self or self.admin_type == AdminType.SUPER_ADMIN)
+
+    def __str__(self):
+        return self.username
+
     class Meta:
         db_table = "user"
 
+   
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
