@@ -4,7 +4,7 @@ from utils.shortcuts import check_is_id
 
 from problem.models import Problem
 from ..models import Article
-from ..serializers import ArticleSerializer, CreateArticleSerializer
+from ..serializers import ArticleSerializer, CreateArticleSerializer, RemoveArticleSerializer
 
 
 class BoardArticleAPI(APIView):
