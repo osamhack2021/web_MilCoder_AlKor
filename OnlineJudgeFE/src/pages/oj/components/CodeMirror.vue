@@ -1,5 +1,5 @@
 <template>
-  <div style="margin: 0px 0px 15px 0px">
+  <div style="margin: 0 0 15px 0">
     <Row type="flex" justify="space-between" class="header">
       <Col :span=12>
         <div>

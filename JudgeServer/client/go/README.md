@@ -16,4 +16,4 @@ import "github.com/QingdaoU/JudgeServer/client/go"
 
 # Examples
 
-[examples](https://github.com/QingdaoU/JudgeServer/tree/master/client/go/examples)
+[CODE_TEMPLATES](https://github.com/QingdaoU/JudgeServer/tree/master/client/go/examples)
