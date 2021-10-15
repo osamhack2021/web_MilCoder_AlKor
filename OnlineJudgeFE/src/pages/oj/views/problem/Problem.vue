@@ -1,218 +1,142 @@
 <template>
-  <div class="flex-container">
-    <div id="problem-main">
-      <!--problem main-->
-      <Panel :padding="40" shadow>
-        <div slot="title">{{ problem.title }}</div>
-        <div id="problem-content" class="markdown-body" v-katex>
-          <p class="title">{{ $t('m.Description') }}</p>
-          <p class="content" v-html=problem.description></p>
-          <!-- {{$t('m.music')}} -->
-          <p class="title">{{ $t('m.Input') }}
-            <span v-if="problem.io_mode.io_mode=='File IO'">({{ $t('m.FromFile') }}: {{
-                problem.io_mode.input
-              }})</span></p>
-          <p class="content" v-html=problem.input_description></p>
+  <Multipane class="vertical-resizer" layout="vertical" @paneResize="verticalPaneResize">
+    <div class="pane pane-left" style="width: 50%">
+      <div id="problem-main">
+        <!--problem main-->
+        <Panel :padding="40" shadow style="height: 100%">
+          <div slot="title">{{ problem.title }}</div>
+          <div id="problem-content" class="markdown-body" v-katex>
+            <p class="title">{{ $t('m.Description') }}</p>
+            <p class="content" v-html=problem.description></p>
+            <!-- {{$t('m.music')}} -->
+            <p class="title">{{ $t('m.Input') }}
+              <span v-if="problem.io_mode.io_mode=='File IO'">({{ $t('m.FromFile') }}: {{
+                  problem.io_mode.input
+                }})</span></p>
+            <p class="content" v-html=problem.input_description></p>
 
-          <p class="title">{{ $t('m.Output') }}
-            <span v-if="problem.io_mode.io_mode=='File IO'">({{ $t('m.ToFile') }}: {{
-                problem.io_mode.output
-              }})</span></p>
-          <p class="content" v-html=problem.output_description></p>
+            <p class="title">{{ $t('m.Output') }}
+              <span v-if="problem.io_mode.io_mode=='File IO'">({{ $t('m.ToFile') }}: {{
+                  problem.io_mode.output
+                }})</span></p>
+            <p class="content" v-html=problem.output_description></p>
 
-          <div v-for="(sample, index) of problem.samples" :key="index">
-            <div class="flex-container sample">
-              <div class="sample-input">
-                <p class="title">{{ $t('m.Sample_Input') }} {{ index + 1 }}
-                  <a class="copy"
-                     v-clipboard:copy="sample.input"
-                     v-clipboard:success="onCopy"
-                     v-clipboard:error="onCopyError">
-                    <Icon type="clipboard"></Icon>
-                  </a>
-                </p>
-                <pre>{{ sample.input }}</pre>
-              </div>
-              <div class="sample-output">
-                <p class="title">{{ $t('m.Sample_Output') }} {{ index + 1 }}</p>
-                <pre>{{ sample.output }}</pre>
+            <div v-for="(sample, index) of problem.samples" :key="index">
+              <div class="flex-container sample">
+                <div class="sample-input">
+                  <p class="title">{{ $t('m.Sample_Input') }} {{ index + 1 }}
+                    <a class="copy"
+                       v-clipboard:copy="sample.input"
+                       v-clipboard:success="onCopy"
+                       v-clipboard:error="onCopyError">
+                      <Icon type="clipboard"></Icon>
+                    </a>
+                  </p>
+                  <pre>{{ sample.input }}</pre>
+                </div>
+                <div class="sample-output">
+                  <p class="title">{{ $t('m.Sample_Output') }} {{ index + 1 }}</p>
+                  <pre>{{ sample.output }}</pre>
+                </div>
               </div>
             </div>
+            <div v-if="problem.hint">
+              <p class="title">{{ $t('m.Hint') }}</p>
+              <Card dis-hover>
+                <div class="content" v-html=problem.hint></div>
+              </Card>
+            </div>
+            <div v-if="problem.source">
+              <p class="title">{{ $t('m.Source') }}</p>
+              <p class="content">{{ problem.source }}</p>
+            </div>
           </div>
-
-          <div v-if="problem.hint">
-            <p class="title">{{ $t('m.Hint') }}</p>
-            <Card dis-hover>
-              <div class="content" v-html=problem.hint></div>
-            </Card>
+        </Panel>
+      </div>
+      <div class="toolbar-container">
+        <div class="toolbar" @click="handleToolbarClick">
+          <div>
+            <Icon type="arrow-left-b"></Icon>
           </div>
-
-          <div v-if="problem.source">
-            <p class="title">{{ $t('m.Source') }}</p>
-            <p class="content">{{ problem.source }}</p>
+          <div>WORKSPACE/SUBMIT</div>
+          <div>
+            <Icon type="arrow-left-b"></Icon>
           </div>
-
         </div>
-      </Panel>
+      </div>
+    </div>
+    <MultipaneResizer/>
+    <div class="pane pane-right" style="flex-grow: 1; width: 200px" ref="paneRight">
       <!--problem main end-->
-      <Card :padding="20" id="submit-code" dis-hover>
-        <CodeMirror :value.sync="code"
-                    :languages="problem.languages"
-                    :language="language"
-                    :theme="theme"
-                    @resetCode="onResetToTemplate"
-                    @changeTheme="onChangeTheme"
-                    @changeLang="onChangeLang"></CodeMirror>
-        <Row type="flex" justify="space-between">
-          <Col :span="10">
-            <div class="status" v-if="statusVisible">
-              <template v-if="!this.contestID || (this.contestID && OIContestRealTimePermission)">
-                <span>{{ $t('m.Status') }}</span>
-                <Tag type="dot" :color="submissionStatus.color" @click.native="handleRoute('/status/'+submissionId)">
-                  {{ $t('m.' + submissionStatus.text.replace(/ /g, '_')) }}
-                </Tag>
-              </template>
-              <template v-else-if="this.contestID && !OIContestRealTimePermission">
-                <Alert type="success" show-icon>{{ $t('m.Submitted_successfully') }}</Alert>
-              </template>
-            </div>
-            <div v-else-if="problem.my_status === 0">
-              <Alert type="success" show-icon>{{ $t('m.You_have_solved_the_problem') }}</Alert>
-            </div>
-            <div v-else-if="this.contestID && !OIContestRealTimePermission && submissionExists">
-              <Alert type="success" show-icon>{{ $t('m.You_have_submitted_a_solution') }}</Alert>
-            </div>
-            <div v-if="contestEnded">
-              <Alert type="warning" show-icon>{{ $t('m.Contest_has_ended') }}</Alert>
-            </div>
-          </Col>
-
-          <Col :span="12">
-            <template v-if="captchaRequired">
-              <div class="captcha-container">
-                <Tooltip v-if="captchaRequired" content="Click to refresh" placement="top">
-                  <img :src="captchaSrc" @click="getCaptchaSrc"/>
-                </Tooltip>
-                <Input v-model="captchaCode" class="captcha-code"/>
-              </div>
-            </template>
-            <Button type="warning" icon="edit" :loading="submitting" @click="submitCode"
-                    :disabled="problemSubmitDisabled || submitted"
-                    class="fl-right">
-              <span v-if="submitting">{{ $t('m.Submitting') }}</span>
-              <span v-else>{{ $t('m.Submit') }}</span>
-            </Button>
-          </Col>
-        </Row>
-      </Card>
+      <Multipane class="horizontal-resizer" layout="horizontal">
+        <div class="pane" style="height: 70%">
+          <Card :padding="20" id="submit-code" dis-hover>
+            <CodeEditor :source.sync="code"
+                        :languages="problem.languages"
+                        :language="language"/>
+            <Row type="flex" justify="space-between">
+              <Col :span="10">
+                <div class="status" v-if="statusVisible">
+                  <template v-if="!this.contestID || (this.contestID && OIContestRealTimePermission)">
+                    <span>{{ $t('m.Status') }}</span>
+                    <Tag type="dot" :color="submissionStatus.color" @click.native="handleRoute('/status/'+submissionId)">
+                      {{ $t('m.' + submissionStatus.text.replace(/ /g, '_')) }}
+                    </Tag>
+                  </template>
+                  <template v-else-if="this.contestID && !OIContestRealTimePermission">
+                    <Alert type="success" show-icon>{{ $t('m.Submitted_successfully') }}</Alert>
+                  </template>
+                </div>
+                <div v-else-if="problem.my_status === 0">
+                  <Alert type="success" show-icon>{{ $t('m.You_have_solved_the_problem') }}</Alert>
+                </div>
+                <div v-else-if="this.contestID && !OIContestRealTimePermission && submissionExists">
+                  <Alert type="success" show-icon>{{
+                      $t('m.You_have_submitted_a_solution')
+                    }}
+                  </Alert>
+                </div>
+                <div v-if="contestEnded">
+                  <Alert type="warning" show-icon>{{ $t('m.Contest_has_ended') }}</Alert>
+                </div>
+              </Col>
+              <Col :span="12">
+                <template v-if="captchaRequired">
+                  <div class="captcha-container">
+                    <Tooltip v-if="captchaRequired" content="Click to refresh" placement="top">
+                      <img :src="captchaSrc" @click="getCaptchaSrc"/>
+                    </Tooltip>
+                    <Input v-model="captchaCode" class="captcha-code"/>
+                  </div>
+                </template>
+                <Button type="warning" icon="edit" :loading="submitting" @click="submitCode"
+                        :disabled="problemSubmitDisabled || submitted"
+                        class="fl-right">
+                  <span v-if="submitting">{{ $t('m.Submitting') }}</span>
+                  <span v-else>{{ $t('m.Submit') }}</span>
+                </Button>
+              </Col>
+            </Row>
+          </Card>
+        </div>
+        <MultipaneResizer/>
+        <div class="pane" style="flex-grow: 1">
+          <h1>asdf</h1>
+          <h1>asdf</h1>
+          <h1>asdf</h1>
+        </div>
+      </Multipane>
     </div>
-
-    <div id="right-column">
-      <VerticalMenu @on-click="handleRoute">
-        <template v-if="this.contestID">
-          <VerticalMenu-item :route="{name: 'contest-problem-list', params: {contestID: contestID}}">
-            <Icon type="ios-photos"></Icon>
-            {{ $t('m.Problems') }}
-          </VerticalMenu-item>
-
-          <VerticalMenu-item :route="{name: 'contest-announcement-list', params: {contestID: contestID}}">
-            <Icon type="chatbubble-working"></Icon>
-            {{ $t('m.Announcements') }}
-          </VerticalMenu-item>
-        </template>
-
-        <VerticalMenu-item v-if="!this.contestID || OIContestRealTimePermission" :route="submissionRoute">
-          <Icon type="navicon-round"></Icon>
-          {{ $t('m.Submissions') }}
-        </VerticalMenu-item>
-
-        <template v-if="this.contestID">
-          <VerticalMenu-item v-if="!this.contestID || OIContestRealTimePermission"
-                             :route="{name: 'contest-rank', params: {contestID: contestID}}">
-            <Icon type="stats-bars"></Icon>
-            {{ $t('m.Rankings') }}
-          </VerticalMenu-item>
-          <VerticalMenu-item :route="{name: 'contest-details', params: {contestID: contestID}}">
-            <Icon type="home"></Icon>
-            {{ $t('m.View_Contest') }}
-          </VerticalMenu-item>
-        </template>
-      </VerticalMenu>
-
-      <Card id="info">
-        <div slot="title" class="header">
-          <Icon type="information-circled"></Icon>
-          <span class="card-title">{{ $t('m.Information') }}</span>
-        </div>
-        <ul>
-          <li><p>ID</p>
-            <p>{{ problem._id }}</p></li>
-          <li>
-            <p>{{ $t('m.Time_Limit') }}</p>
-            <p>{{ problem.time_limit }}MS</p></li>
-          <li>
-            <p>{{ $t('m.Memory_Limit') }}</p>
-            <p>{{ problem.memory_limit }}MB</p></li>
-          <li>
-          <li>
-            <p>{{ $t('m.IOMode') }}</p>
-            <p>{{ problem.io_mode.io_mode }}</p>
-          </li>
-          <li>
-            <p>{{ $t('m.Created') }}</p>
-            <p>{{ problem.created_by.username }}</p></li>
-          <li v-if="problem.difficulty">
-            <p>{{ $t('m.Level') }}</p>
-            <p>{{ $t('m.' + problem.difficulty) }}</p></li>
-          <li v-if="problem.total_score">
-            <p>{{ $t('m.Score') }}</p>
-            <p>{{ problem.total_score }}</p>
-          </li>
-          <li>
-            <p>{{ $t('m.Tags') }}</p>
-            <p>
-              <Poptip trigger="hover" placement="left-end">
-                <a>{{ $t('m.Show') }}</a>
-            <div slot="content">
-              <Tag v-for="tag in problem.tags" :key="tag">{{ tag }}</Tag>
-            </div>
-            </Poptip>
-            </p>
-          </li>
-        </ul>
-      </Card>
-
-      <Card id="pieChart" :padding="0" v-if="!this.contestID || OIContestRealTimePermission">
-        <div slot="title">
-          <Icon type="ios-analytics"></Icon>
-          <span class="card-title">{{ $t('m.Statistic') }}</span>
-          <Button type="ghost" size="small" id="detail" @click="graphVisible = !graphVisible">
-            Details
-          </Button>
-        </div>
-        <div class="echarts">
-          <ECharts :options="pie"></ECharts>
-        </div>
-      </Card>
-    </div>
-
-    <Modal v-model="graphVisible">
-      <div id="pieChart-detail">
-        <ECharts :options="largePie" :initOptions="largePieInitOpts"></ECharts>
-      </div>
-      <div slot="footer">
-        <Button type="ghost" @click="graphVisible=false">{{ $t('m.Close') }}</Button>
-      </div>
-    </Modal>
-  </div>
+  </Multipane>
 </template>
 
 <script>
 import { buildProblemCodeKey, CONTEST_STATUS, JUDGE_STATUS } from '@/utils/constants';
 import storage from '@/utils/storage';
 import api from '@oj/api';
-import CodeMirror from '@oj/components/CodeMirror.vue';
+import CodeEditor, { constants } from '@oj/components/CodeEditor';
 import { FormMixin } from '@oj/components/mixins';
+import { Multipane, MultipaneResizer } from 'vue-multipane';
 import { mapActions, mapGetters } from 'vuex';
 import { types } from '../../../../store';
 import { largePie, pie } from './chartData';
@@ -223,11 +147,14 @@ const filtedStatus = ['-1', '-2', '0', '1', '2', '3', '4', '8'];
 export default {
   name: 'Problem',
   components: {
-    CodeMirror,
+    CodeEditor,
+    Multipane,
+    MultipaneResizer,
   },
   mixins: [FormMixin],
   data() {
     return {
+      paneSize: 0,
       statusVisible: false,
       captchaRequired: false,
       graphVisible: false,
@@ -238,8 +165,8 @@ export default {
       problemID: '',
       submitting: false,
       code: '',
-      language: 'C++',
-      theme: 'solarized',
+      language: constants.DEFAULT_LANGUAGE_CODE,
+      theme: constants.DEFAULT_THEME,
       submissionId: '',
       submitted: false,
       result: {
@@ -346,7 +273,10 @@ export default {
 
       let largePieData = [];
       Object.keys(problemData.statistic_info).forEach(ele => {
-        largePieData.push({ name: JUDGE_STATUS[ele].short, value: problemData.statistic_info[ele] });
+        largePieData.push({
+          name: JUDGE_STATUS[ele].short,
+          value: problemData.statistic_info[ele],
+        });
       });
       largePieData.push({ name: 'AC', value: acCount });
       this.largePie.series[0].data = largePieData;
@@ -354,29 +284,34 @@ export default {
     handleRoute(route) {
       this.$router.push(route);
     },
-    onChangeLang(newLang) {
-      if (this.problem.template[newLang]) {
-        if (this.code.trim() === '') {
-          this.code = this.problem.template[newLang];
-        }
+    handleToolbarClick(event) {
+      const toolbar = event.currentTarget;
+      const pane = toolbar.parentElement.parentElement;
+      const resizer = pane.nextElementSibling;
+      const oppositePane = resizer.nextElementSibling;
+      const isRight = toolbar.classList.contains('right');
+
+      toolbar.classList = 'toolbar';
+      oppositePane.classList.remove('hide');
+      pane.style.width = '50%';
+      resizer.style.display = null;
+      if (isRight) {
+        oppositePane.style.width = '200px';
+      } else {
+        oppositePane.style.height = '200px';
       }
-      this.language = newLang;
     },
-    onChangeTheme(newTheme) {
-      this.theme = newTheme;
-    },
-    onResetToTemplate() {
-      this.$Modal.confirm({
-        content: this.$i18n.t('m.Are_you_sure_you_want_to_reset_your_code'),
-        onOk: () => {
-          let template = this.problem.template;
-          if (template && template[this.language]) {
-            this.code = template[this.language];
-          } else {
-            this.code = '';
-          }
-        },
-      });
+    verticalPaneResize(pane, resizer, size) {
+      const rightEl = this.$refs.paneRight;
+      const width = rightEl.offsetWidth;
+      if (width < 200) {
+        const toolbar = pane.querySelector('.toolbar');
+        pane.style.width = '100%';
+        rightEl.classList.add('hide');
+        resizer.style.display = 'none';
+        toolbar.classList.add('active');
+        toolbar.classList.add('right');
+      }
     },
     checkSubmissionStatus() {
       // 使用setTimeout避免一些问题
@@ -516,18 +451,165 @@ export default {
   },
 };
 </script>
-
+<style>
+.content-app {
+  padding: 0 !important;
+}
+</style>
 <style lang="less" scoped>
+.toolbar-container {
+  display: inline-block;
+
+  .toolbar {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+    align-items: center;
+    background-color: #fff;
+    width: 40px;
+    height: 100%;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    z-index: 5;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    justify-content: space-evenly;
+
+    &.right {
+      right: 0;
+    }
+
+    &.left {
+      left: 0;
+    }
+
+    &.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    > * {
+      display: flex;
+      align-items: center;
+    }
+
+    > :first-child, &:last-child {
+      //flex: .5;
+      font-size: 1.8rem;
+    }
+
+    > :nth-child(2) {
+      //flex: 1;
+      transform: rotate(90deg);
+
+      > div {
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 130%;
+        white-space: nowrap;
+        margin-top: -.4em;
+        transform: translateY(10%);
+      }
+    }
+  }
+}
+
+.vertical-resizer {
+  width: 100%;
+  height: calc(100vh - 4em);
+  margin-top: 20px;
+}
+
+.vertical-resizer > .pane {
+  text-align: left;
+  overflow: hidden;
+  background: #eee;
+}
+
+.vertical-resizer > .multipane-resizer {
+  margin: 0;
+  left: 0;
+  position: relative;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+
+  &:before {
+    display: block;
+    content: "";
+    width: 3px;
+    height: 40px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -20px;
+    margin-left: -1.5px;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+  }
+
+  &:hover {
+    &:before {
+      border-color: #999;
+    }
+  }
+}
+
+.horizontal-resizer {
+  width: 100%;
+  height: 100%;
+
+  > .pane {
+    overflow: hidden;
+    background: #eee;
+  }
+
+  > .multipane-resizer {
+    margin: 0;
+    left: 0;
+    position: relative;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+
+    &:before {
+      display: block;
+      content: "";
+      width: 40px;
+      height: 3px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -6.5px;
+      margin-left: -20px;
+      border-top: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+    }
+  }
+
+  &:hover {
+    &:before {
+      border-color: #999;
+    }
+  }
+}
+
+.pane {
+  &.hide {
+    display: none;
+  }
+}
+
 .card-title {
   margin-left: 8px;
 }
 
-.flex-container {
-  #problem-main {
-    flex: auto;
-    margin-right: 18px;
-  }
+#problem-main {
+  flex: auto;
+  height: 100%;
+}
 
+.flex-container {
   #right-column {
     flex: none;
     width: 220px;
@@ -575,9 +657,6 @@ export default {
 }
 
 #submit-code {
-  margin-top: 20px;
-  margin-bottom: 20px;
-
   .status {
     float: left;
 

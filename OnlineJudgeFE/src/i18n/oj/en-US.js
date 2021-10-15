@@ -138,6 +138,7 @@ export const m = {
   Theme: 'Theme',
   Reset_to_default_code_definition: 'Reset to default code definition',
   Upload_file: 'Upload file',
+  Editor_run: 'Run (F9)',
   Monokai: 'Monokai',
   Solarized_Light: 'Solarized Light',
   Material: 'Material',
