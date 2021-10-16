@@ -16,3 +16,13 @@ class Article(models.Model):
         db_table = "board_article"
         ordering = ("-create_time",)
 
+
+class Comment(models.Model):
+    content = RichTextField()
+    create_time = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "board_comment"
+        ordering = ("-create_time",)
