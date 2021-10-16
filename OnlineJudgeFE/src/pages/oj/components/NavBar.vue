@@ -15,7 +15,7 @@
         {{ $t('m.Contests') }}
       </Menu-item>
       <Menu-item name="/board">
-        <Icon type="md-clipboard"></Icon>
+        <Icon type="clipboard"></Icon>
         {{ $t('m.Board') }}
       </Menu-item>
       <Menu-item name="/status">

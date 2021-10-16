@@ -46,14 +46,14 @@ export const m = {
   System_Error_Description: 'Oops, something has gone wrong with the judger. Please report this to administrator.',
   // ACMContestRank.vue
   Menu: '메뉴',
-  Chart: 'Chart',
-  Auto_Refresh: 'Auto Refresh',
-  RealName: 'RealName',
-  Force_Update: 'Force Update',
-  download_csv: 'download csv',
+  Chart: '차트',
+  Auto_Refresh: '자동 갱신',
+  RealName: '이름',
+  Force_Update: '강제 갱신',
+  download_csv: 'csv로 저장',
   TotalTime: 'TotalTime',
-  Top_10_Teams: 'Top 10 Teams',
-  save_as_image: 'save as image',
+  Top_10_Teams: 'Top 10',
+  save_as_image: '이미지로 저장',
   // ACMHelper.vue
   ACM_Helper: 'ACM Helper',
   AC_Time: '정답 시간',
@@ -65,7 +65,7 @@ export const m = {
   Check_It: 'Check It',
   // ACMRank.vue
   ACM_Ranklist: 'ACM Ranklist',
-  mood: 'mood',
+  mood: '한마디',
   AC: 'AC',
   Rating: 'Rating',
   // Announcements.vue
