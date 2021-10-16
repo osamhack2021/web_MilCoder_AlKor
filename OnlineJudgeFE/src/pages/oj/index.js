@@ -7,6 +7,12 @@ import '@/styles/index.less';
 import { GOOGLE_ANALYTICS_ID } from '@/utils/constants';
 import filters from '@/utils/filters.js';
 
+import Element from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+import Cancel from './components/btn/Cancel.vue';
+import IconBtn from './components/btn/IconBtn.vue';
+import Save from './components/btn/Save.vue';
+
 import Panel from '@oj/components/Panel.vue';
 import VerticalMenuItem from '@oj/components/verticalMenu/verticalMenu-item.vue';
 import VerticalMenu from '@oj/components/verticalMenu/verticalMenu.vue';
@@ -48,6 +54,9 @@ Vue.config.productionTip = false;
 Vue.use(iView, {
   i18n: (key, value) => i18n.t(key, value),
 });
+Vue.use(Element, {
+  i18n: (key, value) => i18n.t(key, value),
+});
 
 Vue.use(vgl);
 Vue.use(BootstrapVue);
@@ -64,6 +73,10 @@ Vue.component('ECharts', ECharts);
 Vue.component(VerticalMenu.name, VerticalMenu);
 Vue.component(VerticalMenuItem.name, VerticalMenuItem);
 Vue.component(Panel.name, Panel);
+
+Vue.component(IconBtn.name, IconBtn);
+Vue.component(Save.name, Save);
+Vue.component(Cancel.name, Cancel);
 
 // 注册全局消息提示
 Vue.prototype.$Message.config({

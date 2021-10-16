@@ -172,6 +172,9 @@ export const m = {
   No_Posts: '게시글이 존재하지 않습니다',
   Posts: '게시글',
   Problem_Posts: '문제 관련 게시글',
+  Post_Title: '제목',
+  Post_Content: '내용',
+  NewPost: '새 글',
   // Setting.vue
   Profile: '프로필',
   Account: '계정',

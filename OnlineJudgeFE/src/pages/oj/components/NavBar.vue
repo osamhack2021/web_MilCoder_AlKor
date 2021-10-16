@@ -15,7 +15,7 @@
         {{ $t('m.Contests') }}
       </Menu-item>
       <Menu-item name="/board">
-        <Icon type="logo-reddit"></Icon>
+        <Icon type="md-clipboard"></Icon>
         {{ $t('m.Board') }}
       </Menu-item>
       <Menu-item name="/status">

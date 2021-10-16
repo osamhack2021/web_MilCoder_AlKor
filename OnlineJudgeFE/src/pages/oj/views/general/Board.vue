@@ -1,9 +1,13 @@
 <template>
+<div>
   <Panel shadow :padding="10">
     <div slot="title">
       {{ title }}
     </div>
     <div slot="extra">
+      <Button v-if="listVisible" type="info" @click.native="showEditPostDialog = true">
+        {{ $t('m.NewPost') }}
+      </Button>
       <Button v-if="listVisible" type="info" @click="init" :loading="btnLoading">
         {{ $t('m.Refresh') }}
       </Button>
@@ -58,16 +62,38 @@
       </template>
     </transition-group>
   </Panel>
+  <el-dialog title="새 게시글" :visible.sync="showEditPostDialog"
+               @open="onOpenEditDialog" :close-on-click-modal="false">
+      <el-form label-position="top">
+        <el-form-item :label="$t('m.Post_Title')" required>
+          <el-input
+            v-model="newpost.title"
+            :placeholder="$t('m.Post_Title')" class="title-input">
+          </el-input>
+        </el-form-item>
+        <el-form-item :label="$t('m.Post_Content')" required>
+          <Simditor v-model="newpost.content"></Simditor>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+          <p style="color:red"> {{ this.newpostErr }} </p>
+          <cancel @click.native="showEditPostDialog = false"></cancel>
+          <save type="primary" @click.native="writePost"></save>
+      </span>
+    </el-dialog>
+</div>
 </template>
 
 <script>
 import api from '@oj/api';
 import Pagination from '@oj/components/Pagination';
+import Simditor from '@oj/components/Simditor';
 
 export default {
   name: 'Board',
   components: {
     Pagination,
+    Simditor,
   },
   data() {
     return {
@@ -79,6 +105,12 @@ export default {
       listVisible: true,
       comments: [],
       comment: '',
+      showEditPostDialog: false,
+      newpost: {
+        title: '',
+        content: '',
+      },
+      newpostErr: '',
     };
   },
   mounted() {
@@ -99,6 +131,20 @@ export default {
         this.btnLoading = false;
       });
     },
+    writePost() {
+      if(!this.newpost.title){
+        this.newpostErr = '제목은 비워둘 수 없습니다!';
+        return;
+      }
+      if(!this.newpost.content){
+        this.newpostErr = '내용은 비워둘 수 없습니다!';
+        return;
+      }
+      api.writePost(this.newpost.title, this.newpost.content).then(res => {
+        this.newpostErr = '';
+        this.init();
+      });
+    },
     goPost(post) {
       this.post = post;
       this.listVisible = false;
@@ -117,7 +163,18 @@ export default {
       api.writeComment(this.post.id, comment).then(res => {
         this.getComments();
       });
-    }
+    },
+    onOpenEditDialog() {
+      setTimeout(() => {
+        if (document.createEvent) {
+          let event = document.createEvent('HTMLEvents');
+          event.initEvent('resize', true, true);
+          window.dispatchEvent(event);
+        } else if (document.createEventObject) {
+          window.fireEvent('onresize');
+        }
+      }, 0);
+    },
   },
   computed: {
     title() {
@@ -194,5 +251,9 @@ export default {
 changeLocale
 .post-animate-enter-active {
   animation: fadeIn 1s;
+}
+
+.title-input {
+  margin-bottom: 20px;
 }
 </style>
