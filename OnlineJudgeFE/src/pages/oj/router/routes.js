@@ -17,7 +17,8 @@ import {
   SubmissionDetails,
   SubmissionList,
   UserHome,
-  Ide
+  Ide,
+  Board
 } from '../views';
 
 export default [
@@ -50,6 +51,18 @@ export default [
     path: '/reset-password/:token',
     meta: { title: 'Reset Password' },
     component: ResetPassword,
+  },
+  {
+    name: 'board',
+    path: '/board/',
+    meta: { title: 'Board' },
+    component: Board,
+  },
+  {
+    name: 'problem-board',
+    path: '/board/:problemID',
+    meta: { title: 'Problem Board' },
+    component: Board,
   },
   {
     name: 'problem-list',

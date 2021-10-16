@@ -1,5 +1,6 @@
 import NotFound from './general/404.vue';
 import Announcements from './general/Announcements.vue';
+import Board from './general/Board.vue';
 import Home from './general/Home.vue';
 import About from './help/About.vue';
 import FAQ from './help/FAQ.vue';
@@ -24,7 +25,7 @@ const Ide = () => import('@oj/views/ide/Ide.vue');
 export {
   Home, NotFound, Announcements,
   Logout, UserHome, About, FAQ,
-  ProblemList, Problem,
+  ProblemList, Board, Problem,
   ACMRank, OIRank,
   SubmissionList, SubmissionDetails,
   ApplyResetPassword, ResetPassword,

@@ -35,6 +35,17 @@
 
       <template v-else>
         <div v-katex v-html="post.content" key="content" class="content-container markdown-body"></div>
+        <Card v-for="comment in comments" :key="comment.create_time">
+          <a href="#" slot="title">
+              {{comment.created_by}}
+          </a>
+          <p slot="extra">
+              {{comment.create_time}}
+          </p>
+          <p>
+            {{comment.content}}
+          </p>
+        </Card>
       </template>
     </transition-group>
   </Panel>
@@ -57,6 +68,23 @@ export default {
       posts: [],
       post: '',
       listVisible: true,
+      comments: [
+        {
+          'create_time': '2021-10-16 12:34',
+          'created_by': 'user101',
+          'content': '댓글 테스트 #1'
+        },
+        {
+          'create_time': '2021-10-16 16:12',
+          'created_by': 'user102',
+          'content': '댓글 테스트 #2'
+        },
+        {
+          'create_time': '2021-10-16 13:56',
+          'created_by': 'user103',
+          'content': '댓글 테스트 #3'
+        }
+      ]
     };
   },
   mounted() {
