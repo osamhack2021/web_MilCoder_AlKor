@@ -12,7 +12,7 @@
 
     <transition-group name="post-animate" mode="in-out">
       <div class="no-post" v-if="!posts.length" key="no-post">
-        <p>{{ $t('m.No_Announcements') }}</p>
+        <p>{{ $t('m.No_Posts') }}</p>
       </div>
       <template v-if="listVisible">
         <ul class="posts-container" key="list">
@@ -46,6 +46,15 @@
             {{comment.content}}
           </p>
         </Card>
+        <Card>
+          <a href="#" slot="title">
+              새 댓글
+          </a>
+          <p slot="extra">
+              <Icon type="md-add" @click="writeComment(comment)"></Icon>
+          </p>
+          <Input v-model="comment" maxlength="500" show-word-limit type="textarea" placeholder="내용을 입력하세요..." />
+        </Card>
       </template>
     </transition-group>
   </Panel>
@@ -68,23 +77,8 @@ export default {
       posts: [],
       post: '',
       listVisible: true,
-      comments: [
-        {
-          'create_time': '2021-10-16 12:34',
-          'created_by': 'user101',
-          'content': '댓글 테스트 #1'
-        },
-        {
-          'create_time': '2021-10-16 16:12',
-          'created_by': 'user102',
-          'content': '댓글 테스트 #2'
-        },
-        {
-          'create_time': '2021-10-16 13:56',
-          'created_by': 'user103',
-          'content': '댓글 테스트 #3'
-        }
-      ]
+      comments: [],
+      comment: '',
     };
   },
   mounted() {
@@ -92,15 +86,12 @@ export default {
   },
   methods: {
     init() {
-      if (this.isProblem) {
-        this.getProblemPostList();
-      } else {
-        this.getPostList();
-      }
+      this.getPostList();
     },
     getPostList(page = 1) {
       this.btnLoading = true;
-      api.getPostList((page - 1) * this.limit, this.limit).then(res => {
+      api.getPostList((page - 1) * this.limit, this.limit, this.$route.params.problemID).then(res => {
+        console.log(res);
         this.btnLoading = false;
         this.posts = res.data.data.results;
         this.total = res.data.data.total;
@@ -108,28 +99,30 @@ export default {
         this.btnLoading = false;
       });
     },
-    getProblemPostList() {
-      this.btnLoading = true;
-      api.getProblemPostList(this.$route.params.problemID).then(res => {
-        this.btnLoading = false;
-        this.posts = res.data.data;
-      }, () => {
-        this.btnLoading = false;
-      });
-    },
     goPost(post) {
       this.post = post;
       this.listVisible = false;
+      this.getComments();
     },
     goBack() {
       this.listVisible = true;
       this.post = '';
     },
+    getComments(){
+      api.getComments(this.post.id).then(res => {
+        this.comments = res.data.data;
+      });
+    },
+    writeComment(comment){
+      api.writeComment(this.post.id, comment).then(res => {
+        this.getComments();
+      });
+    }
   },
   computed: {
     title() {
       if (this.listVisible) {
-        return this.isProblem ? this.$i18n.t('m.Contest_Announcements') : this.$i18n.t('m.Announcements');
+        return this.isProblem ? this.$i18n.t('m.Problem_Posts') : this.$i18n.t('m.Posts');
       } else {
         return this.post.title;
       }

@@ -148,6 +148,7 @@ export const m = {
   Home: '홈',
   NavProblems: '문제',
   Contests: '대회',
+  Board: '게시판',
   NavStatus: '상태',
   Rank: '순위',
   ACM_Rank: 'ACM Rank',
@@ -167,6 +168,10 @@ export const m = {
   Refresh: '새로고침',
   Back: 'Back',
   No_Announcements: '공지가 존재하지 않습니다',
+  // Board.vue
+  No_Posts: '게시글이 존재하지 않습니다',
+  Posts: '게시글',
+  Problem_Posts: '문제 관련 게시글',
   // Setting.vue
   Profile: '프로필',
   Account: '계정',

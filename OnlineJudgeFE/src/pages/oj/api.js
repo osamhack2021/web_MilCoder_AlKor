@@ -132,6 +132,59 @@ export default {
   pickone() {
     return ajax('pickone', 'get');
   },
+  getPostList(offset, limit, problemID) {
+    return ajax('board', 'get', {
+      params: {
+        offset: offset,
+        limit: limit,
+        problem_id: problemID || '',
+      },
+    });
+  },
+  getPost(postID) {
+    return ajax('board', 'get', {
+      params: {
+        id: postID,
+      },
+    });
+  },
+  writePost(title, content) {
+    return ajax('board', 'post', {
+      data: {
+        title: title,
+        content: content,
+      },
+    });
+  },
+  deletePost(postID) {
+    return ajax('board', 'delete', {
+      data: {
+        id: postID,
+      },
+    });
+  },
+  getComments(postID) {
+    return ajax('board/comment', 'get', {
+      params: {
+        id: postID,
+      },
+    });
+  },
+  writeComment(postID, content) {
+    return ajax('board/comment', 'post', {
+      data: {
+        id: postID,
+        content: content,
+      },
+    });
+  },
+  deleteComment(commentID) {
+    return ajax('board/comment', 'delete', {
+      data: {
+        id: commentID,
+      },
+    });
+  },
   getProblem(problemID) {
     return ajax('problem', 'get', {
       params: {
