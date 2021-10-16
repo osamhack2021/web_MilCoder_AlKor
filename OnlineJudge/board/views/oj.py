@@ -61,6 +61,12 @@ class BoardRemoveAPI(APIView):
             article = Article.objects.get(id=id)
         except Article.DoesNotExist:
             return self.error("Article does not exist")
-        article.delete()
-        return self.success({"id": id})
+
+        # Check (user is admin) or (user is writer)
+        user = request.user
+        if user.is_authenticated and (user.is_admin_role() or user.id == article.created_by.id):
+            article.delete()
+            return self.success({"id": id})
+
+        return self.error("No permission to remove article")
 
