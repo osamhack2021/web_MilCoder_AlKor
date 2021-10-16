@@ -7,6 +7,7 @@ from ..models import Article, Comment
 from ..serializers import ArticleSerializer, ArticleListSerializer
 from ..serializers import CreateArticleSerializer, RemoveArticleSerializer
 from ..serializers import CommentSerializer
+from ..serializers import CreateCommentSerializer
 
 class BoardAPI(APIView):
     def get(self, request):
@@ -96,6 +97,28 @@ class BoardCommentAPI(APIView):
             article = Article.objects.get(id=article_id)
         except Article.DoesNotExist:
             return self.error("Article does not exist")
-        
+
         comments = aritcle.comment_set.all()
         return self.success(self.paginate_data(request, comments, CommentSerializer))
+
+    @validate_serializer(CreateCommentSerializer)
+    @login_required
+    def post(self, request):
+        """
+        Write a new comment
+        """
+        data = request.data
+        article_id = data["id"]
+        if not article_id or check_is_id(article_id):
+            return self.error("Invalid parameter, id is required")
+        try:
+            article = Article.objects.get(id=article_id)
+        except Article.DoesNotExist:
+            return self.error("Article does not exist")
+
+        comment = Comment(
+            content=data["content"],
+            created_by=request.user,
+            article=article,
+        )
+        return self.success({"id": comment.id})

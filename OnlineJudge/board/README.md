@@ -32,3 +32,10 @@ Requested user should be super_admin, admin or writer itself.
 Get a list of comments via article id
 
 - `id`: article id
+
+### `POST /api/board/comment/`
+
+Write a new comment.
+
+- `content`: Content
+- `id`: Target article's id
