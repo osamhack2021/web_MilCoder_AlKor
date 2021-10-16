@@ -7,7 +7,7 @@ from ..models import Article, Comment
 from ..serializers import ArticleSerializer, ArticleListSerializer
 from ..serializers import CreateArticleSerializer, RemoveArticleSerializer
 from ..serializers import CommentSerializer
-from ..serializers import CreateCommentSerializer
+from ..serializers import CreateCommentSerializer, RemoveCommentSerializer
 
 class BoardAPI(APIView):
     def get(self, request):
@@ -70,7 +70,7 @@ class BoardAPI(APIView):
         """
         data = request.data
         id = data["id"]
-        if not id or not check_is_id(id):
+        if check_is_id(id):
             return self.error("Invalid parameter, id is required")
         try:
             article = Article.objects.get(id=id)
@@ -122,3 +122,25 @@ class BoardCommentAPI(APIView):
             article=article,
         )
         return self.success({"id": comment.id})
+
+    @validate_serializer(RemoveCommentSerializer)
+    @login_required
+    def delete(self, request):
+        """
+        remove a comment
+        """
+        data = request.data
+        id = data["id"]
+        if check_is_id(id):
+            return self.error("Invalid parameter, id is required")
+        try:
+            comment = Comment.objects.get(id=id)
+        except Comment.DoesNotExist:
+            return self.error("Comment does not exist")
+
+        user = request.user
+        if user.is_admin_role() or user.id == comment.created_by_id:
+            comment.delete()
+            return self.success({"id": id})
+
+        return self.error("No permission to remove comment")

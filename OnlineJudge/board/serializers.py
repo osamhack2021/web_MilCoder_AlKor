@@ -38,6 +38,10 @@ class CreateCommentSerializer(serializers.Serializer):
     content = serializers.CharField(max_length=Const.MAX_CONTENT_LEN)
 
 
+class RemoveCommentSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+
+
 class CommentSerializer(serializers.ModelSerializer):
     # TODO: Check User is NULL
     created_by = UsernameSerializer()

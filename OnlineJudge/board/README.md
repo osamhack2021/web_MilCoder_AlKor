@@ -39,3 +39,9 @@ Write a new comment.
 
 - `content`: Content
 - `id`: Target article's id
+
+### `DELETE /api/board/comment/`
+
+Delete a comment.
+
+- `id`: Target comment's id
