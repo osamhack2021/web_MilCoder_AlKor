@@ -1,6 +1,6 @@
 from utils.api import UsernameSerializer, serializers
 
-from .models import Article
+from .models import Article, Comment
 
 
 class Const:
@@ -14,25 +14,38 @@ class CreateArticleSerializer(serializers.Serializer):
     problem = serializers.CharField(max_length=32, allow_blank=True, allow_null=True)
 
 
-class EditArticleSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    title = serializers.CharField(max_length=Const.MAX_TITLE_LEN)
-    content = serializers.CharField(max_length=Const.MAX_CONTENT_LEN)
-
-
 class RemoveArticleSerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
 
-class ArticleAdminSerializer(serializers.ModelSerializer):
+class ArticleSerializer(serializers.ModelSerializer):
     # TODO: Check User is NULL
     created_by = UsernameSerializer()
 
     class Meta:
         model = Article
-        fields = "__all__"
+        field = "__all__"
 
 
-class ArticleSerializer(ArticleAdminSerializer):
-    pass
+class ArticleListSerializer(ArticleSerializer):
+    class Meta:
+        model = Article
+        exclude = ("content",)
 
+
+class CreateCommentSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    content = serializers.CharField(max_length=Const.MAX_CONTENT_LEN)
+
+
+class RemoveCommentSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    # TODO: Check User is NULL
+    created_by = UsernameSerializer()
+
+    class Meta:
+        model = Comment
+        field = "__all__"
