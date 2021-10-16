@@ -20,7 +20,7 @@ class BoardAPI(APIView):
             article = Article.objects.get(id=id)
         except Article.DoesNotExist:
             return self.error("Article does not exist")
-        data = ArticleSerializer(aritcle).data
+        data = ArticleSerializer(article).data
         return self.success(data)
 
     @validate_serializer(CreateArticleSerializer)
