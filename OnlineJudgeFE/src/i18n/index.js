@@ -1,11 +1,7 @@
 // element UI
 import elenUS from 'element-ui/lib/locale/lang/en';
-import elzhCN from 'element-ui/lib/locale/lang/zh-CN';
-import elzhTW from 'element-ui/lib/locale/lang/zh-TW';
 // ivew UI
 import ivenUS from 'iview/dist/locale/en-US';
-import ivzhCN from 'iview/dist/locale/zh-CN';
-import ivzhTW from 'iview/dist/locale/zh-TW';
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
 
