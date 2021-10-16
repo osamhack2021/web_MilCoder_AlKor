@@ -4,7 +4,8 @@ from utils.shortcuts import check_is_id
 
 from problem.models import Problem
 from ..models import Article
-from ..serializers import ArticleSerializer, CreateArticleSerializer, RemoveArticleSerializer
+from ..serializers import ArticleSerializer, ArticleListSerializer
+from ..serializers import CreateArticleSerializer, RemoveArticleSerializer
 
 
 class BoardArticleAPI(APIView):
@@ -16,7 +17,7 @@ class BoardArticleAPI(APIView):
             article = Article.objects.get(id=id)
         except Article.DoesNotExist:
             return self.error("Article does not exist")
-        data = ContestSerializer(contest).data
+        data = ArticleSerializer(contest).data
         return self.success(data)
 
 
@@ -31,7 +32,7 @@ class BoardListAPI(APIView):
             except Problem.DoesNotExist:
                 return self.error("Problem does not exist")
             articles = Article.objects.filter(problem=problem)
-        return self.success(self.paginate_data(request, article, ArticleSerializer))
+        return self.success(self.paginate_data(request, article, ArticleListSerializer))
 
 
 class BoardWriteAPI(APIView):

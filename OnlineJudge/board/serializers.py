@@ -33,6 +33,17 @@ class ArticleAdminSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ArticleSerializer(ArticleAdminSerializer):
-    pass
+class ArticleSerializer(serializers.ModelSerializer):
+    # TODO: Check User is NULL
+    created_by = UsernameSerializer()
+
+    class Meta:
+        model = Article
+        field = "__all__"
+
+
+class ArticleListSerializer(ArticleSerializer):
+    class Meta:
+        model = Article
+        exclude = ("content",)
 
