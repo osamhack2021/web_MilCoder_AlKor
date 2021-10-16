@@ -18,7 +18,7 @@ Write a new article.
 Remove an article via id.
 Requested user should be super_admin, admin or writer itself.
 
-- `id`: Taraget article's id
+- `id`: Target article's id
 
 ## `/api/board/list/`
 
