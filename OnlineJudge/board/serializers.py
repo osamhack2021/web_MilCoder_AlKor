@@ -24,15 +24,6 @@ class RemoveArticleSerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
 
-class ArticleAdminSerializer(serializers.ModelSerializer):
-    # TODO: Check User is NULL
-    created_by = UsernameSerializer()
-
-    class Meta:
-        model = Article
-        fields = "__all__"
-
-
 class ArticleSerializer(serializers.ModelSerializer):
     # TODO: Check User is NULL
     created_by = UsernameSerializer()
