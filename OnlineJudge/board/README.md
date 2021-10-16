@@ -4,7 +4,12 @@
 
 ### `GET /api/board/?id=[1234]`
 
-Get an article via id.
+Get an article via id, or search and show list.
+It uses pagination.
+
+- `id` (optional): article id
+- `problem_id` (optional): problem id
+- `keyword` (optional): search for title
 
 ### `POST /api/board/`
 
@@ -20,12 +25,10 @@ Requested user should be super_admin, admin or writer itself.
 
 - `id`: Target article's id
 
-## `/api/board/list/`
+## `/api/board/comment/`
 
-### `GET /api/board/list/?problem_id=[PROBLEM_BALLOON]&...`
+### `GET /api/board/comment/?id=[1234]`
 
-Get a list of articles.
+Get a list of comments via article id
 
-- `problem_id` (optional)
-- ...
-
+- `id`: article id
