@@ -33,6 +33,7 @@ class BoardAPI(APIView):
         article = Article.objects.create(
             title=data["title"],
             content=data["content"],
+            problem_id=data.get("problem_id", None),
             created_by=request.user,
         )
         return self.success({"id": article.id})
