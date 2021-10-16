@@ -122,7 +122,7 @@ export const m = {
   Public: '공개',
   Password_Protected: '비밀번호 잠금',
   // ContestList.vue
-  Rule: '규칙',
+  Rule: '대회 방식',
   OI: 'OI',
   ACM: 'ACM',
   Underway: '진행 중',
@@ -185,10 +185,10 @@ export const m = {
   LoginUsername: '닉네임',
   LoginPassword: '비밀번호',
   TFA_Code: '2FA 앱 코드',
-  No_Account: '계정이 없으신가요? 지금 가입하세요!',
-  Forget_Password: '비밀번호 분',
+  No_Account: '회원가입',
+  Forget_Password: '비밀번호 재설정',
   UserLogin: '로그인',
-  Welcome_back: '다시 오신 것을 환영합니다',
+  Welcome_back: '환영합니다',
   // OIRank.vue
   OI_Ranklist: 'OI Ranklist',
   // OIContestRank.vue
