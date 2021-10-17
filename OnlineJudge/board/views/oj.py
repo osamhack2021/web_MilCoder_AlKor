@@ -43,7 +43,7 @@ class BoardAPI(APIView):
         
         keyword = request.GET.get("keyword", "").strip()
         if keyword:
-            articles = article.filter(title__icontians=keyword)
+            articles = articles.filter(title__icontians=keyword)
         return self.success(self.paginate_data(request, article, ArticleListSerializer))
 
 
@@ -98,7 +98,7 @@ class BoardCommentAPI(APIView):
         except Article.DoesNotExist:
             return self.error("Article does not exist")
 
-        comments = aritcle.comment_set.all()
+        comments = article.comment_set.all()
         return self.success(self.paginate_data(request, comments, CommentSerializer))
 
     @validate_serializer(CreateCommentSerializer)
