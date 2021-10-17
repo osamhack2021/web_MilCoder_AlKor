@@ -411,10 +411,6 @@ export default {
     },
     onCloseEditDialog() {
       this.showEditPostDialog = false;
-      this.$message({
-        message: '질문이 등록되었습니다',
-        type: 'success'
-      });
     },
   },
   computed: {

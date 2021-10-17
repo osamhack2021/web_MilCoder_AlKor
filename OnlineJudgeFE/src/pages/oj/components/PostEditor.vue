@@ -67,12 +67,20 @@ export default {
         api.writePost(this.title, this.content, this.problemID).then(res => {
           this.visible = false;
           this.init();
+          this.$message({
+            message: '게시글이 등록되었습니다',
+            type: 'success'
+          });
         });
       }
       else{
         api.editPost(this.postID, this.title, this.content).then(res => {
           this.visible = false;
           this.init();
+          this.$message({
+            message: '게시글이 수정되었습니다',
+            type: 'success'
+          });
         });
       }
     },
