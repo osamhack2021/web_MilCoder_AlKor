@@ -5,13 +5,16 @@
       {{ title }}
     </div>
     <div slot="extra">
-      <Button v-if="listVisible" type="info" @click.native="showEditPostDialog = true">
+      <Button v-if="listVisible" type="info" icon="ios-open-outline" @click.native="showEditPostDialog = true">
         {{ $t('m.NewPost') }}
       </Button>
       <Button v-if="listVisible" type="info" @click="init" :loading="btnLoading">
         {{ $t('m.Refresh') }}
       </Button>
-      <Button v-else type="ghost" icon="ios-undo" @click="goBack">{{ $t('m.Back') }}</Button>
+      <template v-else>
+      <Button type="ghost" icon="ios-undo" @click="goBack">{{ $t('m.Back') }}</Button>
+      <Button v-if="post && user.username==post.created_by.username || isAdminRole" type="error" icon="ios-trash" @click="deletePost">{{ $t('m.Delete') }}</Button>
+      </template>
     </div>
 
     <transition-group name="post-animate" mode="in-out">
@@ -45,16 +48,17 @@
           </a>
           <p slot="extra">
               {{comment.create_time | localtime}}
+              <Button v-if="user.username==comment.created_by.username || isAdminRole" type="error" icon="ios-trash" class="comment-btn" @click="deleteComment(comment.id)"></Button>
           </p>
           <p>
             {{comment.content}}
           </p>
         </Card>
         <Card>
-          <p slot="title" class="newcomment-title">
+          <p slot="title" class="comment-title">
             새 댓글
           </p>
-          <Button type="info" slot="extra" class="newcomment-btn" @click="writeComment(comment)">
+          <Button type="info" slot="extra" class="comment-btn" @click="writeComment(comment)">
             <Icon type="ios-pricetag-outline"></Icon>
             작성하기
           </Button>
@@ -94,6 +98,7 @@
 import api from '@oj/api';
 import Pagination from '@oj/components/Pagination';
 import Simditor from '@oj/components/Simditor';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'Board',
@@ -150,15 +155,28 @@ export default {
       }
       api.writePost(this.newpost.title, this.newpost.content).then(res => {
         this.newpostErr = '';
+        this.newpost.title = '';
+        this.newpost.content = '';
         this.showEditPostDialog = false;
         this.init();
+      });
+    },
+    deletePost() {
+      this.$confirm('정말 삭제하시겠습니까?', 'Warning', {
+        confirmButtonText: '삭제',
+        cancelButtonText: '취소',
+        type: 'warning',
+      }).then(() => {
+        api.deletePost(this.post.id).then(res => {
+          this.getPostList();
+          this.goBack();
+        });
       });
     },
     goPost(post) {
       this.listVisible = false;
       api.getPost(post.id).then(res => {
         this.post = res.data.data;
-        console.log(this.post);
         this.getComments();
       });
     },
@@ -174,8 +192,19 @@ export default {
     },
     writeComment(comment){
       api.writeComment(this.post.id, comment).then(res => {
-        console.log(res);
+        this.comment = '';
         this.getComments();
+      });
+    },
+    deleteComment(commentID) {
+      this.$confirm('정말 삭제하시겠습니까?', 'Warning', {
+        confirmButtonText: '삭제',
+        cancelButtonText: '취소',
+        type: 'warning',
+      }).then(() => {
+        api.deleteComment(commentID).then(res => {
+          this.getComments();
+        });
       });
     },
     onOpenEditDialog() {
@@ -191,6 +220,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(['user', 'isAuthenticated', 'isAdminRole']),
     title() {
       if (this.listVisible) {
         return this.isProblem ? this.$i18n.t('m.Problem_Posts') : this.$i18n.t('m.Posts');
@@ -271,11 +301,11 @@ changeLocale
   margin-bottom: 20px;
 }
 
-.newcomment-title {
+.comment-title {
   margin-bottom: 0;
 }
 
-.newcomment-btn {
+.comment-btn {
   margin-top: -5px;
 }
 </style>

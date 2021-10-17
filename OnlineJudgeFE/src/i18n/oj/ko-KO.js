@@ -175,6 +175,7 @@ export const m = {
   Post_Title: '제목',
   Post_Content: '내용',
   NewPost: '새 글',
+  Delete: '삭제',
   // Setting.vue
   Profile: '프로필',
   Account: '계정',

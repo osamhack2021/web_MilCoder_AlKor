@@ -4,7 +4,7 @@
       <div id="problem-main">
         <!--problem main-->
         <Panel :padding="40" shadow style="height: 100%">
-          <div slot="title">{{ problem.title }}</div>
+          <div slot="title">{{ problem.title }}</div>  
           <div id="problem-content" class="markdown-body" v-katex>
             <p class="title">{{ $t('m.Description') }}</p>
             <p class="content" v-html=problem.description></p>

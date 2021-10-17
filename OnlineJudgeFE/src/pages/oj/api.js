@@ -159,7 +159,7 @@ export default {
   },
   deletePost(postID) {
     return ajax('board', 'delete', {
-      data: {
+      params: {
         id: postID,
       },
     });
@@ -183,7 +183,7 @@ export default {
   },
   deleteComment(commentID) {
     return ajax('board/comment', 'delete', {
-      data: {
+      params: {
         id: commentID,
       },
     });

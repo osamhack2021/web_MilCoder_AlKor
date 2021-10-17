@@ -174,6 +174,7 @@ export const m = {
   Post_Title: 'Post Title',
   Post_Content: 'Post Content',
   NewPost: 'New Post',
+  Delete: 'Delete',
   // Setting.vue
   Profile: 'Profile',
   Account: 'Account',

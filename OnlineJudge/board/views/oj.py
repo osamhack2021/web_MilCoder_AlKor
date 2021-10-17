@@ -131,7 +131,7 @@ class BoardCommentAPI(APIView):
         """
         data = request.data
         id = data["id"]
-        if check_is_id(id):
+        if not check_is_id(id):
             return self.error("Invalid parameter, id is required")
         try:
             comment = Comment.objects.get(id=id)
