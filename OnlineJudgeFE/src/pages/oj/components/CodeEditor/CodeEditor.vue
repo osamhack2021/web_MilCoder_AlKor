@@ -1,23 +1,35 @@
 <template>
   <div style="margin: 0 0 15px 0">
-    <Row type="flex" justify="space-between" class="header">
+    <Row v-if="language !== 'plaintext'" type="flex" justify="space-between" class="header">
       <Col :span=12>
         <div class="tools">
           <span>{{ $t('m.Language') }}:</span>
-          <Select :value="editor.language" @on-change="onLanguageChange" class="adjust">
+          <Select :value="language" @on-change="onLanguageChange" class="adjust">
             <Option v-for="item in supportLanguages" :key="item.id" :value="item.lang">
               {{ item.name }}
             </Option>
           </Select>
           <div>
-            <Tooltip :content="this.$i18n.t('m.Editor_run')" class="editor-menu" placement="top">
-              <Button icon="play"></Button>
+            <Tooltip :content="this.$i18n.t('m.Editor_run')" class="editor-menu" placement="bottom">
+              <Button type="primary" icon="play"></Button>
             </Tooltip>
-            <Tooltip :content="this.$i18n.t('m.Upload_file')" class="editor-menu" placement="top">
-              <Button icon="upload" @click="onUploadFile"/>
+            <Tooltip :content="this.$i18n.t('m.Upload_file')" class="editor-menu" placement="bottom">
+              <Button type="primary" icon="upload" @click="onUploadFile"/>
             </Tooltip>
-            <Tooltip :content="this.$i18n.t('m.Reset_to_default_code_definition')" class="editor-menu" placement="top">
-              <Button icon="refresh" @click="onResetClick"/>
+            <Tooltip :content="this.$i18n.t('m.Reset_to_default_code_definition')" class="editor-menu" placement="bottom">
+              <Button type="warning" icon="refresh" @click="onResetClick"/>
+            </Tooltip>
+            <Tooltip
+              v-if="!!submission"
+              :content="this.$i18n.t('m.Submit')" class="editor-menu" placement="bottom">
+              <Button
+                :loading="submission.status === SUBMITTING"
+                :disabled="submission.disabled"
+                @click="submission.handler"
+                type="error" icon="paper-airplane">
+                <span v-if="submission.status === SUBMITTING">{{ $t('m.Submitting') }}</span>
+                <span v-else>{{ $t('m.Submit') }}</span>
+              </Button>
             </Tooltip>
           </div>
           <input type="file" id="file-uploader" style="display: none" @change="onUploadFileDone">
@@ -26,7 +38,7 @@
       <Col :span=12>
         <div class="fl-right">
           <span>{{ $t('m.Theme') }}:</span>
-          <Select :value="editor.theme" @on-change="onThemeChange" class="adjust">
+          <Select :value="theme" @on-change="onThemeChange" class="adjust">
             <Option v-for="item in themes" :key="item" :value="item">{{ item.toUpperCase() }}
             </Option>
           </Select>
@@ -38,10 +50,10 @@
         <MonacoEditor
           ref="source"
           class="editor"
+          :value.sync="value"
           :options="options"
-          :language="editor.language"
-          :value="editor.source"
-          :theme="editor.theme"
+          :language="language"
+          :theme="theme"
         />
       </Col>
     </Row>
@@ -51,14 +63,8 @@
 <script>
 import axios from 'axios';
 import MonacoEditor from 'vue-monaco';
-import {
-  DEFAULT_LANGUAGE,
-  DEFAULT_LANGUAGE_CODE,
-  DEFAULT_THEME,
-  LANGUAGES_BY_CODE,
-  LANGUAGES_BY_LANG,
-  THEMES,
-} from './constants';
+import { SUBMITTING } from '@/utils/constants';
+import { DEFAULT_LANGUAGE, LANGUAGES_BY_ALIAS, LANGUAGES_BY_LANG, THEMES } from './constants';
 
 // TODO: 코드 테스트용 API(@oj/api) 생성 후 제거
 const JUDGE_URL = 'https://ce.judge0.com';
@@ -69,13 +75,13 @@ export default {
     MonacoEditor,
   },
   props: {
-    source: {
+    value: {
       type: String,
       default: '',
     },
     languages: {
       type: Array,
-      default: [],
+      default: () => [],
     },
     language: {
       type: String,
@@ -83,24 +89,20 @@ export default {
     },
     theme: {
       type: String,
-      default: DEFAULT_THEME,
     },
+    onLanguageChange: Function,
+    onThemeChange: Function,
+    submission: Object,
   },
   data() {
-    const code = this.language || DEFAULT_LANGUAGE_CODE;
-    const language = LANGUAGES_BY_CODE[code].lang;
     return {
+      SUBMITTING,
       options: {
         automaticLayout: true,
         scrollBeyondLastLine: true,
         minimap: {
           enabled: false,
         },
-      },
-      editor: {
-        language,
-        theme: this.theme,
-        source: this.source || LANGUAGES_BY_LANG[language].template,
       },
       supportLanguages: [],
       themes: THEMES,
@@ -109,9 +111,9 @@ export default {
   methods: {
     run() {
       const data = {
-        language_id: LANGUAGES_BY_CODE[this.editor.language].id,
-        source_code: this.editor.source,
-        stdin: this.editor.stdin,
+        language_id: LANGUAGES_BY_LANG[this.language].id,
+        source_code: this.value,
+        stdin: this.stdin,
         compiler_options: '',
         command_line_arguments: '',
         redirect_stderr_to_stdout: false,
@@ -131,24 +133,10 @@ export default {
           console.log(res);
         });
     },
-    onLanguageChange(newLang) {
-      this.editor = Object.assign({}, this.editor, {
-        language: newLang,
-        source: LANGUAGES_BY_LANG[newLang].template,
-      });
-    },
-    onThemeChange(newTheme) {
-      this.editor = Object.assign({}, this.editor, {
-        theme: newTheme,
-      });
-    },
     onResetClick() {
-      this.editor = Object.assign({}, this.editor, {
-        source: LANGUAGES_BY_LANG[this.editor.language].template,
-      });
-      this.$nextTick(() => {
-        this.monacoEditor.getModel().setValue(this.editor.source);
-      });
+      const template = LANGUAGES_BY_LANG[this.language].template;
+      this.value = template;
+      this.monacoEditor.getModel().setValue(template);
     },
     onUploadFile() {
       document.getElementById('file-uploader').click();
@@ -171,8 +159,8 @@ export default {
     },
   },
   watch: {
-    'languages'(languages) {
-      this.supportLanguages = languages.map((code) => LANGUAGES_BY_CODE[code]).filter(Boolean);
+    languages(languages) {
+      this.supportLanguages = languages.map((code) => LANGUAGES_BY_ALIAS[code]).filter(Boolean);
     },
   },
 };
