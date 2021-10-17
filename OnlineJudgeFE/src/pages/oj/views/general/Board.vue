@@ -1,18 +1,31 @@
 <template>
+<div>
   <Panel shadow :padding="10">
     <div slot="title">
       {{ title }}
     </div>
     <div slot="extra">
+      <Button v-if="listVisible" type="info" icon="ios-open-outline" @click.native="showEditPostDialog = true">
+        {{ $t('m.NewPost') }}
+      </Button>
       <Button v-if="listVisible" type="info" @click="init" :loading="btnLoading">
         {{ $t('m.Refresh') }}
       </Button>
-      <Button v-else type="ghost" icon="ios-undo" @click="goBack">{{ $t('m.Back') }}</Button>
+      <template v-else>
+      <Button type="ghost" icon="ios-undo" @click="goBack">{{ $t('m.Back') }}</Button>
+      <Button v-if="post && user.username==post.created_by.username || isAdminRole"
+        type="success" icon="ios-open-outline" @click.native="showEditPostDialog = true">
+        {{ $t('m.Edit') }}
+      </Button>
+      <Button v-if="post && user.username==post.created_by.username || isAdminRole" type="error" icon="ios-trash" @click="deletePost">
+        {{ $t('m.Delete') }}
+      </Button>
+      </template>
     </div>
 
     <transition-group name="post-animate" mode="in-out">
       <div class="no-post" v-if="!posts.length" key="no-post">
-        <p>{{ $t('m.No_Announcements') }}</p>
+        <p>{{ $t('m.No_Posts') }}</p>
       </div>
       <template v-if="listVisible">
         <ul class="posts-container" key="list">
@@ -32,59 +45,75 @@
                     @on-change="getPostList">
         </Pagination>
       </template>
-
-      <template v-else>
+      </transition-group>
+      <template v-if="!listVisible">
         <div v-katex v-html="post.content" key="content" class="content-container markdown-body"></div>
         <Card v-for="comment in comments" :key="comment.create_time">
           <a href="#" slot="title">
-              {{comment.created_by}}
+              {{comment.created_by.username}}
           </a>
           <p slot="extra">
-              {{comment.create_time}}
+              {{comment.create_time | localtime}}
+              <Button v-if="user.username==comment.created_by.username || isAdminRole" type="error" icon="ios-trash" class="comment-btn" @click="deleteComment(comment.id)"></Button>
           </p>
           <p>
             {{comment.content}}
           </p>
         </Card>
+        <Card>
+          <p slot="title" class="comment-title">
+            새 댓글
+          </p>
+          <Button type="info" slot="extra" class="comment-btn" @click="writeComment(comment)">
+            <Icon type="ios-pricetag-outline"></Icon>
+            작성하기
+          </Button>
+          <Input v-model="comment" maxlength="500" show-word-limit type="textarea" placeholder="내용을 입력하세요..." />
+        </Card>
+        <Pagination
+          key="commentsPage"
+          :total="commentsTotal"
+          :page-size="commentsLimit"
+          @on-change="getComments">
+        </Pagination>
       </template>
-    </transition-group>
   </Panel>
+  <PostEditor :visible="showEditPostDialog" :postID="post.id" @closeDialog="onCloseEditDialog"></PostEditor>
+</div>
 </template>
 
 <script>
 import api from '@oj/api';
 import Pagination from '@oj/components/Pagination';
+import Simditor from '@oj/components/Simditor';
+import PostEditor from '@oj/components/PostEditor';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'Board',
   components: {
     Pagination,
+    Simditor,
+    PostEditor,
   },
   data() {
     return {
       limit: 10,
       total: 10,
+      commentsTotal: 10,
+      commentsLimit: 10,
       btnLoading: false,
       posts: [],
       post: '',
       listVisible: true,
-      comments: [
-        {
-          'create_time': '2021-10-16 12:34',
-          'created_by': 'user101',
-          'content': '댓글 테스트 #1'
-        },
-        {
-          'create_time': '2021-10-16 16:12',
-          'created_by': 'user102',
-          'content': '댓글 테스트 #2'
-        },
-        {
-          'create_time': '2021-10-16 13:56',
-          'created_by': 'user103',
-          'content': '댓글 테스트 #3'
-        }
-      ]
+      comments: [],
+      comment: '',
+      showEditPostDialog: false,
+      newpost: {
+        title: '',
+        content: '',
+      },
+      newpostErr: '',
     };
   },
   mounted() {
@@ -92,15 +121,11 @@ export default {
   },
   methods: {
     init() {
-      if (this.isProblem) {
-        this.getProblemPostList();
-      } else {
-        this.getPostList();
-      }
+      this.getPostList();
     },
     getPostList(page = 1) {
       this.btnLoading = true;
-      api.getPostList((page - 1) * this.limit, this.limit).then(res => {
+      api.getPostList((page - 1) * this.limit, this.limit, this.$route.params.problemID).then(res => {
         this.btnLoading = false;
         this.posts = res.data.data.results;
         this.total = res.data.data.total;
@@ -108,28 +133,62 @@ export default {
         this.btnLoading = false;
       });
     },
-    getProblemPostList() {
-      this.btnLoading = true;
-      api.getProblemPostList(this.$route.params.problemID).then(res => {
-        this.btnLoading = false;
-        this.posts = res.data.data;
-      }, () => {
-        this.btnLoading = false;
+    deletePost() {
+      this.$confirm('정말 삭제하시겠습니까?', 'Warning', {
+        confirmButtonText: '삭제',
+        cancelButtonText: '취소',
+        type: 'warning',
+      }).then(() => {
+        api.deletePost(this.post.id).then(res => {
+          this.getPostList();
+          this.goBack();
+        });
       });
     },
     goPost(post) {
-      this.post = post;
       this.listVisible = false;
+      api.getPost(post.id).then(res => {
+        this.post = res.data.data;
+        this.getComments();
+      });
     },
     goBack() {
       this.listVisible = true;
       this.post = '';
     },
+    getComments(commentsPage = 1){
+      api.getComments((commentsPage - 1) * this.commentsLimit, this.commentsLimit, this.post.id).then(res => {
+        this.comments = res.data.data.results;
+        this.commentsTotal = res.data.data.total;
+      });
+    },
+    writeComment(comment){
+      api.writeComment(this.post.id, comment).then(res => {
+        this.comment = '';
+        this.getComments();
+      });
+    },
+    deleteComment(commentID) {
+      this.$confirm('정말 삭제하시겠습니까?', 'Warning', {
+        confirmButtonText: '삭제',
+        cancelButtonText: '취소',
+        type: 'warning',
+      }).then(() => {
+        api.deleteComment(commentID).then(res => {
+          this.getComments();
+        });
+      });
+    },
+    onCloseEditDialog() {
+      this.showEditPostDialog = false;
+      this.getPostList();
+    },
   },
   computed: {
+    ...mapGetters(['user', 'isAuthenticated', 'isAdminRole']),
     title() {
       if (this.listVisible) {
-        return this.isProblem ? this.$i18n.t('m.Contest_Announcements') : this.$i18n.t('m.Announcements');
+        return this.isProblem ? this.$i18n.t('m.Problem_Posts') : this.$i18n.t('m.Posts');
       } else {
         return this.post.title;
       }
@@ -201,5 +260,17 @@ export default {
 changeLocale
 .post-animate-enter-active {
   animation: fadeIn 1s;
+}
+
+.title-input {
+  margin-bottom: 20px;
+}
+
+.comment-title {
+  margin-bottom: 0;
+}
+
+.comment-btn {
+  margin-top: -5px;
 }
 </style>

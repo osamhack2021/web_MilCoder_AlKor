@@ -167,6 +167,15 @@ export const m = {
   Refresh: 'Refresh',
   Back: 'Back',
   No_Announcements: 'No Announcements',
+  // Board.vue
+  No_Posts: 'No Posts',
+  Posts: 'Posts',
+  Problem_Posts: 'Problem Posts',
+  Post_Title: 'Post Title',
+  Post_Content: 'Post Content',
+  NewPost: 'New Post',
+  Delete: 'Delete',
+  Edit: 'Edit',
   // Setting.vue
   Profile: 'Profile',
   Account: 'Account',

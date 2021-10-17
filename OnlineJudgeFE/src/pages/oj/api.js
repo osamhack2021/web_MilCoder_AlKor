@@ -132,6 +132,71 @@ export default {
   pickone() {
     return ajax('pickone', 'get');
   },
+  getPostList(offset, limit, problemID = '') {
+    return ajax('board', 'get', {
+      params: {
+        offset: offset,
+        limit: limit,
+        problem_id: problemID,
+      },
+    });
+  },
+  getPost(postID) {
+    return ajax('board', 'get', {
+      params: {
+        id: postID,
+      },
+    });
+  },
+  writePost(title, content, problemID = '') {
+    return ajax('board', 'post', {
+      data: {
+        title: title,
+        content: content,
+        problem_id: problemID,
+      },
+    });
+  },
+  editPost(postID, title, content) {
+    return ajax('board', 'put', {
+      params: {
+        id: postID,
+        title: title,
+        content: content,
+      },
+    });
+  },
+  deletePost(postID) {
+    return ajax('board', 'delete', {
+      params: {
+        id: postID,
+      },
+    });
+  },
+  getComments(offset, limit, postID) {
+    return ajax('board/comment', 'get', {
+      params: {
+        offset: offset,
+        limit: limit,
+        article_id: postID,
+      },
+    });
+  },
+  writeComment(postID, content) {
+    return ajax('board/comment', 'post', {
+      data: {
+        article_id: postID,
+        content: content,
+      },
+    });
+  },
+  deleteComment(commentID) {
+    return ajax('board/comment', 'delete', {
+      params: {
+        id: commentID,
+      },
+    });
+  },
   getProblem(problemID) {
     return ajax('problem', 'get', {
       params: {

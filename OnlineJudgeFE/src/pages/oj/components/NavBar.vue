@@ -14,6 +14,10 @@
         <Icon type="trophy"></Icon>
         {{ $t('m.Contests') }}
       </Menu-item>
+      <Menu-item name="/board">
+        <Icon type="clipboard"></Icon>
+        {{ $t('m.Board') }}
+      </Menu-item>
       <Menu-item name="/status">
         <Icon type="ios-pulse-strong"></Icon>
         {{ $t('m.NavStatus') }}

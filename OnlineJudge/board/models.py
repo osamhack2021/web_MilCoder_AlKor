@@ -13,7 +13,7 @@ class Article(models.Model):
     problem = models.ForeignKey(Problem, on_delete=models.SET_NULL, null=True)
 
     class Meta:
-        db_table = "board_article"
+        db_table = "article"
         ordering = ("-create_time",)
 
 
@@ -24,5 +24,5 @@ class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = "board_comment"
+        db_table = "comment"
         ordering = ("-create_time",)

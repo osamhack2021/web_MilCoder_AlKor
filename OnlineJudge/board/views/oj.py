@@ -42,9 +42,9 @@ class BoardAPI(APIView):
             articles = articles.filter(problem=problem)
         
         keyword = request.GET.get("keyword", "").strip()
-        if keyword:
-            articles = article.filter(title__icontians=keyword)
-        return self.success(self.paginate_data(request, article, ArticleListSerializer))
+        if keyword:  
+            articles = articles.filter(title__icontians=keyword)
+        return self.success(self.paginate_data(request, articles, ArticleListSerializer))
 
 
     @validate_serializer(CreateArticleSerializer)
@@ -60,7 +60,7 @@ class BoardAPI(APIView):
             problem_id=data.get("problem_id", None),
             created_by=request.user,
         )
-        return self.success({"id": article.id})
+        return self.success(ArticleSerializer(article).data)
 
     @validate_serializer(RemoveArticleSerializer)
     @login_required
@@ -70,7 +70,7 @@ class BoardAPI(APIView):
         """
         data = request.data
         id = data["id"]
-        if check_is_id(id):
+        if not check_is_id(id):
             return self.error("Invalid parameter, id is required")
         try:
             article = Article.objects.get(id=id)
@@ -90,15 +90,15 @@ class BoardCommentAPI(APIView):
         """
         get a list of comments using article id
         """
-        article_id = request.GET.get("id")
-        if not article_id or check_is_id(article_id):
-            return self.error("Invalid parameter, id is required")
+        article_id = request.GET.get("article_id")
+        if not article_id or not check_is_id(article_id):
+            return self.error("Invalid parameter, article_id is required")
         try:
             article = Article.objects.get(id=article_id)
         except Article.DoesNotExist:
             return self.error("Article does not exist")
 
-        comments = aritcle.comment_set.all()
+        comments = article.comment_set.all()
         return self.success(self.paginate_data(request, comments, CommentSerializer))
 
     @validate_serializer(CreateCommentSerializer)
@@ -108,20 +108,20 @@ class BoardCommentAPI(APIView):
         Write a new comment
         """
         data = request.data
-        article_id = data["id"]
-        if not article_id or check_is_id(article_id):
-            return self.error("Invalid parameter, id is required")
+        article_id = data["article_id"]
+        if not article_id or not check_is_id(article_id):
+            return self.error("Invalid parameter, article_id is required")
         try:
             article = Article.objects.get(id=article_id)
         except Article.DoesNotExist:
             return self.error("Article does not exist")
 
-        comment = Comment(
+        comment = Comment.objects.create(
             content=data["content"],
             created_by=request.user,
             article=article,
         )
-        return self.success({"id": comment.id})
+        return self.success(CommentSerializer(comment).data)
 
     @validate_serializer(RemoveCommentSerializer)
     @login_required
@@ -131,7 +131,7 @@ class BoardCommentAPI(APIView):
         """
         data = request.data
         id = data["id"]
-        if check_is_id(id):
+        if not check_is_id(id):
             return self.error("Invalid parameter, id is required")
         try:
             comment = Comment.objects.get(id=id)
