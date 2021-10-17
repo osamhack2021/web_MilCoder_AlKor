@@ -52,13 +52,20 @@
         </Card>
         <Card>
           <a href="#" slot="title">
-              새 댓글
+              Comment
           </a>
           <p slot="extra">
-              <Icon type="md-add" @click="writeComment(comment)"></Icon>
+              <Icon type="add" @click="writeComment(comment)"></Icon>
           </p>
           <Input v-model="comment" maxlength="500" show-word-limit type="textarea" placeholder="내용을 입력하세요..." />
         </Card>
+        <div> asdfasdf </div>
+        <Pagination
+          key="commentsPage"
+          :total="commentsTotal"
+          :page-size="commentsLimit"
+          @on-change="getComments">
+        </Pagination>
       </template>
     </transition-group>
   </Panel>
@@ -99,6 +106,8 @@ export default {
     return {
       limit: 10,
       total: 10,
+      commentsTotal: 10,
+      commentsLimit: 10,
       btnLoading: false,
       posts: [],
       post: '',
@@ -142,21 +151,31 @@ export default {
       }
       api.writePost(this.newpost.title, this.newpost.content).then(res => {
         this.newpostErr = '';
+        this.showEditPostDialog = false;
         this.init();
       });
     },
     goPost(post) {
-      this.post = post;
       this.listVisible = false;
-      this.getComments();
+      api.getPost(post.id).then(res => {
+        this.post = res.data.data;
+        console.log(this.post);
+        this.getComments();
+      });
     },
     goBack() {
       this.listVisible = true;
       this.post = '';
     },
-    getComments(){
-      api.getComments(this.post.id).then(res => {
-        this.comments = res.data.data;
+    getComments(commentsPage = 1){
+      api.getComments((commentsPage - 1) * this.commentsLimit, this.commentsLimit, this.post.id).then(res => {
+        this.comments = res.data.data.results;
+        this.commentsTotal = res.data.data.total;
+        
+        this.comments = [{content:'테스트 댓글1', created_by:'testUser', create_time:'12:23'},
+                         {content:'테스트 댓글22', created_by:'testUser2', create_time:'12:33'}];
+        this.commentsTotal = 2;
+        console.log(this.comments);
       });
     },
     writeComment(comment){

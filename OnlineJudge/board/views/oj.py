@@ -44,7 +44,7 @@ class BoardAPI(APIView):
         keyword = request.GET.get("keyword", "").strip()
         if keyword:
             articles = articles.filter(title__icontians=keyword)
-        return self.success(self.paginate_data(request, article, ArticleListSerializer))
+        return self.success(self.paginate_data(request, articles, ArticleListSerializer))
 
 
     @validate_serializer(CreateArticleSerializer)
@@ -91,7 +91,7 @@ class BoardCommentAPI(APIView):
         get a list of comments using article id
         """
         article_id = request.GET.get("id")
-        if not article_id or check_is_id(article_id):
+        if not article_id or not check_is_id(article_id):
             return self.error("Invalid parameter, id is required")
         try:
             article = Article.objects.get(id=article_id)

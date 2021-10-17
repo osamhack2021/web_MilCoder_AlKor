@@ -132,12 +132,12 @@ export default {
   pickone() {
     return ajax('pickone', 'get');
   },
-  getPostList(offset, limit, problemID) {
+  getPostList(offset, limit, problemID = '') {
     return ajax('board', 'get', {
       params: {
         offset: offset,
         limit: limit,
-        problem_id: problemID || '',
+        problem_id: problemID,
       },
     });
   },
@@ -148,11 +148,12 @@ export default {
       },
     });
   },
-  writePost(title, content) {
+  writePost(title, content, problemID = '') {
     return ajax('board', 'post', {
       data: {
         title: title,
         content: content,
+        problem_id: problemID,
       },
     });
   },
@@ -163,9 +164,11 @@ export default {
       },
     });
   },
-  getComments(postID) {
+  getComments(offset, limit, postID) {
     return ajax('board/comment', 'get', {
       params: {
+        offset: offset,
+        limit: limit,
         id: postID,
       },
     });
