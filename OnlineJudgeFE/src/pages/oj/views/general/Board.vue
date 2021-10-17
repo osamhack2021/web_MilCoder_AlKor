@@ -72,25 +72,7 @@
         </Pagination>
       </template>
   </Panel>
-  <el-dialog title="새 게시글" :visible.sync="showEditPostDialog"
-               @open="onOpenEditDialog" :close-on-click-modal="false">
-      <el-form label-position="top">
-        <el-form-item :label="$t('m.Post_Title')" required>
-          <el-input
-            v-model="newpost.title"
-            :placeholder="$t('m.Post_Title')" class="title-input">
-          </el-input>
-        </el-form-item>
-        <el-form-item :label="$t('m.Post_Content')" required>
-          <Simditor v-model="newpost.content"></Simditor>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-          <p style="color:red"> {{ this.newpostErr }} </p>
-          <cancel @click.native="showEditPostDialog = false"></cancel>
-          <save type="primary" @click.native="writePost"></save>
-      </span>
-    </el-dialog>
+  <PostEditor :mode="editMode" :visible="showEditPostDialog" postID="post||post.id" @closeDialog="onCloseEditDialog"></PostEditor>
 </div>
 </template>
 
@@ -98,6 +80,7 @@
 import api from '@oj/api';
 import Pagination from '@oj/components/Pagination';
 import Simditor from '@oj/components/Simditor';
+import PostEditor from '@oj/components/PostEditor';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -105,6 +88,7 @@ export default {
   components: {
     Pagination,
     Simditor,
+    PostEditor,
   },
   data() {
     return {
@@ -136,29 +120,11 @@ export default {
     getPostList(page = 1) {
       this.btnLoading = true;
       api.getPostList((page - 1) * this.limit, this.limit, this.$route.params.problemID).then(res => {
-        console.log(res);
         this.btnLoading = false;
         this.posts = res.data.data.results;
         this.total = res.data.data.total;
       }, () => {
         this.btnLoading = false;
-      });
-    },
-    writePost() {
-      if(!this.newpost.title){
-        this.newpostErr = '제목은 비워둘 수 없습니다!';
-        return;
-      }
-      if(!this.newpost.content){
-        this.newpostErr = '내용은 비워둘 수 없습니다!';
-        return;
-      }
-      api.writePost(this.newpost.title, this.newpost.content).then(res => {
-        this.newpostErr = '';
-        this.newpost.title = '';
-        this.newpost.content = '';
-        this.showEditPostDialog = false;
-        this.init();
       });
     },
     deletePost() {
@@ -207,16 +173,9 @@ export default {
         });
       });
     },
-    onOpenEditDialog() {
-      setTimeout(() => {
-        if (document.createEvent) {
-          let event = document.createEvent('HTMLEvents');
-          event.initEvent('resize', true, true);
-          window.dispatchEvent(event);
-        } else if (document.createEventObject) {
-          window.fireEvent('onresize');
-        }
-      }, 0);
+    onCloseEditDialog() {
+      this.showEditPostDialog = false;
+      this.getPostList();
     },
   },
   computed: {
@@ -231,6 +190,9 @@ export default {
     isProblem() {
       return !!this.$route.params.problemID;
     },
+    editMode() {
+      return (this.post)? "editPost":"writePost";
+    }
   },
 };
 </script>
