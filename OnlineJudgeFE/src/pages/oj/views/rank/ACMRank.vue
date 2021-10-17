@@ -20,6 +20,7 @@ import { RULE_TYPE } from '@/utils/constants';
 import utils from '@/utils/utils';
 import api from '@oj/api';
 import Pagination from '@oj/components/Pagination';
+import en from 'echarts/lib/langEN';
 
 export default {
   name: 'acm-rank',
@@ -99,9 +100,27 @@ export default {
         toolbox: {
           show: true,
           feature: {
-            dataView: { show: true, readOnly: true },
-            magicType: { show: true, type: ['line', 'bar', 'stack'] },
-            saveAsImage: { show: true },
+            dataView: {
+              how: true,
+              readOnly: true,
+              title: 'Data View',
+              lang: ['Data View', 'Close', 'Refresh']
+            },
+            magicType: {
+              show: true,
+              type: ['line', 'bar', 'stack'],
+              title: {
+                line: 'Switch to Line Chart',
+                bar: 'Switch to Bar Chart',
+                stack: 'Stack',
+                tiled: 'Tile'
+              }
+            },
+            saveAsImage: {
+              show: true,
+              title: 'Save as Image',
+              lang: ['Right Click to Save Image']
+            },
           },
           right: '10%',
         },

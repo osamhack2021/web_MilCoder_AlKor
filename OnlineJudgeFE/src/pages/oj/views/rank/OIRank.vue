@@ -103,9 +103,27 @@ export default {
         toolbox: {
           show: true,
           feature: {
-            dataView: { show: true, readOnly: true },
-            magicType: { show: true, type: ['line', 'bar'] },
-            saveAsImage: { show: true },
+            dataView: {
+              how: true,
+              readOnly: true,
+              title: 'Data View',
+              lang: ['Data View', 'Close', 'Refresh']
+            },
+            magicType: {
+              show: true,
+              type: ['line', 'bar', 'stack'],
+              title: {
+                line: 'Switch to Line Chart',
+                bar: 'Switch to Bar Chart',
+                stack: 'Stack',
+                tiled: 'Tile'
+              }
+            },
+            saveAsImage: {
+              show: true,
+              title: 'Save as Image',
+              lang: ['Right Click to Save Image']
+            },
           },
           right: '10%',
         },
