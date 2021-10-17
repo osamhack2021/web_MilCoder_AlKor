@@ -29,7 +29,7 @@ export default {
   components: {
     Simditor,
   },
-  props: ['postID', 'visible'],
+  props: ['postID', 'problemID', 'visible'],
   data() {
     return {
       title: '',
@@ -64,7 +64,7 @@ export default {
         return;
       }
       if(this.mode=='writePost'){
-        api.writePost(this.title, this.content).then(res => {
+        api.writePost(this.title, this.content, this.problemID).then(res => {
           this.visible = false;
           this.init();
         });

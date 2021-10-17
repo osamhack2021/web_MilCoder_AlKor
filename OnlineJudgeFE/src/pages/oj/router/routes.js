@@ -60,7 +60,7 @@ export default [
   },
   {
     name: 'problem-board',
-    path: '/board/:problemID',
+    path: '/qna/:problemID',
     meta: { title: 'Problem Board' },
     component: Board,
   },

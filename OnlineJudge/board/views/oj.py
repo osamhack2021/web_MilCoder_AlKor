@@ -54,10 +54,18 @@ class BoardAPI(APIView):
         write new article
         """
         data = request.data
+        problem_id = data.get("problem_id", None)
+        problem = None
+        try:
+            if problem_id:
+                problem = Problem.objects.get(_id=problem_id)
+        except Problem.DoesNotExist:
+            return self.error("Problem does not exist")
+
         article = Article.objects.create(
             title=data["title"],
             content=data["content"],
-            problem_id=data.get("problem_id", None),
+            problem=problem,
             created_by=request.user,
         )
         return self.success(ArticleSerializer(article).data)
