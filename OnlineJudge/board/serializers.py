@@ -11,7 +11,7 @@ class Const:
 class CreateArticleSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=Const.MAX_TITLE_LEN)
     content = serializers.CharField(max_length=Const.MAX_CONTENT_LEN)
-    problem = serializers.CharField(max_length=32, allow_blank=True, allow_null=True)
+    problem_id = serializers.CharField(max_length=32, allow_blank=True, allow_null=True)
 
 
 class RemoveArticleSerializer(serializers.Serializer):
