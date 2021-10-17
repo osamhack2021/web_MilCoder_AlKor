@@ -5,7 +5,7 @@ from utils.shortcuts import check_is_id
 from problem.models import Problem
 from ..models import Article, Comment
 from ..serializers import ArticleSerializer, ArticleListSerializer
-from ..serializers import CreateArticleSerializer, RemoveArticleSerializer
+from ..serializers import CreateArticleSerializer, EditArticleSerializer, RemoveArticleSerializer
 from ..serializers import CommentSerializer
 from ..serializers import CreateCommentSerializer, RemoveCommentSerializer
 
@@ -61,6 +61,30 @@ class BoardAPI(APIView):
             created_by=request.user,
         )
         return self.success(ArticleSerializer(article).data)
+
+    @validate_serializer(EditArticleSerializer)
+    @login_required
+    def put(self, request):
+        """
+        edit new article
+        """
+        data = request.data
+        article_id = data["id"]
+        if not check_is_id(article_id):
+            return self.error("Invalid parameter, id is required")
+        try:
+            article = Article.objects.get(id=article_id)
+        except Article.DoesNotExist:
+            return self.error("Article does not exist")
+        
+        user = request.user
+        if user.is_admin_role() or user.id == article.created_by_id:
+            setattr(article, title, data["title"])
+            setattr(article, content, data["content"])
+            setattr(article, problem_id, data.get("problem_id", None))
+            article.save()
+            return self.success({"id": article_id})
+        return self.error("No permission to edit article")
 
     @validate_serializer(RemoveArticleSerializer)
     @login_required
