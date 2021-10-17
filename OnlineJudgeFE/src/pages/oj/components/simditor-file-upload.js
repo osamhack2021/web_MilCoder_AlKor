@@ -25,9 +25,6 @@ UploadFile = (function (_super) {
   __extends(UploadFile, _super);
 
   UploadFile.i18n = {
-    'zh-CN': {
-      uploadfile: '上传文件',
-    },
     'en-US': {
       uploadfile: 'upload file',
     },
