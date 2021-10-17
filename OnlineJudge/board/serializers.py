@@ -28,13 +28,14 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class ArticleListSerializer(ArticleSerializer):
+    created_by = UsernameSerializer()
     class Meta:
         model = Article
         exclude = ("content",)
 
 
 class CreateCommentSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
+    article_id = serializers.IntegerField()
     content = serializers.CharField(max_length=Const.MAX_CONTENT_LEN)
 
 

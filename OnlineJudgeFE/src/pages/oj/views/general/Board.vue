@@ -36,30 +36,30 @@
                     @on-change="getPostList">
         </Pagination>
       </template>
-
-      <template v-else>
+      </transition-group>
+      <template v-if="!listVisible">
         <div v-katex v-html="post.content" key="content" class="content-container markdown-body"></div>
         <Card v-for="comment in comments" :key="comment.create_time">
           <a href="#" slot="title">
-              {{comment.created_by}}
+              {{comment.created_by.username}}
           </a>
           <p slot="extra">
-              {{comment.create_time}}
+              {{comment.create_time | localtime}}
           </p>
           <p>
             {{comment.content}}
           </p>
         </Card>
         <Card>
-          <a href="#" slot="title">
-              Comment
-          </a>
-          <p slot="extra">
-              <Icon type="add" @click="writeComment(comment)"></Icon>
+          <p slot="title" class="newcomment-title">
+            새 댓글
           </p>
+          <Button type="info" slot="extra" class="newcomment-btn" @click="writeComment(comment)">
+            <Icon type="ios-pricetag-outline"></Icon>
+            작성하기
+          </Button>
           <Input v-model="comment" maxlength="500" show-word-limit type="textarea" placeholder="내용을 입력하세요..." />
         </Card>
-        <div> asdfasdf </div>
         <Pagination
           key="commentsPage"
           :total="commentsTotal"
@@ -67,7 +67,6 @@
           @on-change="getComments">
         </Pagination>
       </template>
-    </transition-group>
   </Panel>
   <el-dialog title="새 게시글" :visible.sync="showEditPostDialog"
                @open="onOpenEditDialog" :close-on-click-modal="false">
@@ -171,15 +170,11 @@ export default {
       api.getComments((commentsPage - 1) * this.commentsLimit, this.commentsLimit, this.post.id).then(res => {
         this.comments = res.data.data.results;
         this.commentsTotal = res.data.data.total;
-        
-        this.comments = [{content:'테스트 댓글1', created_by:'testUser', create_time:'12:23'},
-                         {content:'테스트 댓글22', created_by:'testUser2', create_time:'12:33'}];
-        this.commentsTotal = 2;
-        console.log(this.comments);
       });
     },
     writeComment(comment){
       api.writeComment(this.post.id, comment).then(res => {
+        console.log(res);
         this.getComments();
       });
     },
@@ -274,5 +269,13 @@ changeLocale
 
 .title-input {
   margin-bottom: 20px;
+}
+
+.newcomment-title {
+  margin-bottom: 0;
+}
+
+.newcomment-btn {
+  margin-top: -5px;
 }
 </style>

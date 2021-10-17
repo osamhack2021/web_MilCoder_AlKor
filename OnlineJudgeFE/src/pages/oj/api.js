@@ -169,14 +169,14 @@ export default {
       params: {
         offset: offset,
         limit: limit,
-        id: postID,
+        article_id: postID,
       },
     });
   },
   writeComment(postID, content) {
     return ajax('board/comment', 'post', {
       data: {
-        id: postID,
+        article_id: postID,
         content: content,
       },
     });
