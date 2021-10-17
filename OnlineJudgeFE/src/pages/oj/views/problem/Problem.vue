@@ -1,14 +1,17 @@
 <template>
 <div>
   <Multipane class="vertical-resizer" layout="vertical" @paneResize="verticalPaneResize">
-    <div class="pane pane-left" style="width: 50%">
+    <div
+      class="pane pane-left"
+      :class="{ full: toolbar.variant === 'v-right', hide: toolbar.variant === 'v-left' }"
+      ref="paneLeft">
       <div id="problem-main">
         <!--problem main-->
         <Panel :padding="40" shadow style="height: 100%">
           <div slot="title">{{ problem.title }}</div>
           <Button slot="extra" type="info" icon="ios-open-outline" @click.native="showEditPostDialog = true">
             {{ $t('m.NewPost') }}
-          </Button>  
+          </Button>
           <div id="problem-content" class="markdown-body" v-katex>
             <p class="title">{{ $t('m.Description') }}</p>
             <p class="content" v-html=problem.description></p>
@@ -57,28 +60,28 @@
           </div>
         </Panel>
       </div>
-      <div class="toolbar-container">
-        <div class="toolbar" @click="handleToolbarClick">
-          <div>
-            <Icon type="arrow-left-b"></Icon>
-          </div>
-          <div>WORKSPACE/SUBMIT</div>
-          <div>
-            <Icon type="arrow-left-b"></Icon>
-          </div>
-        </div>
-      </div>
     </div>
-    <MultipaneResizer/>
-    <div class="pane pane-right" style="flex-grow: 1; width: 200px" ref="paneRight">
+    <MultipaneResizer :class="{ hide: toolbar.variant.startsWith('v-') }"/>
+    <div
+      class="pane pane-right"
+      :class="{ full: toolbar.variant === 'v-left', hide: toolbar.variant === 'v-right' }"
+      ref="paneRight">
       <!--problem main end-->
-      <Multipane class="horizontal-resizer" layout="horizontal">
-        <div class="pane" style="height: 70%">
-          <Card :padding="20" id="submit-code" dis-hover>
-            <CodeEditor :source.sync="code"
-                        :languages="problem.languages"
-                        :language="language"/>
-            <Row type="flex" justify="space-between">
+      <Multipane class="horizontal-resizer" layout="horizontal" ref="horizontalMultipane">
+        <div class="pane pane-top" ref="paneTop">
+          <Card :padding="10" id="workspace-code" dis-hover>
+            <Row type="flex" justify="space-between" style="height: 100%;">
+              <Col :span="24">
+                <CodeEditor
+                  ref="editor"
+                  :value.sync="workspace.code"
+                  :language="workspace.language"
+                  :languages="problem.languages"
+                  :submission="submission"
+                  :onLanguageChange="onLanguageChange"
+                  :onThemeChange="onThemeChange"
+                />
+              </Col>
               <Col :span="10">
                 <div class="status" v-if="statusVisible">
                   <template v-if="!this.contestID || (this.contestID && OIContestRealTimePermission)">
@@ -92,7 +95,10 @@
                   </template>
                 </div>
                 <div v-else-if="problem.my_status === 0">
-                  <Alert type="success" show-icon>{{ $t('m.You_have_solved_the_problem') }}</Alert>
+                  <Alert type="success" show-icon>{{
+                      $t('m.You_have_solved_the_problem')
+                    }}
+                  </Alert>
                 </div>
                 <div v-else-if="this.contestID && !OIContestRealTimePermission && submissionExists">
                   <Alert type="success" show-icon>{{
@@ -113,23 +119,58 @@
                     <Input v-model="captchaCode" class="captcha-code"/>
                   </div>
                 </template>
-                <Button type="warning" icon="edit" :loading="submitting" @click="submitCode"
-                        :disabled="problemSubmitDisabled || submitted"
-                        class="fl-right">
-                  <span v-if="submitting">{{ $t('m.Submitting') }}</span>
-                  <span v-else>{{ $t('m.Submit') }}</span>
-                </Button>
               </Col>
             </Row>
           </Card>
         </div>
         <MultipaneResizer/>
-        <div class="pane" style="flex-grow: 1">
-          <h1>asdf</h1>
-          <h1>asdf</h1>
-          <h1>asdf</h1>
+        <div class="pane pane-bottom" ref="paneBottom">
+          <Card :padding="10" id="workspace-io">
+            <Tabs :animated="false" @on-click="handleIoTabClick">
+              <TabPane label="INPUT" name="stdin">
+                <CodeEditor
+                  :value.sync="workspace.stdin"
+                  :options="workspace.options"
+                  :theme="workspace.theme"
+                  language="plaintext"
+                  ref="stdinEditor"
+                />
+              </TabPane>
+              <TabPane label="OUTPUT" name="stdout">
+                <CodeEditor
+                  :value.sync="workspace.stdout"
+                  :options="Object.assign({}, workspace.options, { readOnly: true })"
+                  :theme="workspace.theme"
+                  language="plaintext"
+                  ref="stdoutEditor"
+                />
+              </TabPane>
+              <TabPane label="ERROR" name="stderr">
+                <CodeEditor
+                  :value.sync="workspace.stderr"
+                  :options="Object.assign({}, workspace.options, { readOnly: true })"
+                  :theme="workspace.theme"
+                  language="plaintext"
+                  ref="stderrEditor"
+                />
+              </TabPane>
+            </Tabs>
+          </Card>
         </div>
       </Multipane>
+    </div>
+    <div class="toolbar-container" @click="handleToolbarClick">
+      <div class="toolbar" :class="{ active: !!toolbar.variant, [toolbar.variant]: !!toolbar.variant }">
+        <div>
+          <Icon v-if="toolbar.variant === 'v-right'" type="arrow-left-b"></Icon>
+          <Icon v-else-if="toolbar.variant === 'v-left'" type="arrow-right-b"></Icon>
+        </div>
+        <div>{{ toolbar.label }}</div>
+        <div>
+          <Icon v-if="toolbar.variant === 'v-right'" type="arrow-left-b"></Icon>
+          <Icon v-else-if="toolbar.variant === 'v-left'" type="arrow-right-b"></Icon>
+        </div>
+      </div>
     </div>
   </Multipane>
   <PostEditor :visible="showEditPostDialog" :problemID="problemID" @closeDialog="onCloseEditDialog"></PostEditor>
@@ -137,13 +178,21 @@
 </template>
 
 <script>
-import { buildProblemCodeKey, CONTEST_STATUS, JUDGE_STATUS } from '@/utils/constants';
+import { buildProblemCodeKey, CONTEST_STATUS, JUDGE_STATUS, SUBMITTING } from '@/utils/constants';
 import storage from '@/utils/storage';
 import api from '@oj/api';
-import CodeEditor, { constants } from '@oj/components/CodeEditor';
+import CodeEditor from '@oj/components/CodeEditor';
+import {
+  DEFAULT_LANGUAGE,
+  DEFAULT_THEME,
+  LANGUAGE_TO_ALIAS,
+  LANGUAGES_BY_ALIAS,
+  LANGUAGES_BY_LANG,
+} from '@oj/components/CodeEditor/constants';
 import PostEditor from '@oj/components/PostEditor';
 import { FormMixin } from '@oj/components/mixins';
-import { Multipane, MultipaneResizer } from 'vue-multipane';
+import { Multipane, MultipaneResizer } from '@oj/components/Multipane';
+import { assign } from 'lodash';
 import { mapActions, mapGetters } from 'vuex';
 import { types } from '../../../../store';
 import { largePie, pie } from './chartData';
@@ -172,9 +221,6 @@ export default {
       contestID: '',
       problemID: '',
       submitting: false,
-      code: '',
-      language: constants.DEFAULT_LANGUAGE_CODE,
-      theme: constants.DEFAULT_THEME,
       submissionId: '',
       submitted: false,
       result: {
@@ -193,6 +239,31 @@ export default {
         tags: [],
         io_mode: { 'io_mode': 'Standard IO' },
       },
+      submission: {
+        handler: this.submitCode,
+        status: '',
+        disabled: false,
+      },
+      workspace: {
+        code: LANGUAGES_BY_LANG[DEFAULT_LANGUAGE].template,
+        language: DEFAULT_LANGUAGE,
+        theme: DEFAULT_THEME,
+        stdin: '',
+        stdout: '',
+        stderr: '',
+        options: {
+          automaticLayout: true,
+          scrollBeyondLastLine: true,
+          minimap: {
+            enabled: false,
+          },
+        },
+        currentTab: 'stdin',
+      },
+      toolbar: {
+        label: '',
+        variant: '', // v-left, v-right, h-top, h-bottom
+      },
       pie: pie,
       largePie: largePie,
 
@@ -206,9 +277,11 @@ export default {
     let problemCode = storage.get(buildProblemCodeKey(to.params.problemID, to.params.contestID));
     if (problemCode) {
       next(vm => {
-        vm.language = problemCode.language;
-        vm.code = problemCode.code;
-        vm.theme = problemCode.theme;
+        vm.workspace = assign({}, vm.workspace, {
+          code: problemCode.code,
+          language: problemCode.language,
+          theme: problemCode.theme,
+        });
       });
     } else {
       next();
@@ -236,15 +309,14 @@ export default {
         this.problem = problem;
         this.changePie(problem);
 
-        if (this.code !== '') {
-          return;
-        }
         // try to load problem template
-        this.language = this.problem.languages[0];
-        let template = this.problem.template;
-        if (template && template[this.language]) {
-          this.code = template[this.language];
-        }
+        const language = LANGUAGES_BY_ALIAS[this.problem.languages[0]];
+        this.workspace = assign({}, this.workspace, {
+          code: language.template,
+          language: language.lang,
+          theme: DEFAULT_THEME,
+          stdin: problem.samples.map((sample) => sample.input).join(''),
+        });
       }, () => {
         this.$Loading.error();
       });
@@ -288,33 +360,58 @@ export default {
       this.$router.push(route);
     },
     handleToolbarClick(event) {
-      const toolbar = event.currentTarget;
-      const pane = toolbar.parentElement.parentElement;
+      const container = event.currentTarget;
+      const pane = container.parentElement.firstElementChild;
       const resizer = pane.nextElementSibling;
       const oppositePane = resizer.nextElementSibling;
-      const isRight = toolbar.classList.contains('right');
 
-      toolbar.classList = 'toolbar';
-      oppositePane.classList.remove('hide');
-      pane.style.width = '50%';
-      resizer.style.display = null;
-      if (isRight) {
-        oppositePane.style.width = '200px';
-      } else {
-        oppositePane.style.height = '200px';
+      switch (this.toolbar.variant) {
+        case 'v-left':
+        case 'v-right':
+          pane.style.width = '50%';
+          oppositePane.style.width = '50%';
+          oppositePane.style.width = null;
+          break;
+        case 'v-top':
+        case 'v-bottom':
+          pane.style.height = '70%';
+          oppositePane.style.height = '30%';
+          oppositePane.style.height = null;
+          break;
       }
+      this.toolbar = { label: '', variant: '' };
+      this.$nextTick(() => {
+        this.layoutEditors();
+      });
     },
     verticalPaneResize(pane, resizer, size) {
-      const rightEl = this.$refs.paneRight;
-      const width = rightEl.offsetWidth;
-      if (width < 200) {
-        const toolbar = pane.querySelector('.toolbar');
-        pane.style.width = '100%';
-        rightEl.classList.add('hide');
-        resizer.style.display = 'none';
-        toolbar.classList.add('active');
-        toolbar.classList.add('right');
+      const oppositePane = resizer.nextElementSibling;
+      const hideLeft = pane.offsetWidth < 200;
+      const hideRight = oppositePane.offsetWidth < 200;
+
+      if (!hideLeft && !hideRight) return;
+
+      if (hideLeft) {
+        this.toolbar = assign({}, this.toolbar, {
+          label: 'PROBLEM',
+          variant: 'v-left',
+        });
+      } else if (hideRight) {
+        this.toolbar = assign({}, this.toolbar, {
+          label: 'WORKSPACE/SUBMIT',
+          variant: 'v-right',
+        });
       }
+      this.$nextTick(() => {
+        this.layoutEditors();
+      });
+    },
+    handleIoTabClick(name) {
+      const editor = this.$refs[`${name}Editor`];
+      this.currentTab = name;
+      this.$nextTick(() => {
+        editor.monacoEditor.layout();
+      });
     },
     checkSubmissionStatus() {
       if (this.refreshStatus) {
@@ -340,17 +437,19 @@ export default {
       this.refreshStatus = setTimeout(checkStatus, 2000);
     },
     submitCode() {
-      if (this.code.trim() === '') {
+      const code = this.editor.getModel().getValue();
+      if (code.trim() === '') {
         this.$error(this.$i18n.t('m.Code_can_not_be_empty'));
         return;
       }
+
       this.submissionId = '';
-      this.result = { result: 9 };
+      this.result = { result: SUBMITTING };
       this.submitting = true;
-      let data = {
+      const data = {
         problem_id: this.problem.id,
-        language: this.language,
-        code: this.code,
+        language: LANGUAGE_TO_ALIAS[this.workspace.language],
+        code: code,
         contest_id: this.contestID,
       };
       if (this.captchaRequired) {
@@ -403,6 +502,10 @@ export default {
         submitFunc(data, true);
       }
     },
+    layoutEditors() {
+      this.$refs.editor.monacoEditor.layout();
+      this.$refs[`${this.workspace.currentTab}Editor`].monacoEditor.layout();
+    },
     onCopy(event) {
       this.$success('Code copied');
     },
@@ -411,6 +514,15 @@ export default {
     },
     onCloseEditDialog() {
       this.showEditPostDialog = false;
+    },
+    onLanguageChange(newLang) {
+      this.workspace = assign({}, this.workspace, {
+        language: newLang,
+        code: LANGUAGES_BY_LANG[newLang].template,
+      });
+    },
+    onThemeChange(newTheme) {
+      this.workspace = assign({}, this.workspace, { theme: newTheme });
     },
   },
   computed: {
@@ -434,6 +546,9 @@ export default {
         return { name: 'submission-list', query: { problemID: this.problemID } };
       }
     },
+    editor() {
+      return this.$refs.editor.monacoEditor;
+    },
   },
   beforeRouteLeave(to, from, next) {
     clearInterval(this.refreshStatus);
@@ -450,6 +565,21 @@ export default {
     '$route'() {
       this.init();
     },
+    submitting() {
+      this.submission = assign({}, this.submission, {
+        status: this.submitting ? SUBMITTING : this.submission.status,
+      });
+    },
+    problemSubmitDisabled() {
+      this.submission = assign({}, this.submission, {
+        disabled: this.problemSubmitDisabled || this.submitted,
+      });
+    },
+    submitted() {
+      this.submission = assign({}, this.submission, {
+        disabled: this.problemSubmitDisabled || this.submitted,
+      });
+    },
   },
 };
 </script>
@@ -459,7 +589,46 @@ export default {
 }
 </style>
 <style lang="less" scoped>
+.hide {
+  display: none;
+}
+
+.pane-left {
+  width: 50%;
+
+  &.full {
+    width: 100% !important;
+    padding-right: 40px;
+  }
+}
+
+.pane-right {
+  width: 200px;
+  flex-grow: 1;
+
+  &.full {
+    width: 100% !important;
+    padding-left: 40px;
+  }
+}
+
+.pane-top {
+  height: 70%;
+  min-height: 300px;
+
+  &.full {
+    height: 100% !important;
+    padding-left: 40px;
+  }
+}
+
+.pane-bottom {
+  height: 200px;
+  flex-grow: 1;
+}
+
 .toolbar-container {
+  position: initial !important;
   display: inline-block;
 
   .toolbar {
@@ -479,11 +648,11 @@ export default {
     border-right: 1px solid #ccc;
     justify-content: space-evenly;
 
-    &.right {
+    &.v-right {
       right: 0;
     }
 
-    &.left {
+    &.v-left {
       left: 0;
     }
 
@@ -540,13 +709,13 @@ export default {
   &:before {
     display: block;
     content: "";
-    width: 3px;
+    width: 5px;
     height: 40px;
     position: absolute;
     top: 50%;
     left: 50%;
     margin-top: -20px;
-    margin-left: -1.5px;
+    margin-left: -4.5px;
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
   }
@@ -568,7 +737,8 @@ export default {
   }
 
   > .multipane-resizer {
-    margin: 0;
+    background: #fff;
+    margin: 0 !important;
     left: 0;
     position: relative;
     border-top: 1px solid #ccc;
@@ -578,11 +748,11 @@ export default {
       display: block;
       content: "";
       width: 40px;
-      height: 3px;
+      height: 5px;
       position: absolute;
       top: 50%;
       left: 50%;
-      margin-top: -6.5px;
+      margin-top: -2.5px;
       margin-left: -20px;
       border-top: 1px solid #ccc;
       border-bottom: 1px solid #ccc;
@@ -593,12 +763,6 @@ export default {
     &:before {
       border-color: #999;
     }
-  }
-}
-
-.pane {
-  &.hide {
-    display: none;
   }
 }
 
@@ -658,7 +822,9 @@ export default {
   }
 }
 
-#submit-code {
+#workspace-code {
+  height: 100%;
+
   .status {
     float: left;
 
@@ -705,8 +871,8 @@ export default {
   }
 }
 
-.fl-right {
-  float: right;
+#workspace-io {
+  height: 100%;
 }
 
 #pieChart {
