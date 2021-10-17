@@ -1,10 +1,14 @@
 <template>
+<div>
   <Multipane class="vertical-resizer" layout="vertical" @paneResize="verticalPaneResize">
     <div class="pane pane-left" style="width: 50%">
       <div id="problem-main">
         <!--problem main-->
         <Panel :padding="40" shadow style="height: 100%">
-          <div slot="title">{{ problem.title }}</div>  
+          <div slot="title">{{ problem.title }}</div>
+          <Button slot="extra" type="info" icon="ios-open-outline" @click.native="showEditPostDialog = true">
+            {{ $t('m.NewPost') }}
+          </Button>  
           <div id="problem-content" class="markdown-body" v-katex>
             <p class="title">{{ $t('m.Description') }}</p>
             <p class="content" v-html=problem.description></p>
@@ -128,6 +132,8 @@
       </Multipane>
     </div>
   </Multipane>
+  <PostEditor :visible="showEditPostDialog" :problemID="problemID" @closeDialog="onCloseEditDialog"></PostEditor>
+</div>
 </template>
 
 <script>
@@ -135,25 +141,27 @@ import { buildProblemCodeKey, CONTEST_STATUS, JUDGE_STATUS } from '@/utils/const
 import storage from '@/utils/storage';
 import api from '@oj/api';
 import CodeEditor, { constants } from '@oj/components/CodeEditor';
+import PostEditor from '@oj/components/PostEditor';
 import { FormMixin } from '@oj/components/mixins';
 import { Multipane, MultipaneResizer } from 'vue-multipane';
 import { mapActions, mapGetters } from 'vuex';
 import { types } from '../../../../store';
 import { largePie, pie } from './chartData';
 
-// 只显示这些状态的图形占用
 const filtedStatus = ['-1', '-2', '0', '1', '2', '3', '4', '8'];
 
 export default {
   name: 'Problem',
   components: {
     CodeEditor,
+    PostEditor,
     Multipane,
     MultipaneResizer,
   },
   mixins: [FormMixin],
   data() {
     return {
+      showEditPostDialog: false,
       paneSize: 0,
       statusVisible: false,
       captchaRequired: false,
@@ -187,7 +195,7 @@ export default {
       },
       pie: pie,
       largePie: largePie,
-      // echarts 无法获取隐藏dom的大小，需手动指定
+
       largePieInitOpts: {
         width: '500',
         height: '480',
@@ -228,7 +236,6 @@ export default {
         this.problem = problem;
         this.changePie(problem);
 
-        // 在beforeRouteEnter中修改了, 说明本地有code，无需加载template
         if (this.code !== '') {
           return;
         }
@@ -243,7 +250,6 @@ export default {
       });
     },
     changePie(problemData) {
-      // 只显示特定的一些状态
       for (let k in problemData.statistic_info) {
         if (filtedStatus.indexOf(k) === -1) {
           delete problemData.statistic_info[k];
@@ -255,19 +261,16 @@ export default {
         { name: 'AC', value: acNum },
       ];
       this.pie.series[0].data = data;
-      // 只把大图的AC selected下，这里需要做一下deepcopy
       let data2 = JSON.parse(JSON.stringify(data));
       data2[1].selected = true;
       this.largePie.series[1].data = data2;
 
-      // 根据结果设置legend,没有提交过的legend不显示
       let legend = Object.keys(problemData.statistic_info).map(ele => JUDGE_STATUS[ele].short);
       if (legend.length === 0) {
         legend.push('AC', 'WA');
       }
       this.largePie.legend.data = legend;
 
-      // 把ac的数据提取出来放在最后
       let acCount = problemData.statistic_info['0'];
       delete problemData.statistic_info['0'];
 
@@ -314,9 +317,7 @@ export default {
       }
     },
     checkSubmissionStatus() {
-      // 使用setTimeout避免一些问题
       if (this.refreshStatus) {
-        // 如果之前的提交状态检查还没有停止,则停止,否则将会失去timeout的引用造成无限请求
         clearTimeout(this.refreshStatus);
       }
       const checkStatus = () => {
@@ -387,7 +388,6 @@ export default {
             title: '',
             content: '<h3>' + this.$i18n.t('m.You_have_submission_in_this_problem_sure_to_cover_it') + '<h3>',
             onOk: () => {
-              // 暂时解决对话框与后面提示对话框冲突的问题(否则一闪而过）
               setTimeout(() => {
                 submitFunc(data, false);
               }, 1000);
@@ -408,6 +408,9 @@ export default {
     },
     onCopyError(e) {
       this.$error('Failed to copy code');
+    },
+    onCloseEditDialog() {
+      this.showEditPostDialog = false;
     },
   },
   computed: {
@@ -433,7 +436,6 @@ export default {
     },
   },
   beforeRouteLeave(to, from, next) {
-    // 防止切换组件后仍然不断请求
     clearInterval(this.refreshStatus);
 
     this.$store.commit(types.CHANGE_CONTEST_ITEM_VISIBLE, { menu: true });

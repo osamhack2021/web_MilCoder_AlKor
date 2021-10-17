@@ -170,8 +170,8 @@ export const m = {
   No_Announcements: '공지가 존재하지 않습니다',
   // Board.vue
   No_Posts: '게시글이 존재하지 않습니다',
-  Posts: '게시글',
-  Problem_Posts: '문제 관련 게시글',
+  Posts: '전체게시판',
+  Problem_Posts: '문제풀이 QnA 게시판',
   Post_Title: '제목',
   Post_Content: '내용',
   NewPost: '새 글',
