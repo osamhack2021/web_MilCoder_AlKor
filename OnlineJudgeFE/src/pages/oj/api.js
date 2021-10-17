@@ -159,7 +159,7 @@ export default {
   },
   editPost(postID, title, content) {
     return ajax('board', 'put', {
-      params: {
+      data: {
         id: postID,
         title: title,
         content: content,

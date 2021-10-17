@@ -79,9 +79,8 @@ class BoardAPI(APIView):
         
         user = request.user
         if user.is_admin_role() or user.id == article.created_by_id:
-            setattr(article, title, data["title"])
-            setattr(article, content, data["content"])
-            setattr(article, problem_id, data.get("problem_id", None))
+            setattr(article, 'title', data["title"])
+            setattr(article, 'content', data["content"])
             article.save()
             return self.success({"id": article_id})
         return self.error("No permission to edit article")

@@ -181,7 +181,10 @@ export default {
     },
     onCloseEditDialog() {
       this.showEditPostDialog = false;
-      this.getPostList();
+      if(this.listVisible)
+        this.getPostList();
+      else
+       this.goPost(this.post);
     },
   },
   computed: {
