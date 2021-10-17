@@ -157,6 +157,15 @@ export default {
       },
     });
   },
+  editPost(postID, title, content) {
+    return ajax('board', 'put', {
+      params: {
+        id: postID,
+        title: title,
+        content: content,
+      },
+    });
+  },
   deletePost(postID) {
     return ajax('board', 'delete', {
       params: {

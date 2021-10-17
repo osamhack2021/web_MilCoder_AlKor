@@ -13,7 +13,13 @@
       </Button>
       <template v-else>
       <Button type="ghost" icon="ios-undo" @click="goBack">{{ $t('m.Back') }}</Button>
-      <Button v-if="post && user.username==post.created_by.username || isAdminRole" type="error" icon="ios-trash" @click="deletePost">{{ $t('m.Delete') }}</Button>
+      <Button v-if="post && user.username==post.created_by.username || isAdminRole"
+        type="success" icon="ios-open-outline" @click.native="showEditPostDialog = true">
+        {{ $t('m.Edit') }}
+      </Button>
+      <Button v-if="post && user.username==post.created_by.username || isAdminRole" type="error" icon="ios-trash" @click="deletePost">
+        {{ $t('m.Delete') }}
+      </Button>
       </template>
     </div>
 
@@ -72,7 +78,7 @@
         </Pagination>
       </template>
   </Panel>
-  <PostEditor :mode="editMode" :visible="showEditPostDialog" postID="post||post.id" @closeDialog="onCloseEditDialog"></PostEditor>
+  <PostEditor :visible="showEditPostDialog" :postID="post.id" @closeDialog="onCloseEditDialog"></PostEditor>
 </div>
 </template>
 
@@ -190,9 +196,6 @@ export default {
     isProblem() {
       return !!this.$route.params.problemID;
     },
-    editMode() {
-      return (this.post)? "editPost":"writePost";
-    }
   },
 };
 </script>

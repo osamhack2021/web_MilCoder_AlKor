@@ -29,7 +29,7 @@ export default {
   components: {
     Simditor,
   },
-  props: ['mode', 'postID', 'visible'],
+  props: ['postID', 'visible'],
   data() {
     return {
       title: '',
@@ -42,9 +42,17 @@ export default {
   },
   methods: {
     init() {
-        this.title = '';
-        this.content = '';
-        this.errMsg = '';
+        if(this.postID){
+            api.getPost(this.postID).then(res => {
+                this.title = res.data.data.title;
+                this.content = res.data.data.content;
+            });
+        }
+        else{
+            this.title = '';
+            this.content = '';
+            this.errMsg = '';
+        }
     },
     writePost() {
       if(!this.title){
@@ -55,10 +63,18 @@ export default {
         this.errMsg = '내용은 비워둘 수 없습니다!';
         return;
       }
-      api[this.mode](this.title, this.content).then(res => {
-        this.visible = false;
-        this.init();
-      });
+      if(this.mode=='writePost'){
+        api.writePost(this.title, this.content).then(res => {
+          this.visible = false;
+          this.init();
+        });
+      }
+      else{
+        api.editPost(this.postID, this.title, this.content).then(res => {
+          this.visible = false;
+          this.init();
+        });
+      }
     },
     onOpenEditDialog() {
       setTimeout(() => {
@@ -70,26 +86,27 @@ export default {
           window.fireEvent('onresize');
         }
       }, 0);
+      this.init();
     },
     onCloseEditDialog() {
       this.$emit('closeDialog');
     },
   },
   computed: {
-    _mode(){
-        return this.mode;
-    },
-    _postID(){
-        return this.postID;
-    },
     _visible(){
-        return this.visible;
+      return this.visible;
+    },
+    mode(){
+      if(!!this.postID)
+        return "editPost";
+      else
+        return "writePost";
     },
     modeTitle(){
-        if(this.mode == "writePost")
-            return "새 게시글";
-        else
-            return "게시글 수정";
+      if(!!this.postID)
+        return "게시글 수정";
+      else
+        return "새 게시글";
     }
   },
 };
