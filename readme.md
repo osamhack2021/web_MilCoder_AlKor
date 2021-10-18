@@ -49,4 +49,4 @@ npm run dev # FRONT
 - Kim Jehyung (arlawpgud2\[at\]gmail.com), GitHub ID: 0xrgb
 
 ## 저작권 및 사용권 정보 (Copyleft / End User License)
-MIT. 자세한 정보는 [license.md]에서 확인하세요.
+MIT. 자세한 정보는 [license.md](license.md)에서 확인하세요.
