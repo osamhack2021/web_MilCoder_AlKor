@@ -11,8 +11,13 @@
             <div slot="title">{{ problem.title }}</div>
             <Button
               @click.native="showEditPostDialog = true"
-              slot="extra" type="info" icon="android-open">
-              {{ $t('m.NewPost') }}
+              slot="extra" type="info" icon="edit">
+              새 질문
+            </Button>
+            <Button
+              @click.native="$router.push('/qna/'+problemID)"
+              slot="extra" type="success" icon="android-open">
+              질문 보기
             </Button>
             <div id="problem-content" class="markdown-body" v-katex>
               <p class="title">{{ $t('m.Description') }}</p>

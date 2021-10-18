@@ -43,7 +43,7 @@ class BoardAPI(APIView):
         
         keyword = request.GET.get("keyword", "").strip()
         if keyword:  
-            articles = articles.filter(title__icontians=keyword)
+            articles = articles.filter(title__contains=keyword)
         return self.success(self.paginate_data(request, articles, ArticleListSerializer))
 
 

@@ -132,12 +132,13 @@ export default {
   pickone() {
     return ajax('pickone', 'get');
   },
-  getPostList(offset, limit, problemID = '') {
+  getPostList(offset, limit, problemID = '', keyword = '') {
     return ajax('board', 'get', {
       params: {
         offset: offset,
         limit: limit,
         problem_id: problemID,
+        keyword: keyword,
       },
     });
   },
