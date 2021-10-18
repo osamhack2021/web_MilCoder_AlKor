@@ -1,69 +1,82 @@
+export const COMPILE_ERROR = -2;
+export const WRONG_ANSWER = -1;
+export const ACCEPTED = 0;
+export const TIME_LIMIT_EXCEEDED = 1;
+export const TIME_LIMIT_EXCEEDED_2 = 2;
+export const MEMORY_LIMIT_EXCEEDED = 3;
+export const RUNTIME_ERROR = 4;
+export const SYSTEM_ERROR = 5;
+export const PENDING = 6;
+export const JUDGING = 7;
+export const PARTIAL_ACCEPTED = 8;
+export const SUBMITTING = 9;
+
 export const JUDGE_STATUS = {
-  '-2': {
+  [COMPILE_ERROR]: {
     name: 'Compile Error',
     short: 'CE',
     color: 'yellow',
     type: 'warning',
   },
-  '-1': {
+  [WRONG_ANSWER]: {
     name: 'Wrong Answer',
     short: 'WA',
     color: 'red',
     type: 'error',
   },
-  '0': {
+  [ACCEPTED]: {
     name: 'Accepted',
     short: 'AC',
     color: 'green',
     type: 'success',
   },
-  '1': {
+  [TIME_LIMIT_EXCEEDED]: {
     name: 'Time Limit Exceeded',
     short: 'TLE',
     color: 'red',
     type: 'error',
   },
-  '2': {
+  [TIME_LIMIT_EXCEEDED_2]: {
     name: 'Time Limit Exceeded',
     short: 'TLE',
     color: 'red',
     type: 'error',
   },
-  '3': {
+  [MEMORY_LIMIT_EXCEEDED]: {
     name: 'Memory Limit Exceeded',
     short: 'MLE',
     color: 'red',
     type: 'error',
   },
-  '4': {
+  [RUNTIME_ERROR]: {
     name: 'Runtime Error',
     short: 'RE',
     color: 'red',
     type: 'error',
   },
-  '5': {
+  [SYSTEM_ERROR]: {
     name: 'System Error',
     short: 'SE',
     color: 'red',
     type: 'error',
   },
-  '6': {
+  [PENDING]: {
     name: 'Pending',
     color: 'yellow',
     type: 'warning',
   },
-  '7': {
+  [JUDGING]: {
     name: 'Judging',
     color: 'blue',
     type: 'info',
   },
-  '8': {
+  [PARTIAL_ACCEPTED]: {
     name: 'Partial Accepted',
     short: 'PAC',
     color: 'blue',
     type: 'info',
   },
-  '9': {
+  [SUBMITTING]: {
     name: 'Submitting',
     color: 'yellow',
     type: 'warning',

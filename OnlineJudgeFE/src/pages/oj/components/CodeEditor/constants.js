@@ -1,10 +1,10 @@
-import { keyBy } from 'lodash';
+import { keyBy, reduce } from 'lodash';
 
 const C = `#include <stdio.h>
 
 int main(void) {
-  printf("Hello world!\\n");
-  return 0;
+    printf("Hello world!\\n");
+    return 0;
 }`;
 
 const CPP = `#include <iostream>
@@ -15,9 +15,9 @@ int main() {
 }`;
 
 const JAVA = `public class Main {
-  public static void main(String[p] args) {
-    System.out.println("Hello world!");
-  }
+    public static void main(String[p] args) {
+        System.out.println("Hello world!");
+    }
 }`;
 
 const JAVASCRIPT = `console.log("Hello world!");`;
@@ -46,11 +46,15 @@ export const SUPPORT_LANGUAGES = [
   { id: 71, lang: 'python', name: 'Python3 (3.8.1)', template: CODE_TEMPLATES.PYTHON },
 ];
 export const DEFAULT_LANGUAGE = 'cpp';
-export const DEFAULT_LANGUAGE_CODE = 'C++';
+export const DEFAULT_LANGUAGE_ALIAS = 'C++';
 export const DEFAULT_LANGUAGE_ID = 54;
 export const LANGUAGES_BY_ID = keyBy(SUPPORT_LANGUAGES, 'id');
 export const LANGUAGES_BY_LANG = keyBy(SUPPORT_LANGUAGES, 'lang');
-export const LANGUAGES_BY_CODE = keyBy(SUPPORT_LANGUAGES, (item) => item.name.split(' ')[0]);
+export const LANGUAGES_BY_ALIAS = keyBy(SUPPORT_LANGUAGES, (item) => item.name.split(' ')[0]);
+export const LANGUAGE_TO_ALIAS = reduce(SUPPORT_LANGUAGES, (result, item) => {
+  result[item.lang] = item.name.split(' ')[0];
+  return result;
+}, {});
 
 export const THEMES = ['vs', 'vs-dark', 'hc-black'];
 export const DEFAULT_THEME = 'vs';
