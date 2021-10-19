@@ -34,16 +34,12 @@ class BoardAPI(APIView):
         articles = Article.objects.all()
 
         problem_id = request.GET.get("problem_id", "").strip()
-        if problem_id:
-            try:
-                problem = Problem.objects.get(_id=problem_id)
-            except Problem.DoesNotExist:
-                return self.error("Problem does not exist")
-            articles = articles.filter(problem=problem)
+        if problem_id :
+            articles = articles.filter(problem___id__icontains=problem_id)
         
         keyword = request.GET.get("keyword", "").strip()
         if keyword:  
-            articles = articles.filter(title__contains=keyword)
+            articles = articles.filter(title__icontains=keyword)
         return self.success(self.paginate_data(request, articles, ArticleListSerializer))
 
 
