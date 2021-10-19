@@ -160,6 +160,7 @@ export default {
   },
   watch: {
     languages(languages) {
+      console.log(languages);
       this.supportLanguages = languages.map((code) => LANGUAGES_BY_ALIAS[code]).filter(Boolean);
     },
   },

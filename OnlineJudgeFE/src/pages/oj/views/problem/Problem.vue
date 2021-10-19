@@ -322,7 +322,7 @@ export default {
           code: language.template,
           language: language.lang,
           theme: DEFAULT_THEME,
-          stdin: problem.samples.map((sample) => sample.input).join(''),
+          stdin: '',
         });
       }, () => {
         this.$Loading.error();
@@ -702,7 +702,7 @@ export default {
 
 .vertical-resizer > .pane {
   text-align: left;
-  overflow: hidden;
+  overflow-x: hidden;
   background: #eee;
 }
 
@@ -780,6 +780,11 @@ export default {
 #problem-main {
   flex: auto;
   height: 100%;
+
+  > div {
+    height: 100%;
+    overflow-x: hidden;
+  }
 }
 
 .flex-container {

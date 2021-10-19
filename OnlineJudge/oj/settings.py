@@ -143,7 +143,7 @@ UPLOAD_DIR = f"{DATA_DIR}{UPLOAD_PREFIX}"
 
 STATICFILES_DIRS = [os.path.join(DATA_DIR, "public")]
 
-LOGGING_HANDLERS = ['console', 'sentry'] if is_production else ['console']
+LOGGING_HANDLERS = ['console']
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

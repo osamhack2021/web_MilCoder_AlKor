@@ -42,7 +42,6 @@ export const SUPPORT_LANGUAGES = [
     name: 'Javascript (Node.js 12.14.0)',
     template: CODE_TEMPLATES.JAVASCRIPT,
   },
-  { id: 70, lang: 'python', name: 'Python2 (2.7.17)', template: CODE_TEMPLATES.PYTHON },
   { id: 71, lang: 'python', name: 'Python3 (3.8.1)', template: CODE_TEMPLATES.PYTHON },
 ];
 export const DEFAULT_LANGUAGE = 'cpp';
