@@ -54,3 +54,4 @@ MIT, GPL 3.0. 자세한 정보는 [license.md](license.md)에서 확인하세요
 ## 참조 (Reference)
 - https://github.com/QingdaoU/OnlineJudge 
 - https://github.com/judge0/judge0
+- https://github.com/egoist/vue-monaco
