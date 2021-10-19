@@ -29,6 +29,7 @@ export default {
   },
   mounted() {
     this.editor = new Simditor({
+      locale: 'en-US',
       textarea: this.$refs.editor,
       toolbar: this.toolbar,
       pasteImage: true,

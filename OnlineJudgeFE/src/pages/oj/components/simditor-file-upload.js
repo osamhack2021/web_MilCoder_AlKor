@@ -3,6 +3,8 @@
 import * as $ from 'jquery';
 import Simditor from 'tar-simditor';
 
+Simditor.locale = 'en-US';
+
 let UploadFile,
   __hasProp = {}.hasOwnProperty,
   __extends = function (child, parent) {

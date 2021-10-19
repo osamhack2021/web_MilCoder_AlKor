@@ -108,7 +108,7 @@ class OptionKeys:
 class OptionDefaultValue:
     website_base_url = "http://127.0.0.1"
     website_name = "MilCoder"
-    website_name_shortcut = "M-Coder"
+    website_name_shortcut = "MilCoder"
     website_footer = "Online Judge Footer"
     allow_register = True
     submission_list_show_all = True
