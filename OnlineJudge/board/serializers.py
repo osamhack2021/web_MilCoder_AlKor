@@ -1,4 +1,4 @@
-from utils.api import UsernameSerializer, serializers
+from utils.api import UsernameSerializer, SimpleProblemSerializer, serializers
 
 from .models import Article, Comment
 
@@ -35,6 +35,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 class ArticleListSerializer(ArticleSerializer):
     created_by = UsernameSerializer()
+    problem = SimpleProblemSerializer()
     class Meta:
         model = Article
         exclude = ("content",)

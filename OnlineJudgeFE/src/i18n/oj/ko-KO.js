@@ -171,7 +171,7 @@ export const m = {
   // Board.vue
   No_Posts: '게시글이 존재하지 않습니다',
   Posts: '전체게시판',
-  Problem_Posts: '문제풀이 QnA 게시판',
+  Problem_Posts: '문제 QnA 게시판',
   Post_Title: '제목',
   Post_Content: '내용',
   NewPost: '새 글',

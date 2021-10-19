@@ -3,9 +3,14 @@
   <Panel shadow :padding="10">
     <div slot="title">
       {{ title }}
+      <el-input class="problem-slot"
+        placeholder="Problem ID"
+        v-model="problemID"
+        clearable>
+      </el-input>
     </div>
     <div slot="extra">
-      <Button v-if="listVisible" type="info" icon="ios-open-outline" @click.native="showEditPostDialog = true">
+      <Button v-if="listVisible" type="info" icon="edit" @click.native="showEditPostDialog = true">
         {{ $t('m.NewPost') }}
       </Button>
       <Button v-if="listVisible" type="info" @click="init" :loading="btnLoading">
@@ -14,7 +19,7 @@
       <template v-else>
       <Button type="ghost" icon="ios-undo" @click="goBack">{{ $t('m.Back') }}</Button>
       <Button v-if="post && user.username==post.created_by.username || isAdminRole"
-        type="success" icon="ios-open-outline" @click.native="showEditPostDialog = true">
+        type="success" icon="edit" @click.native="showEditPostDialog = true">
         {{ $t('m.Edit') }}
       </Button>
       <Button v-if="post && user.username==post.created_by.username || isAdminRole" type="error" icon="ios-trash" @click="deletePost">
@@ -23,7 +28,6 @@
       </template>
     </div>
 
-    <transition-group name="post-animate" mode="in-out">
       <div class="no-post" v-if="!posts.length" key="no-post">
         <p>{{ $t('m.No_Posts') }}</p>
       </div>
@@ -33,19 +37,31 @@
             <div class="flex-container">
               <div class="title"><a class="entry" @click="goPost(post)">
                 {{ post.title }}</a></div>
+              <div class="problem">
+                <el-button :type="(post.problem)?'primary':'info'" size="small" round @click="$router.push('/problem/'+post.problem._id)">
+                  {{problemLabel(post.problem)}}
+                </el-button>
+              </div>
               <div class="date">{{ post.create_time | localtime }}</div>
               <div class="creator"> {{ $t('m.By') }} {{ post.created_by.username }}</div>
             </div>
           </li>
         </ul>
-        <Pagination v-if="!isProblem"
-                    key="page"
-                    :total="total"
-                    :page-size="limit"
-                    @on-change="getPostList">
+        <div class="flex-container">
+          <el-input class="flex-stretch"
+            placeholder="검색어를 입력하세요"
+            v-model="searchKeyword">
+          </el-input>
+        <Button icon="search" class="flex-item" @click.native="getPostList(1)">검색</Button>
+        <Pagination class="flex-item"
+          key="page"
+          :total="total"
+          :page-size="limit"
+          @on-change="getPostList">
         </Pagination>
+        </div>
       </template>
-      </transition-group>
+
       <template v-if="!listVisible">
         <div v-katex v-html="post.content" key="content" class="content-container markdown-body"></div>
         <Card v-for="comment in comments" :key="comment.create_time">
@@ -98,6 +114,7 @@ export default {
   },
   data() {
     return {
+      problemID: '',
       limit: 10,
       total: 10,
       commentsTotal: 10,
@@ -114,18 +131,29 @@ export default {
         content: '',
       },
       newpostErr: '',
+      searchKeyword: '',
     };
   },
   mounted() {
     this.init();
   },
+  watch: {
+    $route(to, from){
+      this.init();
+    },
+    problemID(to, from){
+      if((to && to.length==4) || to=='')
+        this.getPostList();
+    }
+  },
   methods: {
     init() {
+      this.problemID = this.$route.params.problem;
       this.getPostList();
     },
     getPostList(page = 1) {
       this.btnLoading = true;
-      api.getPostList((page - 1) * this.limit, this.limit, this.$route.params.problemID).then(res => {
+      api.getPostList((page - 1) * this.limit, this.limit, this.problemID, this.searchKeyword).then(res => {
         this.btnLoading = false;
         this.posts = res.data.data.results;
         this.total = res.data.data.total;
@@ -186,6 +214,11 @@ export default {
       else
        this.goPost(this.post);
     },
+    problemLabel(prob){
+      if(!!!prob)
+        return 'General';
+      return '[' + prob._id + '] ' + prob.title;
+    }
   },
   computed: {
     ...mapGetters(['user', 'isAuthenticated', 'isAdminRole']),
@@ -197,7 +230,7 @@ export default {
       }
     },
     isProblem() {
-      return !!this.$route.params.problemID;
+      return !!this.problemID;
     },
   },
 };
@@ -221,6 +254,7 @@ export default {
     }
 
     .flex-container {
+      align-items: center;
       .title {
         flex: 1 1;
         text-align: left;
@@ -236,9 +270,14 @@ export default {
         }
       }
 
+      .problem {
+        flex: none;
+        text-align: center;
+      }
+
       .creator {
         flex: none;
-        width: 200px;
+        width: 120px;
         text-align: center;
       }
 
@@ -249,6 +288,22 @@ export default {
       }
     }
   }
+}
+
+.flex-container {
+  align-items: center;
+  .flex-stretch {
+    flex: 1 1;
+    padding-left: 30px;
+  }
+  .flex-item {
+    flex: none;
+    padding-left: 10px;
+  }
+}
+
+.problem-slot {
+  max-width: 120px;
 }
 
 .content-container {
