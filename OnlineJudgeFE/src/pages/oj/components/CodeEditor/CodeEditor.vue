@@ -11,7 +11,7 @@
           </Select>
           <div>
             <Tooltip :content="this.$i18n.t('m.Editor_run')" class="editor-menu" placement="bottom">
-              <Button type="primary" icon="play"></Button>
+              <Button type="primary" icon="play" @click="run"></Button>
             </Tooltip>
             <Tooltip :content="this.$i18n.t('m.Upload_file')" class="editor-menu" placement="bottom">
               <Button type="primary" icon="upload" @click="onUploadFile"/>
@@ -54,6 +54,7 @@
           :options="options"
           :language="language"
           :theme="theme"
+          @editorDidMount="editorDidMount"
         />
       </Col>
     </Row>
@@ -61,13 +62,14 @@
 </template>
 
 <script>
+import { SUBMITTING } from '@/utils/constants';
 import axios from 'axios';
 import MonacoEditor from 'vue-monaco';
-import { SUBMITTING } from '@/utils/constants';
 import { DEFAULT_LANGUAGE, LANGUAGES_BY_ALIAS, LANGUAGES_BY_LANG, THEMES } from './constants';
 
 // TODO: 코드 테스트용 API(@oj/api) 생성 후 제거
-const JUDGE_URL = 'https://ce.judge0.com';
+const JUDGE_URL = 'http://118.67.129.181:2358';
+const JUDGE_CHECK_INTERVAL = 500;
 
 export default {
   name: 'CodeEditor',
@@ -76,6 +78,10 @@ export default {
   },
   props: {
     value: {
+      type: String,
+      default: '',
+    },
+    stdin: {
       type: String,
       default: '',
     },
@@ -90,8 +96,11 @@ export default {
     theme: {
       type: String,
     },
+    onRunStart: Function,
+    onRunEnd: Function,
     onLanguageChange: Function,
     onThemeChange: Function,
+    onStdinChange: Function,
     submission: Object,
   },
   data() {
@@ -106,32 +115,73 @@ export default {
       },
       supportLanguages: [],
       themes: THEMES,
+      result: {
+        stdout: '',
+        stderr: '',
+        memory: '',
+        time: '',
+      },
     };
   },
   methods: {
+    editorDidMount(editor) {
+      editor.onDidChangeModelContent((e) => {
+        if (this.onStdinChange !== undefined) {
+          this.onStdinChange(editor.getModel().getValue());
+        }
+      });
+    },
     run() {
+      const self = this;
+      const model = this.monacoEditor.getModel();
+      const code = model.getValue();
       const data = {
         language_id: LANGUAGES_BY_LANG[this.language].id,
-        source_code: this.value,
-        stdin: this.stdin,
+        source_code: btoa(code),
+        stdin: btoa(this.stdin),
         compiler_options: '',
         command_line_arguments: '',
         redirect_stderr_to_stdout: false,
       };
-
-      axios({
-        url: `${JUDGE_URL}/submissions`,
+      const submit = () => axios({
+        url: `${JUDGE_URL}/submissions?base64_encoded=true`,
         method: 'POST',
         data: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         withCredentials: false,
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          console.log(res);
-        });
+      });
+      const check = (token) => axios({
+        url: `${JUDGE_URL}/submissions/${token}?base64_encoded=true`,
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: false,
+      });
+      this.onRunStart();
+      submit(data).then((res) => {
+        const token = res.data.token;
+        const t = setInterval(() => {
+          check(token).then((res) => {
+            const data = res.data;
+            if (data.status.id <= 2) {
+              return;
+            }
+            self.result = Object.assign({}, self.result, {
+              stdout: data.stdout ? atob(data.stdout) : null,
+              stderr: data.stderr ? atob(data.stderr) : null,
+              time: data.time,
+              memory: data.memory,
+              compile: data.compile_output
+                ? decodeURIComponent(
+                  atob(data.compile_output)
+                    .split('')
+                    .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                    .join(''))
+                : null,
+            });
+            clearInterval(t);
+          });
+        }, JUDGE_CHECK_INTERVAL);
+      });
     },
     onResetClick() {
       const template = LANGUAGES_BY_LANG[this.language].template;
@@ -159,9 +209,14 @@ export default {
     },
   },
   watch: {
+    value(value) {
+      this.monacoEditor.getModel().setValue(value);
+    },
     languages(languages) {
-      console.log(languages);
       this.supportLanguages = languages.map((code) => LANGUAGES_BY_ALIAS[code]).filter(Boolean);
+    },
+    result(result) {
+      this.onRunEnd(result);
     },
   },
 };

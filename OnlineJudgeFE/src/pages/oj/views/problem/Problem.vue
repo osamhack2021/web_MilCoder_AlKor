@@ -82,9 +82,12 @@
                   <CodeEditor
                     ref="editor"
                     :value.sync="workspace.code"
+                    :stdin="workspace.stdin"
                     :language="workspace.language"
                     :languages="problem.languages"
                     :submission="submission"
+                    :onRunStart="onRunStart"
+                    :onRunEnd="onRunEnd"
                     :onLanguageChange="onLanguageChange"
                     :onThemeChange="onThemeChange"
                   />
@@ -133,12 +136,13 @@
           <MultipaneResizer/>
           <div class="pane pane-bottom" ref="paneBottom">
             <Card :padding="10" id="workspace-io">
-              <Tabs :animated="false" @on-click="handleIoTabClick">
+              <Tabs :value="workspace.currentTab" :animated="false" @on-click="handleIoTabClick">
                 <TabPane label="INPUT" name="stdin">
                   <CodeEditor
                     :value.sync="workspace.stdin"
                     :options="workspace.options"
                     :theme="workspace.theme"
+                    :onStdinChange="onStdinChange"
                     language="plaintext"
                     ref="stdinEditor"
                   />
@@ -159,6 +163,15 @@
                     :theme="workspace.theme"
                     language="plaintext"
                     ref="stderrEditor"
+                  />
+                </TabPane>
+                <TabPane label="COMPILATION" name="compile">
+                  <CodeEditor
+                    :value.sync="workspace.compile"
+                    :options="Object.assign({}, workspace.options, { readOnly: true })"
+                    :theme="workspace.theme"
+                    language="plaintext"
+                    ref="compileEditor"
                   />
                 </TabPane>
               </Tabs>
@@ -258,6 +271,7 @@ export default {
         stdin: '',
         stdout: '',
         stderr: '',
+        compile: '',
         options: {
           automaticLayout: true,
           scrollBeyondLastLine: true,
@@ -415,7 +429,7 @@ export default {
     },
     handleIoTabClick(name) {
       const editor = this.$refs[`${name}Editor`];
-      this.currentTab = name;
+      this.workspace.currentTab = name;
       this.$nextTick(() => {
         editor.monacoEditor.layout();
       });
@@ -513,6 +527,35 @@ export default {
       this.$refs.editor.monacoEditor.layout();
       this.$refs[`${this.workspace.currentTab}Editor`].monacoEditor.layout();
     },
+    onRunStart() {
+      this.workspace = assign({}, this.workspace, { stdout: 'loading...', currentTab: 'stdout' });
+      this.$nextTick(() => {
+        this.$refs.stdoutEditor.monacoEditor.layout();
+      });
+    },
+    onRunEnd(result) {
+      if (result.compile !== null) {
+        this.workspace = assign({}, this.workspace, {
+          compile: result.compile,
+          currentTab: 'compile',
+        });
+      } else if (result.stderr !== null) {
+        this.workspace = assign({}, this.workspace, {
+          stderr: result.stderr,
+          currentTab: 'stderr',
+        });
+      } else {
+        const stdout = [result.stdout, `Finished in ${result.time}s with ${result.memory} bytes memory usage.`].join('\n');
+        this.workspace = assign({}, this.workspace, {
+          stdout,
+          currentTab: 'stdout',
+        });
+      }
+
+      this.$nextTick(() => {
+        this.$refs[`${this.workspace.currentTab}Editor`].monacoEditor.layout();
+      });
+    },
     onCopy(event) {
       this.$success('Code copied');
     },
@@ -530,6 +573,9 @@ export default {
     },
     onThemeChange(newTheme) {
       this.workspace = assign({}, this.workspace, { theme: newTheme });
+    },
+    onStdinChange(stdin) {
+      this.workspace = assign({}, this.workspace, { stdin });
     },
   },
   computed: {
