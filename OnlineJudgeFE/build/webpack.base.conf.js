@@ -16,11 +16,6 @@ function getEntries() {
     'oj': ['./src/pages/oj/index.js'],
     'admin': ['./src/pages/admin/index.js'],
   };
-  if (process.env.USE_SENTRY === '1') {
-    Object.keys(base).forEach(entry => {
-      base[entry].push('./src/utils/sentry.js');
-    });
-  }
   return base;
 }
 
