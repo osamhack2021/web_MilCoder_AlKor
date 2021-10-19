@@ -3,7 +3,7 @@
   <Panel shadow :padding="10">
     <div slot="title">
       {{ title }}
-      <el-input class="problem-slot"
+      <el-input v-if="listVisible" class="problem-slot"
         placeholder="Problem ID"
         v-model="problemID"
         clearable>
