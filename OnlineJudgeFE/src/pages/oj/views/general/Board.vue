@@ -3,6 +3,11 @@
   <Panel shadow :padding="10">
     <div slot="title">
       {{ title }}
+      <el-input class="problem-slot"
+        placeholder="Problem ID"
+        v-model="problemID"
+        clearable>
+      </el-input>
     </div>
     <div slot="extra">
       <Button v-if="listVisible" type="info" icon="edit" @click.native="showEditPostDialog = true">
@@ -109,6 +114,7 @@ export default {
   },
   data() {
     return {
+      problemID: '',
       limit: 10,
       total: 10,
       commentsTotal: 10,
@@ -134,17 +140,20 @@ export default {
   watch: {
     $route(to, from){
       this.init();
+    },
+    problemID(to, from){
+      if((to && to.length==4) || to=='')
+        this.getPostList();
     }
   },
   methods: {
     init() {
+      this.problemID = this.$route.params.problem;
       this.getPostList();
     },
     getPostList(page = 1) {
       this.btnLoading = true;
-      console.log('search for '+this.searchKeyword);
-      api.getPostList((page - 1) * this.limit, this.limit, this.$route.params.problemID, this.searchKeyword).then(res => {
-        console.log(res);
+      api.getPostList((page - 1) * this.limit, this.limit, this.problemID, this.searchKeyword).then(res => {
         this.btnLoading = false;
         this.posts = res.data.data.results;
         this.total = res.data.data.total;
@@ -221,7 +230,7 @@ export default {
       }
     },
     isProblem() {
-      return !!this.$route.params.problemID;
+      return !!this.problemID;
     },
   },
 };
@@ -291,6 +300,10 @@ export default {
     flex: none;
     padding-left: 10px;
   }
+}
+
+.problem-slot {
+  max-width: 120px;
 }
 
 .content-container {
