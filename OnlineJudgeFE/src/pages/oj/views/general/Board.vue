@@ -142,8 +142,7 @@ export default {
       this.init();
     },
     problemID(to, from){
-      if((to && to.length==4) || to=='')
-        this.getPostList();
+      this.getPostList();
     }
   },
   methods: {
