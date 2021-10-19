@@ -10,12 +10,25 @@
       </el-input>
     </div>
     <div slot="extra">
-      <Button v-if="listVisible" type="info" icon="edit" @click.native="showEditPostDialog = true">
-        {{ $t('m.NewPost') }}
-      </Button>
-      <Button v-if="listVisible" type="info" @click="init" :loading="btnLoading">
-        {{ $t('m.Refresh') }}
-      </Button>
+      <ul v-if="listVisible" class="filter" >
+        <li>
+          <Input v-model="searchKeyword"
+            @on-enter="getPostList"
+            @on-click="getPostList"
+            placeholder="keyword"
+            icon="ios-search-strong"/>
+        </li>
+        <li>
+          <Button type="info" icon="edit" @click.native="showEditPostDialog = true">
+            {{ $t('m.NewPost') }}
+          </Button>
+        </li>
+        <li>
+          <Button type="info" @click="init" :loading="btnLoading">
+            {{ $t('m.Refresh') }}
+          </Button>
+        </li>
+      </ul>
       <template v-else>
       <Button type="ghost" icon="ios-undo" @click="goBack">{{ $t('m.Back') }}</Button>
       <Button v-if="post && user.username==post.created_by.username || isAdminRole"
@@ -47,19 +60,12 @@
             </div>
           </li>
         </ul>
-        <div class="flex-container">
-          <el-input class="flex-stretch"
-            placeholder="검색어를 입력하세요"
-            v-model="searchKeyword">
-          </el-input>
-        <Button icon="search" class="flex-item" @click.native="getPostList(1)">검색</Button>
-        <Pagination class="flex-item"
+        <Pagination
           key="page"
           :total="total"
           :page-size="limit"
           @on-change="getPostList">
         </Pagination>
-        </div>
       </template>
 
       <template v-if="!listVisible">
