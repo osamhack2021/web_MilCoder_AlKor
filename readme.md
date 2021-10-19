@@ -44,9 +44,9 @@ npm run dev # FRONT
 ```
 
 ## 팀 정보 (Team Information)
-- Lee Woncheol (wclee2265\[at\]naver.com), GitHub ID: wclee2265
-- Kim Minchul (k.minchul95\[at\]gmail.com), GitHub ID: nyan101
-- Kim Jehyung (arlawpgud2\[at\]gmail.com), GitHub ID: 0xrgb
+- Lee Woncheol (wclee2265\@naver.com), GitHub ID: wclee2265
+- Kim Minchul (k.minchul95\@gmail.com), GitHub ID: nyan101
+- Kim Jehyung (arlawpgud2\@gmail.com), GitHub ID: 0xrgb
 
 ## 저작권 및 사용권 정보 (Copyleft / End User License)
 MIT, GPL 3.0. 자세한 정보는 [license.md](license.md)에서 확인하세요.
