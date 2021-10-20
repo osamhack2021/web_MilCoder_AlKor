@@ -14,6 +14,11 @@
 ## 기능 설명
 
 ### 프로그래밍 문제 채점
+
+- 알고리즘 문제해결 기반 프로그래밍 학습을 지원합니다
+- C/C++, JAVA, Python 등 주요 프로그래밍 언어를 모두 지원합니다
+- 제출한 코드에 대한 정답 여부를 실시간으로 확인할 수 있습니다
+
 <div style="display:flex;flex-wrap:wrap;align-items:stretch;">
  <img src="https://user-images.githubusercontent.com/13505734/138110558-5e8317dc-86c0-407b-b677-b76a085b721f.png"  style="width:500px;height:300px;"/>
  <img src="https://user-images.githubusercontent.com/13505734/138110562-45d78295-afe4-4e10-8ab3-0989515a1472.png"  style="width:500px;height:300px;"/>
@@ -21,18 +26,18 @@
  <img src="https://user-images.githubusercontent.com/13505734/138110570-63f3b3b8-b40f-4955-8fbb-1c22a09f4b7c.png"  style="width:500px;height:300px;"/>
 </div>
 
-- 알고리즘 문제해결 기반 프로그래밍 학습을 지원합니다
-- C/C++, JAVA, Python 등 주요 프로그래밍 언어를 모두 지원합니다
-- 제출한 코드에 대한 정답 여부를 실시간으로 확인할 수 있습니다
 
 ### 실시간 웹 IDE 실습환경
+
+- 별도의 프로그램 설치 없이도 웹브라우저에서 실시간으로 코드 작성 및 실행이 가능합니다
+- 입력(`stdin`)에 대한 코드 실행결과(`stdout`, `stderr`)를 눈으로 바로 확인할 수 있어 손쉬운 디버깅이 가능합니다
+
 <div style="display:flex;flex-wrap:wrap;align-items:stretch;">
  <img src="https://user-images.githubusercontent.com/13505734/138109583-06d0af64-7c33-4ecf-94df-f8b15c0b092b.png"  style="width:500px;height:300px;"/>
  <img src="https://user-images.githubusercontent.com/13505734/138109608-a3493ec7-b063-4d75-9520-ad9e95726066.png"  style="width:500px;height:300px;"/>
  <img src="https://user-images.githubusercontent.com/13505734/138109621-30fd64b4-75d4-429a-84cd-7450a76c4eb6.png"  style="width:500px;height:300px;"/>
 </div>
-- 별도의 프로그램 설치 없이도 웹브라우저에서 실시간으로 코드 작성 및 실행이 가능합니다
-- 입력(`stdin`)에 대한 코드 실행결과(`stdout`, `stderr`)를 눈으로 바로 확인할 수 있어 손쉬운 디버깅이 가능합니다
+
 
 ### 사용자 커뮤니티
 
