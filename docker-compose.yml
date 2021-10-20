@@ -5,24 +5,28 @@ services:
     image: redis:4.0-alpine
     container_name: oj-redis
     restart: always
+    networks:
+      - storage
     volumes:
-      - ./data/redis:/data
+      - oj-redis-data:/data
 
   oj-postgres:
     image: postgres:10-alpine
     container_name: oj-postgres
     restart: always
+    networks:
+      - storage
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - oj-postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=onlinejudge
       - POSTGRES_USER=onlinejudge
       - POSTGRES_PASSWORD=onlinejudge
 
-  judge-server:
+  oj-judge-server:
     build: ./JudgeServer
     image: oj/judge-server
-    container_name: judge-server
+    container_name: oj-judge-server
     restart: always
     read_only: true
     cap_drop:
@@ -34,12 +38,14 @@ services:
       - FSETID
     tmpfs:
       - /tmp
+    networks:
+      - backend
     volumes:
       - ./data/backend/test_case:/test_case:ro
       - ./data/judge_server/log:/log
       - ./data/judge_server/run:/judger
     environment:
-      - SERVICE_URL=http://judge-server:8080
+      - SERVICE_URL=http://oj-judge-server:8080
       - BACKEND_URL=http://oj-backend:8000/api/judge_server_heartbeat/
       - TOKEN=e23db591aae7131eaff626d896a30c440435524acfc837224f5391709a15fa63
 
@@ -48,8 +54,10 @@ services:
     image: oj/frontend
     container_name: oj-frontend-dist
     restart: "no"
+    networks:
+      - frontend
     volumes:
-      - ./data/frontend/dist:/app/dist
+      - ./data/frontend:/app/dist
     environment:
       - NODE_ENV=production
 
@@ -63,6 +71,9 @@ services:
       - oj-postgres
       - oj-frontend
       - judge-server
+    networks:
+      - storage
+      - backend
     volumes:
       - ./data/backend:/data
       - ./data/frontend:/front
@@ -73,3 +84,63 @@ services:
       - JUDGE_SERVER_TOKEN=e23db591aae7131eaff626d896a30c440435524acfc837224f5391709a15fa63
     ports:
       - "0.0.0.0:80:8000"
+
+  judge0-server:
+    image: judge0/judge0:latest
+    container_name: judge0-server
+    networks:
+      - judge0
+    volumes:
+      - ./Judge0/judge0.conf:/judge0.conf:ro
+    ports:
+      - "2358:2358"
+    privileged: true
+    restart: always
+
+  judge0-worker:
+    image: judge0/judge0:latest
+    container_name: judge0-worker
+    command: [ "./scripts/workers" ]
+    networks:
+      - judge0
+    volumes:
+      - ./Judge0/judge0.conf:/judge0.conf:ro
+    privileged: true
+    restart: always
+
+  judge0-postgres:
+    image: postgres:13.0
+    container_name: judge0-postgres
+    env_file: ./Judge0/judge0.conf
+    networks:
+      - judge0
+    volumes:
+      - judge0-postgres-data:/var/lib/postgresql/data/
+    restart: always
+
+  judge0-redis:
+    image: redis:6.0
+    container_name: judge0-redis
+    command: [
+        "bash", "-c",
+        'docker-entrypoint.sh --appendonly yes --requirepass "$$REDIS_PASSWORD"'
+    ]
+    env_file: ./Judge0/judge0.conf
+    networks:
+      - judge0
+    volumes:
+      - judge0-redis-data:/data
+    restart: always
+
+
+networks:
+  storage:
+  backend:
+  frontend:
+  judge0:
+
+volumes:
+  oj-postgres-data:
+  oj-redis-data:
+  judge0-postgres-data:
+  judge0-redis-data:
