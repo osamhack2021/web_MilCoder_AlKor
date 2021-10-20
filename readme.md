@@ -58,8 +58,8 @@
 * 체계를 통해 내부 경연대회를 개최함으로써, 선의의 경쟁을 통해 학습의욕을 고취시킬 수 있습니다
 
 <div style="display:flex;flex-wrap:wrap;align-items:stretch;">
- <img src="https://user-images.githubusercontent.com/13505734/138113132-ced8ed42-e34e-4736-b60b-40a056403dbd.png"  style="width:500px;height:300px;"/>
- <img src="https://user-images.githubusercontent.com/13505734/138113137-1c1bb141-d85c-4485-a13c-10ea4335ba7c.png"  style="width:500px;height:300px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138113132-ced8ed42-e34e-4736-b60b-40a056403dbd.png"  style="width:500px;height:320px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138113137-1c1bb141-d85c-4485-a13c-10ea4335ba7c.png"  style="width:500px;height:320px;"/>
 </div>
 
 ## 컴퓨터 구성 / 필수 조건 안내
