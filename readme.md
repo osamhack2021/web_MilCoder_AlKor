@@ -33,9 +33,9 @@
 * 입력(`stdin`)에 대한 코드 실행결과(`stdout`, `stderr`)를 눈으로 바로 확인할 수 있어 손쉬운 디버깅이 가능합니다
 
 <div style="display:flex;flex-wrap:wrap;align-items:stretch;">
- <img src="https://user-images.githubusercontent.com/13505734/138109583-06d0af64-7c33-4ecf-94df-f8b15c0b092b.png"  style="width:500px;height:300px;"/>
- <img src="https://user-images.githubusercontent.com/13505734/138109608-a3493ec7-b063-4d75-9520-ad9e95726066.png"  style="width:500px;height:300px;"/>
- <img src="https://user-images.githubusercontent.com/13505734/138109621-30fd64b4-75d4-429a-84cd-7450a76c4eb6.png"  style="width:500px;height:300px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138109583-06d0af64-7c33-4ecf-94df-f8b15c0b092b.png"  style="width:500px;height:330px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138109608-a3493ec7-b063-4d75-9520-ad9e95726066.png"  style="width:500px;height:330px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138109621-30fd64b4-75d4-429a-84cd-7450a76c4eb6.png"  style="width:500px;height:330px;"/>
 </div>
 
 
@@ -46,9 +46,9 @@
 * 게시글별 댓글을 통해 사용자들 간 자유롭게 의견을 교류할 수 있습니다
 
 <div style="display:flex;flex-wrap:wrap;align-items:stretch;">
- <img src="https://user-images.githubusercontent.com/13505734/138112565-c62da3a8-6ced-49d3-86da-019b73b29714.png"  style="width:500px;height:300px;"/>
- <img src="https://user-images.githubusercontent.com/13505734/138112572-3125a190-0a21-4531-ae06-51caf4ef56b7.png"  style="width:500px;height:300px;"/>
- <img src="https://user-images.githubusercontent.com/13505734/138112573-035d4ce9-e45d-4c43-a1aa-fddeb907adfb.png"  style="width:500px;height:300px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138112565-c62da3a8-6ced-49d3-86da-019b73b29714.png"  style="width:500px;height:350px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138112572-3125a190-0a21-4531-ae06-51caf4ef56b7.png"  style="width:500px;height:350px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138112573-035d4ce9-e45d-4c43-a1aa-fddeb907adfb.png"  style="width:500px;height:350px;"/>
 </div>
 
 ### 순위표, 경연대회 개최
