@@ -9,7 +9,7 @@
 
 ![forget-curve-short](https://user-images.githubusercontent.com/13505734/138091478-dd85cd50-6148-4f6a-a074-e398b4c37bbf.png)
 
-이를 해결하기 위해 저희는 **국방망 내 문제풀이 기반 프로그래밍 학습체계를 구축해 국방 실무자들이 ①손쉽게, ②꾸준히 실력향상을 꾀할 수 있도록 하자**는 목표와 함께 <**Mil Coder**> 프로젝트를 제안합니다.
+이를 해결하기 위해 저희는 **국방망 내 문제풀이 기반 프로그래밍 학습체계를 구축해 국방 실무자들이 ①손쉽게, ②꾸준히 실력향상을 꾀할 수 있도록 하자**는 목표와 함께 <**Mil Coder**> 프로젝트를 제안합니다. QingdaoU 온라인저지 프레임워크를 기반으로, 국방망 환경에 적합하도록 실시간 웹 IDE 추가와 함께 커뮤니티 기능을 강화해 국방인력들의 소프트웨어 역량 향상에 기여하고자 합니다.
 
 ## 기능 설명
 
@@ -37,29 +37,33 @@
 * 체계를 통해 내부 경연대회를 개최함으로써, 선의의 경쟁을 통해 학습의욕을 고취시킬 수 있습니다
 
 
-## 컴퓨터 구성 / 필수 조건 안내 (Prerequisites)
+## 컴퓨터 구성 / 필수 조건 안내
 
 - ECMAScript 6 지원 브라우저 사용
 - 권장: Google Chrome 버전 77 이상
 
 
-## 기술 스택 (Technique Used)
+## 소스코드 구성 및 기술 스택 
 
-### OJ Server (back-end)
-- Django
-- redis
-- postgreSQL
+### Front-End
 
-### Front-end
-- 주 프레임워크: Vue.js
-- 디자인 UI: Element-UI / iView
-- 그 외 UI: Golden Layout, Monaco Editor 등
+* `OnlineJudgeFE` :  웹사이트 프론트엔드 구성
+  * `Vue.js` 기반
+  * `Golden Layout`, `Monaco Editor`를 이용한 IDE UI 구성
+  * `ElementUI`, `iView`를 이용한 UI 컴포넌트 디자인
 
-### Judge Server
-- Flask
+### Back-End
 
-### Judge Sandbox
-- seccomp
+* `OnlineJudge` : 웹사이트 백엔드 구성
+  * `Python Django` 기반
+  * `redis`, `postgreSQL`을 이용한 DB관리
+* `JudgeServer` : 문제에 대한 채점서버 API 구성
+  * `Python Flask` 기반
+  * `seccomp` 기반 샌드박스 구성
+* `IdeServer` : 웹 IDE 실습환경에 대한 API 구성
+  * `judge0` 기반
+
+
 
 ## 설치 안내 (Installation Process)
 ```shell
