@@ -243,9 +243,7 @@ export default {
       submitting: false,
       submissionId: '',
       submitted: false,
-      result: {
-        result: 9,
-      },
+      result: 9,
       problem: {
         title: '',
         description: '',
@@ -328,7 +326,7 @@ export default {
         });
         problem.languages = problem.languages.sort();
         this.problem = problem;
-        this.changePie(problem);
+        // this.changePie(problem);
 
         // try to load problem template
         const language = LANGUAGES_BY_ALIAS[this.problem.languages[0]];
@@ -441,7 +439,7 @@ export default {
       const checkStatus = () => {
         let id = this.submissionId;
         api.getSubmission(id).then(res => {
-          this.result = res.data.data;
+          this.result = res.data.data.result;
           if (Object.keys(res.data.data.statistic_info).length !== 0) {
             this.submitting = false;
             this.submitted = false;
@@ -465,7 +463,7 @@ export default {
       }
 
       this.submissionId = '';
-      this.result = { result: SUBMITTING };
+      this.result = SUBMITTING;
       this.submitting = true;
       const data = {
         problem_id: this.problem.id,
@@ -588,8 +586,8 @@ export default {
     },
     submissionStatus() {
       return {
-        text: JUDGE_STATUS[this.result.result]['name'],
-        color: JUDGE_STATUS[this.result.result]['color'],
+        text: JUDGE_STATUS[this.result]['name'],
+        color: JUDGE_STATUS[this.result]['color'],
       };
     },
     submissionRoute() {
@@ -632,6 +630,9 @@ export default {
       this.submission = assign({}, this.submission, {
         disabled: this.problemSubmitDisabled || this.submitted,
       });
+    },
+    result(status) {
+      this.submission = assign({}, this.submission, { status: JUDGE_STATUS[status] });
     },
   },
 };

@@ -68,7 +68,8 @@ import MonacoEditor from 'vue-monaco';
 import { DEFAULT_LANGUAGE, LANGUAGES_BY_ALIAS, LANGUAGES_BY_LANG, THEMES } from './constants';
 
 // TODO: 코드 테스트용 API(@oj/api) 생성 후 제거
-const JUDGE_URL = 'http://118.67.129.181:2358';
+// const JUDGE_URL = 'http://118.67.129.181:2358';
+const JUDGE_URL = `${location.protocol}//${location.hostname}:2358`;
 const JUDGE_CHECK_INTERVAL = 500;
 
 export default {
@@ -210,7 +211,9 @@ export default {
   },
   watch: {
     value(value) {
-      this.monacoEditor.getModel().setValue(value);
+      if (this.monacoEditor !== undefined) {
+        this.monacoEditor.getModel().setValue(value);
+      }
     },
     languages(languages) {
       this.supportLanguages = languages.map((code) => LANGUAGES_BY_ALIAS[code]).filter(Boolean);
