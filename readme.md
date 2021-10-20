@@ -7,14 +7,19 @@
 
 군 역시 각군 교육사령부를 통해 AI, SW 인력 양성교육을 수행하고 있지만, 소집교육이 종료된 후에는 국방망(내부망)이라는 환경적 제약으로 인해 쌓은 지식들에 대해 충분한 복습기회를 제공받지 못하고 쉽게 내용을 망각하게 됩니다.
 
-![forget-curve-short](https://user-images.githubusercontent.com/13505734/138091478-dd85cd50-6148-4f6a-a074-e398b4c37bbf.png)
+<img src="https://user-images.githubusercontent.com/13505734/138091478-dd85cd50-6148-4f6a-a074-e398b4c37bbf.png"  style="display:block;"/>
 
 이를 해결하기 위해 저희는 **국방망 내 문제풀이 기반 프로그래밍 학습체계를 구축해 국방 실무자들이 ①손쉽게, ②꾸준히 실력향상을 꾀할 수 있도록 하자**는 목표와 함께 <**Mil Coder**> 프로젝트를 제안합니다. QingdaoU 온라인저지 프레임워크를 기반으로, 국방망 환경에 적합하도록 실시간 웹 IDE 추가와 함께 커뮤니티 기능을 강화해 국방인력들의 소프트웨어 역량 향상에 기여하고자 합니다.
 
 ## 기능 설명
 
 ### 프로그래밍 문제 채점
-
+<div style="display:flex;flex-wrap:wrap;align-items:center;">
+ <img src="https://user-images.githubusercontent.com/13505734/138108549-f009f604-0e84-4edb-a8af-8e8232d119a1.png"  style="width:400px"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138108588-884eab18-ce33-4069-82bb-c6334d83cc02.png"  style="width:400px"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138108594-4084d69c-bd46-43e2-8872-d1fa7dddffca.png"  style="width:400px"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138108602-973b9b91-2083-4c4a-8e6d-da699c6e0faf.png"  style="width:400px"/>
+</div>
 - 알고리즘 문제해결 기반 프로그래밍 학습을 지원합니다
 - C/C++, JAVA, Python 등 주요 프로그래밍 언어를 모두 지원합니다
 - 제출한 코드에 대한 정답 여부를 실시간으로 확인할 수 있습니다
