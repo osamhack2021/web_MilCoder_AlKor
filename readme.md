@@ -14,11 +14,11 @@
 ## 기능 설명
 
 ### 프로그래밍 문제 채점
-<div style="display:flex;flex-wrap:wrap;align-items:center;">
- <img src="https://user-images.githubusercontent.com/13505734/138108549-f009f604-0e84-4edb-a8af-8e8232d119a1.png"  style="width:400px"/>
- <img src="https://user-images.githubusercontent.com/13505734/138108588-884eab18-ce33-4069-82bb-c6334d83cc02.png"  style="width:400px"/>
- <img src="https://user-images.githubusercontent.com/13505734/138108594-4084d69c-bd46-43e2-8872-d1fa7dddffca.png"  style="width:400px"/>
- <img src="https://user-images.githubusercontent.com/13505734/138108602-973b9b91-2083-4c4a-8e6d-da699c6e0faf.png"  style="width:400px"/>
+<div style="display:flex;flex-wrap:wrap;align-items:stretch;">
+ <img src="https://user-images.githubusercontent.com/13505734/138108549-f009f604-0e84-4edb-a8af-8e8232d119a1.png"  style="width:500px"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138108588-884eab18-ce33-4069-82bb-c6334d83cc02.png"  style="width:500px"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138108594-4084d69c-bd46-43e2-8872-d1fa7dddffca.png"  style="width:500px"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138108602-973b9b91-2083-4c4a-8e6d-da699c6e0faf.png"  style="width:500px"/>
 </div>
 - 알고리즘 문제해결 기반 프로그래밍 학습을 지원합니다
 - C/C++, JAVA, Python 등 주요 프로그래밍 언어를 모두 지원합니다
