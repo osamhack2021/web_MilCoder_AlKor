@@ -19,7 +19,7 @@ mccabe==0.6.1
 otpauth==1.0.1
 Pillow==8.3.2
 prometheus-client==0.2.0
-psycopg2-binary==2.9.1
+psycopg2-binary==2.8.6  # higher version of psycopg2-binary issues an error when USE_TZ=TUE
 pycodestyle==2.5.0
 pyflakes==2.1.1
 python-dateutil==2.8.0
