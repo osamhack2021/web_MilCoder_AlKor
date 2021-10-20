@@ -70,7 +70,7 @@ services:
       - oj-redis
       - oj-postgres
       - oj-frontend
-      - judge-server
+      - oj-judge-server
     networks:
       - storage
       - backend
