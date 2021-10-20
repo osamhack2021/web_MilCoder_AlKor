@@ -96,8 +96,6 @@
 scripts/dev_setup.sh
 ```
 
-필요한 패키지와 추후 추가될 설치 과정은 위 스크립트 수정 또는 새로 추가헤서 관리 
-
 ## 프로젝트 사용법 (Getting Started)
 ```shell
 python3 manage.py runserver # API
