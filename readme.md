@@ -15,10 +15,10 @@
 
 ### 프로그래밍 문제 채점
 <div style="display:flex;flex-wrap:wrap;align-items:stretch;">
- <img src="https://user-images.githubusercontent.com/13505734/138108549-f009f604-0e84-4edb-a8af-8e8232d119a1.png"  style="width:500px"/>
- <img src="https://user-images.githubusercontent.com/13505734/138108588-884eab18-ce33-4069-82bb-c6334d83cc02.png"  style="width:500px"/>
- <img src="https://user-images.githubusercontent.com/13505734/138108594-4084d69c-bd46-43e2-8872-d1fa7dddffca.png"  style="width:500px"/>
- <img src="https://user-images.githubusercontent.com/13505734/138108602-973b9b91-2083-4c4a-8e6d-da699c6e0faf.png"  style="width:500px"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138108549-f009f604-0e84-4edb-a8af-8e8232d119a1.png"  style="width:500px;height:300px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138108588-884eab18-ce33-4069-82bb-c6334d83cc02.png"  style="width:500px;height:300px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138108594-4084d69c-bd46-43e2-8872-d1fa7dddffca.png"  style="width:500px;height:300px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138108602-973b9b91-2083-4c4a-8e6d-da699c6e0faf.png"  style="width:500px;height:300px;"/>
 </div>
 
 - 알고리즘 문제해결 기반 프로그래밍 학습을 지원합니다
@@ -27,9 +27,9 @@
 
 ### 실시간 웹 IDE 실습환경
 <div style="display:flex;flex-wrap:wrap;align-items:stretch;">
- <img src="https://user-images.githubusercontent.com/13505734/138109583-06d0af64-7c33-4ecf-94df-f8b15c0b092b.png"  style="width:500px"/>
- <img src="https://user-images.githubusercontent.com/13505734/138109608-a3493ec7-b063-4d75-9520-ad9e95726066.png"  style="width:500px"/>
- <img src="https://user-images.githubusercontent.com/13505734/138109621-30fd64b4-75d4-429a-84cd-7450a76c4eb6.png"  style="width:500px"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138109583-06d0af64-7c33-4ecf-94df-f8b15c0b092b.png"  style="width:500px;height:300px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138109608-a3493ec7-b063-4d75-9520-ad9e95726066.png"  style="width:500px;height:300px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138109621-30fd64b4-75d4-429a-84cd-7450a76c4eb6.png"  style="width:500px;height:300px;"/>
 </div>
 - 별도의 프로그램 설치 없이도 웹브라우저에서 실시간으로 코드 작성 및 실행이 가능합니다
 - 입력(`stdin`)에 대한 코드 실행결과(`stdout`, `stderr`)를 눈으로 바로 확인할 수 있어 손쉬운 디버깅이 가능합니다
