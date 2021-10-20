@@ -15,9 +15,9 @@
 
 ### 프로그래밍 문제 채점
 
-- 알고리즘 문제해결 기반 프로그래밍 학습을 지원합니다
-- C/C++, JAVA, Python 등 주요 프로그래밍 언어를 모두 지원합니다
-- 제출한 코드에 대한 정답 여부를 실시간으로 확인할 수 있습니다
+* 알고리즘 문제해결 기반 프로그래밍 학습을 지원합니다
+* C/C++, JAVA, Python 등 주요 프로그래밍 언어를 모두 지원합니다
+* 제출한 코드에 대한 정답 여부를 실시간으로 확인할 수 있습니다
 
 <div style="display:flex;flex-wrap:wrap;align-items:stretch;">
  <img src="https://user-images.githubusercontent.com/13505734/138110558-5e8317dc-86c0-407b-b677-b76a085b721f.png"  style="width:500px;height:300px;"/>
@@ -29,8 +29,8 @@
 
 ### 실시간 웹 IDE 실습환경
 
-- 별도의 프로그램 설치 없이도 웹브라우저에서 실시간으로 코드 작성 및 실행이 가능합니다
-- 입력(`stdin`)에 대한 코드 실행결과(`stdout`, `stderr`)를 눈으로 바로 확인할 수 있어 손쉬운 디버깅이 가능합니다
+* 별도의 프로그램 설치 없이도 웹브라우저에서 실시간으로 코드 작성 및 실행이 가능합니다
+* 입력(`stdin`)에 대한 코드 실행결과(`stdout`, `stderr`)를 눈으로 바로 확인할 수 있어 손쉬운 디버깅이 가능합니다
 
 <div style="display:flex;flex-wrap:wrap;align-items:stretch;">
  <img src="https://user-images.githubusercontent.com/13505734/138109583-06d0af64-7c33-4ecf-94df-f8b15c0b092b.png"  style="width:500px;height:300px;"/>
@@ -44,6 +44,12 @@
 * KaTeX와 마크다운 문법을 통해 복잡한 수식, 표, 이미지가 포함된 게시글을 작성할 수 있습니다
 * 키워드별, 문제 ID별 검색을 통해 특정 주제에 대한 질문 작성 및 필터링이 가능합니다
 * 게시글별 댓글을 통해 사용자들 간 자유롭게 의견을 교류할 수 있습니다
+
+<div style="display:flex;flex-wrap:wrap;align-items:stretch;">
+ <img src="https://user-images.githubusercontent.com/13505734/138112565-c62da3a8-6ced-49d3-86da-019b73b29714.png"  style="width:500px;height:300px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138112572-3125a190-0a21-4531-ae06-51caf4ef56b7.png"  style="width:500px;height:300px;"/>
+ <img src="https://user-images.githubusercontent.com/13505734/138112573-035d4ce9-e45d-4c43-a1aa-fddeb907adfb.png"  style="width:500px;height:300px;"/>
+</div>
 
 ### 순위표, 경연대회 개최
 
