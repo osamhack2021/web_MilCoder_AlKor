@@ -48,20 +48,20 @@
 ### Front-End
 
 * `OnlineJudgeFE` :  웹사이트 프론트엔드 구성
-  * `Vue.js` 기반
-  * `Golden Layout`, `Monaco Editor`를 이용한 IDE UI 구성
-  * `ElementUI`, `iView`를 이용한 UI 컴포넌트 디자인
+  * Vue.js 기반
+  * Golden Layout, Monaco Editor를 이용한 IDE UI 구성
+  * ElementUI, iView를 이용한 UI 컴포넌트 디자인
 
 ### Back-End
 
 * `OnlineJudge` : 웹사이트 백엔드 구성
-  * `Python Django` 기반
-  * `redis`, `postgreSQL`을 이용한 DB관리
+  * Python Django 기반
+  * redis, postgreSQL을 이용한 DB관리
 * `JudgeServer` : 문제에 대한 채점서버 API 구성
-  * `Python Flask` 기반
-  * `seccomp` 기반 샌드박스 구성
+  * Python Flask 기반
+  * seccomp 기반 샌드박스 구성
 * `IdeServer` : 웹 IDE 실습환경에 대한 API 구성
-  * `judge0` 기반
+  * judge0 기반
 
 
 
