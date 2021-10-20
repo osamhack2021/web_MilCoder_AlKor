@@ -69,6 +69,7 @@
 
 
 ## 소스코드 구성 및 기술 스택 
+<img src="https://user-images.githubusercontent.com/13505734/138114245-beb49745-a80f-4bba-aac3-b85b6094f67b.png"  style="width:600px;"/>
 
 ### Front-End
 
