@@ -1,6 +1,5 @@
 let date = require('moment')().format('YYYYMMDD')
-let commit = require('child_process').execSync('git rev-parse HEAD').toString().slice(0, 5)
-let version = `"${date}-${commit}"`
+let version = `"${date}"`
 
 console.log(`current version is ${version}`)
 
