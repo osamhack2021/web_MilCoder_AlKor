@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Multipane class="vertical-resizer" layout="vertical" @paneResize="verticalPaneResize">
+    <Multipane class="vertical-resizer" layout="vertical" @paneResize="handlePaneResize">
       <div
         class="pane pane-left"
         :class="{ full: toolbar.variant === 'v-right', hide: toolbar.variant === 'v-left' }"
@@ -77,71 +77,86 @@
         <Multipane class="horizontal-resizer" layout="horizontal" ref="horizontalMultipane">
           <div class="pane pane-top" ref="paneTop">
             <Card :padding="10" id="workspace-code" dis-hover>
-              <Row type="flex" justify="space-between" style="height: 100%;">
-                <Col :span="24">
-                  <CodeEditor
-                    ref="editor"
-                    :value.sync="workspace.code"
-                    :stdin="workspace.stdin"
-                    :language="workspace.language"
-                    :languages="problem.languages"
-                    :submission="submission"
-                    :onRunStart="onRunStart"
-                    :onRunEnd="onRunEnd"
-                    :onLanguageChange="onLanguageChange"
-                    :onThemeChange="onThemeChange"
-                  />
-                </Col>
-                <Col :span="10">
-                  <div class="status" v-if="statusVisible">
-                    <template v-if="!this.contestID || (this.contestID && OIContestRealTimePermission)">
-                      <span>{{ $t('m.Status') }}</span>
-                      <Tag type="dot" :color="submissionStatus.color" @click.native="handleRoute('/status/'+submissionId)">
-                        {{ $t('m.' + submissionStatus.text.replace(/ /g, '_')) }}
-                      </Tag>
-                    </template>
-                    <template v-else-if="this.contestID && !OIContestRealTimePermission">
-                      <Alert type="success" show-icon>{{ $t('m.Submitted_successfully') }}</Alert>
-                    </template>
+              <div class="header">
+                <div class="tools">
+                  <div class="languages">
+                    <span>{{ $t('m.Language') }}:</span>
+                    <Select :value="workspace.language" @on-change="handleLanguageChange">
+                      <Option v-for="item in workspace.languages" :key="item.id" :value="item.lang">
+                        {{ item.name }}
+                      </Option>
+                    </Select>
                   </div>
-                  <div v-else-if="problem.my_status === 0">
+                  <Tooltip :content="this.$i18n.t('m.Editor_run')" class="editor-menu" placement="bottom">
+                    <Button type="primary" icon="play" @click="runCode"></Button>
+                  </Tooltip>
+                  <Tooltip :content="this.$i18n.t('m.Upload_file')" class="editor-menu" placement="bottom">
+                    <Button type="primary" icon="upload" @click="handleUploadFile"/>
+                  </Tooltip>
+                  <Tooltip :content="this.$i18n.t('m.Reset_to_default_code_definition')" class="editor-menu" placement="bottom">
+                    <Button type="warning" icon="refresh" @click="handleResetClick"/>
+                  </Tooltip>
+                  <Tooltip :content="this.$i18n.t('m.Submit')" class="editor-menu" placement="bottom">
+                    <Button
+                      :loading="submission.state === SUBMISSION_STATES.SUBMITTING"
+                      :disabled="submission.disabled"
+                      @click="submitCode"
+                      type="error" icon="paper-airplane">
+                      <span v-if="submission.state === SUBMISSION_STATES.SUBMITTING">
+                        {{ $t('m.Submitting') }}
+                      </span>
+                      <span v-else>{{ $t('m.Submit') }}</span>
+                    </Button>
+                  </Tooltip>
+                  <input type="file" id="file-uploader" style="display: none" @change="handleUploadFileDone">
+                </div>
+                <div class="status" v-if="submission.sentOnce && submission.id">
+                  <template v-if="!this.contestID || (this.contestID && OIContestRealTimePermission)">
+                    <span>{{ $t('m.Status') }}</span>
+                    <Tag type="dot" :color="submissionStatus.color" @click.native="handleRoute('/status/' + submission.id)">
+                      {{ $t('m.' + submissionStatus.text.replace(/ /g, '_')) }}
+                    </Tag>
+                  </template>
+                  <template v-else-if="this.contestID && !OIContestRealTimePermission">
+                    <Alert type="success" show-icon>{{ $t('m.Submitted_successfully') }}</Alert>
+                  </template>
+                  <template v-else-if="problem.my_status === SUBMISSION_STATES.ACCEPTED">
                     <Alert type="success" show-icon>{{
                         $t('m.You_have_solved_the_problem')
                       }}
                     </Alert>
-                  </div>
-                  <div v-else-if="this.contestID && !OIContestRealTimePermission && submissionExists">
+                  </template>
+                  <template v-else-if="this.contestID && !OIContestRealTimePermission && submissionExists">
                     <Alert type="success" show-icon>{{
                         $t('m.You_have_submitted_a_solution')
                       }}
                     </Alert>
-                  </div>
-                  <div v-if="contestEnded">
-                    <Alert type="warning" show-icon>{{ $t('m.Contest_has_ended') }}</Alert>
-                  </div>
-                </Col>
-                <Col :span="12">
-                  <template v-if="captchaRequired">
-                    <div class="captcha-container">
-                      <Tooltip v-if="captchaRequired" content="Click to refresh" placement="top">
-                        <img :src="captchaSrc" @click="getCaptchaSrc"/>
-                      </Tooltip>
-                      <Input v-model="captchaCode" class="captcha-code"/>
-                    </div>
                   </template>
-                </Col>
-              </Row>
+                  <template v-if="contestEnded">
+                    <Alert type="warning" show-icon>{{ $t('m.Contest_has_ended') }}</Alert>
+                  </template>
+                </div>
+              </div>
+              <div>
+                <CodeEditor
+                  ref="editor"
+                  :value.sync="workspace.code"
+                  :language="workspace.language"
+                  :languages="problem.languages"
+                  :submission="submission"
+                  :onLanguageChange="handleLanguageChange"
+                />
+              </div>
             </Card>
           </div>
           <MultipaneResizer/>
           <div class="pane pane-bottom" ref="paneBottom">
             <Card :padding="10" id="workspace-io">
-              <Tabs :value="workspace.currentTab" :animated="false" @on-click="handleIoTabClick">
+              <Tabs :value="workspace.tab" :animated="false" @on-click="handleWorkspaceTabClick">
                 <TabPane label="INPUT" name="stdin">
                   <CodeEditor
-                    :value.sync="workspace.stdin"
+                    :value.sync="workspace.io.stdin"
                     :options="workspace.options"
-                    :theme="workspace.theme"
                     :onStdinChange="onStdinChange"
                     language="plaintext"
                     ref="stdinEditor"
@@ -149,27 +164,24 @@
                 </TabPane>
                 <TabPane label="OUTPUT" name="stdout">
                   <CodeEditor
-                    :value.sync="workspace.stdout"
+                    :value.sync="workspace.io.stdout"
                     :options="Object.assign({}, workspace.options, { readOnly: true })"
-                    :theme="workspace.theme"
                     language="plaintext"
                     ref="stdoutEditor"
                   />
                 </TabPane>
                 <TabPane label="ERROR" name="stderr">
                   <CodeEditor
-                    :value.sync="workspace.stderr"
+                    :value.sync="workspace.io.stderr"
                     :options="Object.assign({}, workspace.options, { readOnly: true })"
-                    :theme="workspace.theme"
                     language="plaintext"
                     ref="stderrEditor"
                   />
                 </TabPane>
                 <TabPane label="COMPILATION" name="compile">
                   <CodeEditor
-                    :value.sync="workspace.compile"
+                    :value.sync="workspace.result.compile"
                     :options="Object.assign({}, workspace.options, { readOnly: true })"
-                    :theme="workspace.theme"
                     language="plaintext"
                     ref="compileEditor"
                   />
@@ -198,13 +210,18 @@
 </template>
 
 <script>
-import { buildProblemCodeKey, CONTEST_STATUS, JUDGE_STATUS, SUBMITTING } from '@/utils/constants';
+import {
+  ACCEPTED,
+  buildProblemCodeKey,
+  CONTEST_STATUS,
+  JUDGE_STATUS,
+  SUBMITTING,
+} from '@/utils/constants';
 import storage from '@/utils/storage';
 import api from '@oj/api';
 import CodeEditor from '@oj/components/CodeEditor';
 import {
   DEFAULT_LANGUAGE,
-  DEFAULT_THEME,
   LANGUAGE_TO_ALIAS,
   LANGUAGES_BY_ALIAS,
   LANGUAGES_BY_LANG,
@@ -212,11 +229,13 @@ import {
 import { FormMixin } from '@oj/components/mixins';
 import { Multipane, MultipaneResizer } from '@oj/components/Multipane';
 import PostEditor from '@oj/components/PostEditor';
-import { assign } from 'lodash';
+import axios from 'axios';
+import { assign, isEmpty } from 'lodash';
 import { mapActions, mapGetters } from 'vuex';
 import { types } from '../../../../store';
-import { largePie, pie } from './chartData';
 
+const JUDGE_URL = `${location.protocol}//${location.hostname}:2358`;
+const JUDGE_CHECK_INTERVAL = 500;
 const filtedStatus = ['-1', '-2', '0', '1', '2', '3', '4', '8'];
 
 export default {
@@ -231,19 +250,9 @@ export default {
   data() {
     return {
       showEditPostDialog: false,
-      paneSize: 0,
-      statusVisible: false,
-      captchaRequired: false,
-      graphVisible: false,
       submissionExists: false,
-      captchaCode: '',
-      captchaSrc: '',
       contestID: '',
       problemID: '',
-      submitting: false,
-      submissionId: '',
-      submitted: false,
-      result: 9,
       problem: {
         title: '',
         description: '',
@@ -251,25 +260,32 @@ export default {
         my_status: '',
         template: {},
         languages: [],
-        created_by: {
-          username: '',
-        },
+        created_by: { username: '' },
         tags: [],
         io_mode: { 'io_mode': 'Standard IO' },
       },
+      SUBMISSION_STATES: { ACCEPTED, SUBMITTING },
       submission: {
+        id: undefined,
+        state: undefined,
         handler: this.submitCode,
-        status: '',
+        sentOnce: false,
         disabled: false,
       },
       workspace: {
         code: LANGUAGES_BY_LANG[DEFAULT_LANGUAGE].template,
         language: DEFAULT_LANGUAGE,
-        theme: DEFAULT_THEME,
-        stdin: '',
-        stdout: '',
-        stderr: '',
-        compile: '',
+        languages: [],
+        io: {
+          stdin: '',
+          stdout: '',
+          stderr: '',
+        },
+        result: {
+          compile: '',
+          memory: '',
+          time: '',
+        },
         options: {
           automaticLayout: true,
           scrollBeyondLastLine: true,
@@ -277,29 +293,21 @@ export default {
             enabled: false,
           },
         },
-        currentTab: 'stdin',
+        tab: 'stdin',
       },
       toolbar: {
         label: '',
         variant: '', // v-left, v-right, h-top, h-bottom
       },
-      pie: pie,
-      largePie: largePie,
-
-      largePieInitOpts: {
-        width: '500',
-        height: '480',
-      },
     };
   },
   beforeRouteEnter(to, from, next) {
-    let problemCode = storage.get(buildProblemCodeKey(to.params.problemID, to.params.contestID));
+    const problemCode = storage.get(buildProblemCodeKey(to.params.problemID, to.params.contestID));
     if (problemCode) {
       next(vm => {
         vm.workspace = assign({}, vm.workspace, {
           code: problemCode.code,
           language: problemCode.language,
-          theme: problemCode.theme,
         });
       });
     } else {
@@ -322,62 +330,170 @@ export default {
         let problem = res.data.data;
         this.changeDomTitle({ title: problem.title });
         api.submissionExists(problem.id).then(res => {
-          this.submissionExists = res.data.data;
+          this.submission = assign({}, this.submission, {
+            sentOnce: res.data.data,
+            state: problem['my_status'],
+          });
         });
         problem.languages = problem.languages.sort();
         this.problem = problem;
         // this.changePie(problem);
 
-        // try to load problem template
-        const language = LANGUAGES_BY_ALIAS[this.problem.languages[0]];
+        const language = this.workspace.language || LANGUAGES_BY_ALIAS[this.problem.languages[0]];
+        const languages = (
+          this.workspace.languages.length
+            ? this.workspace.languages
+            : problem.languages.map((alias) => LANGUAGES_BY_ALIAS[alias]).filter(Boolean)
+        );
+        const code = this.mainEditor.get() || language.template;
         this.workspace = assign({}, this.workspace, {
-          code: language.template,
-          language: language.lang,
-          theme: DEFAULT_THEME,
-          stdin: '',
+          code,
+          language,
+          languages,
         });
       }, () => {
         this.$Loading.error();
       });
     },
-    changePie(problemData) {
-      for (let k in problemData.statistic_info) {
-        if (filtedStatus.indexOf(k) === -1) {
-          delete problemData.statistic_info[k];
-        }
-      }
-      let acNum = problemData.accepted_number;
-      let data = [
-        { name: 'WA', value: problemData.submission_number - acNum },
-        { name: 'AC', value: acNum },
-      ];
-      this.pie.series[0].data = data;
-      let data2 = JSON.parse(JSON.stringify(data));
-      data2[1].selected = true;
-      this.largePie.series[1].data = data2;
-
-      let legend = Object.keys(problemData.statistic_info).map(ele => JUDGE_STATUS[ele].short);
-      if (legend.length === 0) {
-        legend.push('AC', 'WA');
-      }
-      this.largePie.legend.data = legend;
-
-      let acCount = problemData.statistic_info['0'];
-      delete problemData.statistic_info['0'];
-
-      let largePieData = [];
-      Object.keys(problemData.statistic_info).forEach(ele => {
-        largePieData.push({
-          name: JUDGE_STATUS[ele].short,
-          value: problemData.statistic_info[ele],
-        });
-      });
-      largePieData.push({ name: 'AC', value: acCount });
-      this.largePie.series[0].data = largePieData;
-    },
     handleRoute(route) {
       this.$router.push(route);
     },
+    checkSubmissionStatus() {
+      const tick = setInterval(() => {
+        api.getSubmission(this.submission.id).then((res) => {
+          const { data } = res.data;
+          this.submission = assign({}, this.submission, {
+            state: data.result,
+          });
+          if (!isEmpty(data['statistic_info'])) {
+            clearInterval(tick);
+            this.init();
+          }
+        });
+      }, 2000);
+    },
+    runCode() {
+      const self = this;
+      const code = this.mainEditor.get();
+      const stdin = this.stdinEditor.get();
+      const data = {
+        language_id: LANGUAGES_BY_LANG[this.workspace.language].id,
+        source_code: btoa(code),
+        stdin: btoa(stdin),
+        compiler_options: '',
+        command_line_arguments: '',
+        redirect_stderr_to_stdout: false,
+      };
+      const submit = () => axios({
+        url: `${JUDGE_URL}/submissions?base64_encoded=true`,
+        method: 'POST',
+        data: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: false,
+      });
+      const check = (token) => axios({
+        url: `${JUDGE_URL}/submissions/${token}?base64_encoded=true`,
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: false,
+      });
+      this.onRunStart();
+      submit(data).then((res) => {
+        const token = res.data.token;
+        const t = setInterval(() => {
+          check(token).then((res) => {
+            const data = res.data;
+            if (data.status.id <= 2) {
+              return;
+            }
+            const stdout = [
+              data.stdout ? atob(data.stdout) : '',
+              `Finished in ${data.time}s with ${data.memory} bytes memory usage.`,
+            ].join('\n');
+            self.workspace = Object.assign({}, self.workspace, {
+              io: {
+                stdin,
+                stdout,
+                stderr: data.stderr ? atob(data.stderr) : null,
+              },
+              result: {
+                time: data.time,
+                memory: data.memory,
+                compile: data['compile_output']
+                  ? decodeURIComponent(
+                    atob(data['compile_output'])
+                      .split('')
+                      .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                      .join(''))
+                  : null,
+              },
+            });
+            self.$nextTick(() => {
+              self.onRunEnd();
+            });
+            clearInterval(t);
+          });
+        }, JUDGE_CHECK_INTERVAL);
+      });
+    },
+    submitCode() {
+      const code = this.mainEditor.get();
+      if (code.trim() === '') {
+        this.$error(this.$i18n.t('m.Code_can_not_be_empty'));
+        return;
+      }
+
+      const data = {
+        code,
+        language: LANGUAGE_TO_ALIAS[this.workspace.language],
+        problem_id: this.problem.id,
+        contest_id: this.contestID,
+      };
+      const submissionCheck = ((
+        this.contestRuleType === 'OI' &&
+        !this.OIContestRealTimePermission &&
+        this.submission.sentOnce)
+        ? new Promise((resolve, reject) => {
+          this.$Modal.confirm({
+            title: '',
+            content: `<h3>${this.$i18n.t('m.You_have_submission_in_this_problem_sure_to_cover_it')}</h3>`,
+            onOk: () => resolve(),
+            onCancel: () => {
+              this.submission = assign({}, this.submission, { state: undefined });
+              reject();
+            },
+          });
+        })
+        : Promise.resolve());
+
+      submissionCheck
+        .then(() => api.submitCode(data))
+        .then((res) => {
+          const { data } = res.data;
+          this.submission = assign({}, this.submission, {
+            id: data['submission_id'],
+            state: SUBMITTING,
+            sentOnce: true,
+          });
+          this.$Modal.success({
+            title: this.$i18n.t('m.Success'),
+            content: this.$i18n.t('m.Submit_code_successfully'),
+          });
+          setTimeout(this.checkSubmissionStatus, 1000);
+        })
+        .catch(() => {
+          this.$Modal.error({
+            title: this.$i18n.t('m.Cancel'),
+            content: this.$i18n.t('m.Submission_canceled'),
+          });
+        });
+
+    },
+    layoutEditors() {
+      this.mainEditor.layout();
+      this.$refs[`${this.workspace.tab}Editor`].layout();
+    },
+    // Handle DOM events
     handleToolbarClick(event) {
       const container = event.currentTarget;
       const pane = container.parentElement.firstElementChild;
@@ -403,7 +519,7 @@ export default {
         this.layoutEditors();
       });
     },
-    verticalPaneResize(pane, resizer, size) {
+    handlePaneResize(pane, resizer, size) {
       const oppositePane = resizer.nextElementSibling;
       const hideLeft = pane.offsetWidth < 200;
       const hideRight = oppositePane.offsetWidth < 200;
@@ -421,137 +537,72 @@ export default {
           variant: 'v-right',
         });
       }
-      this.$nextTick(() => {
-        this.layoutEditors();
+    },
+    // Handle change in properties
+    handleLanguageChange(newLang) {
+      this.workspace = assign({}, this.workspace, {
+        language: newLang,
+        code: LANGUAGES_BY_LANG[newLang].template,
       });
     },
-    handleIoTabClick(name) {
+    handleUploadFile() {
+      document.getElementById('file-uploader').click();
+    },
+    handleUploadFileDone() {
+      const self = this;
+      const fileReader = new window.FileReader();
+      const fileUploadEl = document.getElementById('file-uploader');
+      const f = fileUploadEl.files[0];
+      fileReader.onload = (e) => {
+        self.mainEditor.set(e.target.result);
+        fileUploadEl.value = '';
+      };
+      fileReader.readAsText(f, 'UTF-8');
+    },
+    handleResetClick() {
+      const template = LANGUAGES_BY_LANG[this.language].template;
+      this.value = template;
+      this.mainEditor.set(template);
+    },
+    handleWorkspaceTabClick(name) {
       const editor = this.$refs[`${name}Editor`];
-      this.workspace.currentTab = name;
+      this.workspace.tab = name;
       this.$nextTick(() => {
-        editor.monacoEditor.layout();
+        editor.layout();
       });
     },
-    checkSubmissionStatus() {
-      if (this.refreshStatus) {
-        clearTimeout(this.refreshStatus);
-      }
-      const checkStatus = () => {
-        let id = this.submissionId;
-        api.getSubmission(id).then(res => {
-          this.result = res.data.data.result;
-          if (Object.keys(res.data.data.statistic_info).length !== 0) {
-            this.submitting = false;
-            this.submitted = false;
-            clearTimeout(this.refreshStatus);
-            this.init();
-          } else {
-            this.refreshStatus = setTimeout(checkStatus, 2000);
-          }
-        }, res => {
-          this.submitting = false;
-          clearTimeout(this.refreshStatus);
-        });
-      };
-      this.refreshStatus = setTimeout(checkStatus, 2000);
-    },
-    submitCode() {
-      const code = this.editor.getModel().getValue();
-      if (code.trim() === '') {
-        this.$error(this.$i18n.t('m.Code_can_not_be_empty'));
-        return;
-      }
-
-      this.submissionId = '';
-      this.result = SUBMITTING;
-      this.submitting = true;
-      const data = {
-        problem_id: this.problem.id,
-        language: LANGUAGE_TO_ALIAS[this.workspace.language],
-        code: code,
-        contest_id: this.contestID,
-      };
-      if (this.captchaRequired) {
-        data.captcha = this.captchaCode;
-      }
-      const submitFunc = (data, detailsVisible) => {
-        this.statusVisible = true;
-        api.submitCode(data).then(res => {
-          this.submissionId = res.data.data && res.data.data.submission_id;
-          // 定时检查状态
-          this.submitting = false;
-          this.submissionExists = true;
-          if (!detailsVisible) {
-            this.$Modal.success({
-              title: this.$i18n.t('m.Success'),
-              content: this.$i18n.t('m.Submit_code_successfully'),
-            });
-            return;
-          }
-          this.submitted = true;
-          this.checkSubmissionStatus();
-        }, res => {
-          this.getCaptchaSrc();
-          if (res.data.data.startsWith('Captcha is required')) {
-            this.captchaRequired = true;
-          }
-          this.submitting = false;
-          this.statusVisible = false;
-        });
-      };
-
-      if (this.contestRuleType === 'OI' && !this.OIContestRealTimePermission) {
-        if (this.submissionExists) {
-          this.$Modal.confirm({
-            title: '',
-            content: '<h3>' + this.$i18n.t('m.You_have_submission_in_this_problem_sure_to_cover_it') + '<h3>',
-            onOk: () => {
-              setTimeout(() => {
-                submitFunc(data, false);
-              }, 1000);
-            },
-            onCancel: () => {
-              this.submitting = false;
-            },
-          });
-        } else {
-          submitFunc(data, false);
-        }
-      } else {
-        submitFunc(data, true);
-      }
-    },
-    layoutEditors() {
-      this.$refs.editor.monacoEditor.layout();
-      this.$refs[`${this.workspace.currentTab}Editor`].monacoEditor.layout();
-    },
+    // Handle workspace events
     onRunStart() {
-      this.workspace = assign({}, this.workspace, { stdout: 'loading...', currentTab: 'stdout' });
+      this.workspace = assign({}, this.workspace, {
+        io: {
+          ...this.workspace,
+          stdout: 'loading...',
+          stderr: '',
+        },
+        result: {
+          compile: '',
+          memory: '',
+          time: '',
+        },
+        tab: 'stdout',
+      });
       this.$nextTick(() => {
-        this.$refs.stdoutEditor.monacoEditor.layout();
+        this.$refs.stdoutEditor.layout();
       });
     },
-    onRunEnd(result) {
+    onRunEnd() {
+      let tab = this.workspace.tab;
+      const { io, result } = this.workspace;
       if (result.compile !== null) {
-        this.workspace = assign({}, this.workspace, {
-          compile: result.compile,
-          currentTab: 'compile',
-        });
-      } else if (result.stderr !== null) {
-        this.workspace = assign({}, this.workspace, {
-          stderr: result.stderr,
-          currentTab: 'stderr',
-        });
+        tab = 'compile';
+      } else if (io.stderr !== null) {
+        tab = 'stderr';
       } else {
-        const stdout = [result.stdout, `Finished in ${result.time}s with ${result.memory} bytes memory usage.`].join('\n');
-        this.workspace = assign({}, this.workspace, {
-          stdout,
-          currentTab: 'stdout',
-        });
+        tab = 'stdout';
       }
-
+      this.workspace = assign({}, this.workspace, { tab });
       this.$nextTick(() => {
-        this.$refs[`${this.workspace.currentTab}Editor`].monacoEditor.layout();
+        this.$refs[`${tab}Editor`].layout();
       });
     },
     onCopy(event) {
@@ -563,17 +614,13 @@ export default {
     onCloseEditDialog() {
       this.showEditPostDialog = false;
     },
-    onLanguageChange(newLang) {
-      this.workspace = assign({}, this.workspace, {
-        language: newLang,
-        code: LANGUAGES_BY_LANG[newLang].template,
-      });
-    },
-    onThemeChange(newTheme) {
-      this.workspace = assign({}, this.workspace, { theme: newTheme });
-    },
     onStdinChange(stdin) {
-      this.workspace = assign({}, this.workspace, { stdin });
+      this.workspace = assign({}, this.workspace, {
+        io: {
+          ...this.workspace.io,
+          stdin,
+        },
+      });
     },
   },
   computed: {
@@ -585,20 +632,17 @@ export default {
       return this.contestStatus === CONTEST_STATUS.ENDED;
     },
     submissionStatus() {
+      const state = this.submission.state || 9;
       return {
-        text: JUDGE_STATUS[this.result]['name'],
-        color: JUDGE_STATUS[this.result]['color'],
+        text: JUDGE_STATUS[state]['name'],
+        color: JUDGE_STATUS[state]['color'],
       };
     },
-    submissionRoute() {
-      if (this.contestID) {
-        return { name: 'contest-submission-list', query: { problemID: this.problemID } };
-      } else {
-        return { name: 'submission-list', query: { problemID: this.problemID } };
-      }
+    mainEditor() {
+      return this.$refs.editor;
     },
-    editor() {
-      return this.$refs.editor.monacoEditor;
+    stdinEditor() {
+      return this.$refs.stdinEditor;
     },
   },
   beforeRouteLeave(to, from, next) {
@@ -606,9 +650,8 @@ export default {
 
     this.$store.commit(types.CHANGE_CONTEST_ITEM_VISIBLE, { menu: true });
     storage.set(buildProblemCodeKey(this.problem._id, from.params.contestID), {
-      code: this.code,
-      language: this.language,
-      theme: this.theme,
+      code: this.mainEditor.get(),
+      language: this.workspace.language,
     });
     next();
   },
@@ -616,23 +659,16 @@ export default {
     '$route'() {
       this.init();
     },
-    submitting() {
-      this.submission = assign({}, this.submission, {
-        status: this.submitting ? SUBMITTING : this.submission.status,
-      });
-    },
     problemSubmitDisabled() {
       this.submission = assign({}, this.submission, {
-        disabled: this.problemSubmitDisabled || this.submitted,
+        disabled: this.problemSubmitDisabled,
       });
     },
-    submitted() {
-      this.submission = assign({}, this.submission, {
-        disabled: this.problemSubmitDisabled || this.submitted,
+    toolbar() {
+      this.layoutEditors();
+      this.$nextTick(() => {
+        this.layoutEditors();
       });
-    },
-    result(status) {
-      this.submission = assign({}, this.submission, { status: JUDGE_STATUS[status] });
     },
   },
 };
@@ -743,8 +779,7 @@ export default {
 
 .vertical-resizer {
   width: 100%;
-  height: calc(100vh - 4em);
-  margin-top: 20px;
+  height: calc(100vh - 80px);
 }
 
 .vertical-resizer > .pane {
@@ -882,24 +917,42 @@ export default {
 }
 
 #workspace-code {
-  height: 100%;
+  display: flex;
+  flex-direction: column;
 
-  .status {
-    float: left;
+  .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 
-    span {
-      margin-right: 10px;
-      margin-left: 10px;
+    .tools {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      flex-wrap: nowrap;
+
+      .languages {
+        display: inline-flex;
+        min-width: 240px;
+        align-items: center;
+
+        & > span {
+          display: inline-flex;
+          flex: 1 0 auto;
+          margin-right: 0.8em;
+        }
+      }
+
+      div:not(:last-child) {
+        margin-right: 1em;
+      }
     }
   }
 
-  .captcha-container {
-    display: inline-block;
-
-    .captcha-code {
-      width: auto;
-      margin-top: -20px;
-      margin-left: 20px;
+  .status {
+    span {
+      margin-right: 10px;
+      margin-left: 10px;
     }
   }
 }
