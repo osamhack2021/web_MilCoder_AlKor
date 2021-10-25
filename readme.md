@@ -1,6 +1,7 @@
 # MilCoder
 ![title](https://user-images.githubusercontent.com/13505734/138091450-3ce87032-e182-4fa3-aede-223e4391b69d.png)
 
+[Demo Link](http://118.67.129.181/)
 
 ## 프로젝트 소개
 미래 국방비전 2050, 각군의 스마트 부대 육성 등 군의 스마트화, 디지털화에 대한 움직임이 활발히 진행되고 있습니다. 국가 차원에서도 4차산업혁명 관련 인력육성을 위해 <전국민 AI/SW교육 확산방안>과 같은 연구를 진행한 사실에서 알 수 있듯이, 군 역시 이런 패러다임 변화에 맞춰 군 인력에 대한 체계적인 소프트웨어 기초역량 강화방안을 필요로 합니다.
@@ -93,7 +94,9 @@
 
 ## 설치 안내 (Installation Process)
 ```shell
-scripts/dev_setup.sh
+docker-compose up -d
+script/dev.sh setup
+script/dev.sh start
 ```
 
 ## 프로젝트 사용법 (Getting Started)
