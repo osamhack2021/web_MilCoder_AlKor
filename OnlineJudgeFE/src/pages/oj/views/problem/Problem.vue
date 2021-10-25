@@ -68,13 +68,13 @@
           </Panel>
         </div>
       </div>
-      <MultipaneResizer :class="{ hide: toolbar.variant.startsWith('v-') }"/>
+      <MultipaneResizer :class="{ hide: toolbar.variant.startsWith('v-') }" data-layout="vertical"/>
       <div
         class="pane pane-right"
         :class="{ full: toolbar.variant === 'v-left', hide: toolbar.variant === 'v-right' }"
         ref="paneRight">
         <!--problem main end-->
-        <Multipane class="horizontal-resizer" layout="horizontal" ref="horizontalMultipane">
+        <Multipane class="horizontal-resizer" layout="horizontal" ref="horizontalMultipane" @paneResize="handlePaneResize">
           <div class="pane pane-top" ref="paneTop">
             <Card :padding="10" id="workspace-code" dis-hover>
               <div class="header">
@@ -137,7 +137,7 @@
                   </template>
                 </div>
               </div>
-              <div>
+              <div class="main-editor">
                 <CodeEditor
                   ref="editor"
                   :value.sync="workspace.code"
@@ -149,9 +149,9 @@
               </div>
             </Card>
           </div>
-          <MultipaneResizer/>
-          <div class="pane pane-bottom" ref="paneBottom">
-            <Card :padding="10" id="workspace-io">
+          <MultipaneResizer :class="{ hide: toolbar.variant.startsWith('h-') || workspace.hideDetails }" data-layout="horizontal"/>
+          <div class="pane pane-bottom" :class="{ hide: workspace.hideDetails }" ref="paneBottom">
+            <Card :padding="0" id="workspace-io">
               <Tabs :value="workspace.tab" :animated="false" @on-click="handleWorkspaceTabClick">
                 <TabPane label="INPUT" name="stdin">
                   <CodeEditor
@@ -186,9 +186,25 @@
                     ref="compileEditor"
                   />
                 </TabPane>
+                <div slot="extra" class="details-toggle-button">
+                  <Button type="ghost" size="small" @click="handleWorkspaceIoToggleButtonClick">
+                    <Tooltip placement="left" content="Hide">
+                      <Icon type="chevron-down"/>
+                    </Tooltip>
+                  </Button>
+                </div>
               </Tabs>
             </Card>
           </div>
+          <template v-if="workspace.hideDetails">
+            <div class="details-toggle-button">
+              <Button type="ghost" size="small" @click="handleWorkspaceIoToggleButtonClick">
+                <Tooltip placement="left" content="Show">
+                  <Icon type="chevron-up"/>
+                </Tooltip>
+              </Button>
+            </div>
+          </template>
         </Multipane>
       </div>
       <div class="toolbar-container" @click="handleToolbarClick">
@@ -294,6 +310,7 @@ export default {
           },
         },
         tab: 'stdin',
+        hideDetails: false,
       },
       toolbar: {
         label: '',
@@ -521,10 +538,12 @@ export default {
     },
     handlePaneResize(pane, resizer, size) {
       const oppositePane = resizer.nextElementSibling;
-      const hideLeft = pane.offsetWidth < 200;
-      const hideRight = oppositePane.offsetWidth < 200;
+      const layout = resizer.dataset.layout;
+      const hideLeft = layout === 'vertical' && pane.offsetWidth < 200;
+      const hideRight = layout === 'vertical' && oppositePane.offsetWidth < 200;
+      const hideBottom = layout === 'horizontal' && oppositePane.offsetHeight < 100;
 
-      if (!hideLeft && !hideRight) return;
+      if (!hideLeft && !hideRight && !hideBottom) return;
 
       if (hideLeft) {
         this.toolbar = assign({}, this.toolbar, {
@@ -535,6 +554,10 @@ export default {
         this.toolbar = assign({}, this.toolbar, {
           label: 'WORKSPACE/SUBMIT',
           variant: 'v-right',
+        });
+      } else if (hideBottom) {
+        this.workspace = assign({}, this.workspace, {
+          hideDetails: true,
         });
       }
     },
@@ -570,6 +593,10 @@ export default {
       this.$nextTick(() => {
         editor.layout();
       });
+    },
+    handleWorkspaceIoToggleButtonClick() {
+      const hideDetails = !this.workspace.hideDetails;
+      this.workspace = assign({}, this.workspace, { hideDetails });
     },
     // Handle workspace events
     onRunStart() {
@@ -670,6 +697,16 @@ export default {
         this.layoutEditors();
       });
     },
+    'workspace.hideDetails'(hideDetails) {
+      const { paneTop: top, paneBottom: bottom } = this.$refs;
+      if (hideDetails) {
+        top.style.height = '100%';
+      } else {
+        top.style.height = '70%';
+        bottom.style.height = '30%';
+        bottom.style.height = null;
+      }
+    },
   },
 };
 </script>
@@ -704,7 +741,6 @@ export default {
 
 .pane-top {
   height: 70%;
-  min-height: 300px;
 
   &.full {
     height: 100% !important;
@@ -713,7 +749,7 @@ export default {
 }
 
 .pane-bottom {
-  height: 200px;
+  height: 100px;
   flex-grow: 1;
 }
 
@@ -732,17 +768,18 @@ export default {
     height: 100%;
     flex-direction: column;
     position: absolute;
-    top: 0;
     z-index: 5;
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
     justify-content: space-evenly;
 
     &.v-right {
+      top: 0;
       right: 0;
     }
 
     &.v-left {
+      top: 0;
       left: 0;
     }
 
@@ -779,7 +816,8 @@ export default {
 
 .vertical-resizer {
   width: 100%;
-  height: calc(100vh - 80px);
+  height: calc(100vh - 160px);
+  border-bottom: 1px solid #ccc;
 }
 
 .vertical-resizer > .pane {
@@ -855,6 +893,11 @@ export default {
   }
 }
 
+.main-editor {
+  padding-top: 10px;
+  border-top: 1px solid #e9eaec;
+}
+
 .card-title {
   margin-left: 8px;
 }
@@ -919,11 +962,13 @@ export default {
 #workspace-code {
   display: flex;
   flex-direction: column;
+  height: 100%;
 
   .header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    padding: 12px 14px;
 
     .tools {
       display: flex;
@@ -985,6 +1030,16 @@ export default {
 
 #workspace-io {
   height: 100%;
+  padding: 0 !important;
+}
+
+.details-toggle-button {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 10px;;
+  padding: 4px;
+  background-color: #fff;
+  width: 100%;
 }
 
 #pieChart {
