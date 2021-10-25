@@ -83,6 +83,7 @@ function stop() {
   pushd $PROJECT_ROOT
     echo "Kill API server"
     pkill -TERM $(cat $API_PID_FILE) && rm $API_PID_FILE || echo "Failed to kill API Server"
+    ps -ef | grep "manage.py runserver" | awk '{print $2}' | xargs kill -9 2>/dev/null
 
     echo "Kill FRONT"
     killall -9 npm node open || echo "Failed to kill FRONT"
