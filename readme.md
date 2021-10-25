@@ -95,8 +95,6 @@
 ## 설치 안내 (Installation Process)
 ```shell
 docker-compose up -d
-script/dev.sh setup
-script/dev.sh start
 ```
 
 ## 프로젝트 사용법 (Getting Started)
