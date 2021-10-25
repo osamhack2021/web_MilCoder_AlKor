@@ -158,7 +158,6 @@ export default {
 .layout-v > .multipane-resizer {
   width: 20px;
   height: 100%;
-  margin-left: -10px;
   left: 5px;
   cursor: col-resize;
 }
