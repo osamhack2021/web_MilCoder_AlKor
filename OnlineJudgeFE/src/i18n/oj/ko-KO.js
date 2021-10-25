@@ -30,6 +30,7 @@ export const m = {
   Submit_code_successfully: '소스코드 제출 성공',
   You_have_solved_the_problem: '이미 해결한 문제입니다',
   Submitted_successfully: '제출이 성공적으로 완료되었습니다',
+  Submission_canceled: '제출이 취소됐습니다.',
   You_have_submitted_a_solution: '풀이를 제출하였습니다',
   Contest_has_ended: '대회가 종료되었습니다',
   You_have_submission_in_this_problem_sure_to_cover_it: '이미 풀이를 제출하였습니다. 다시 제출하시겠습니까?',

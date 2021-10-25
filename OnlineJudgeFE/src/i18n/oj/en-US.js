@@ -28,6 +28,7 @@ export const m = {
   Are_you_sure_you_want_to_reset_your_code: 'Are you sure you want to reset your code?',
   Code_can_not_be_empty: 'Code can not be empty',
   Submit_code_successfully: 'Submit code successfully',
+  Submission_canceled: 'Submission has canceled',
   You_have_solved_the_problem: 'You have solved the problem',
   Submitted_successfully: 'Submitted successfully',
   You_have_submitted_a_solution: 'You have submitted a solution.',
