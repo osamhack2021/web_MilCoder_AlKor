@@ -20,8 +20,6 @@ const ResetPassword = () => import(/* webpackChunkName: "password" */ '@oj/views
 
 const Problem = () => import(/* webpackChunkName: "Problem" */ '@oj/views/problem/Problem.vue');
 
-const Ide = () => import('@oj/views/ide/Ide.vue');
-
 export {
   Home, NotFound, Announcements,
   Logout, UserHome, About, FAQ,
@@ -29,7 +27,6 @@ export {
   ACMRank, OIRank,
   SubmissionList, SubmissionDetails,
   ApplyResetPassword, ResetPassword,
-  Ide
 };
 /* Component export is divided into two categories,
  * one is commonly used for direct export,
