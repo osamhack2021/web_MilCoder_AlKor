@@ -57,7 +57,7 @@ export default {
     get() {
       try {
         return this.getModel().getValue();
-      } catch {
+      } catch (e) {
         return undefined;
       }
     },
