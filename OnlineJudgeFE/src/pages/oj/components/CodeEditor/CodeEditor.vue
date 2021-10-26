@@ -55,7 +55,11 @@ export default {
       this.getEditor().layout();
     },
     get() {
-      return this.getModel().getValue();
+      try {
+        return this.getModel().getValue();
+      } catch {
+        return undefined;
+      }
     },
     set(value) {
       return this.getModel().setValue(value);
