@@ -332,8 +332,12 @@ export default {
     }
   },
   mounted() {
+    document.body.classList.add('problem');
     this.$store.commit(types.CHANGE_CONTEST_ITEM_VISIBLE, { menu: false });
     this.init();
+  },
+  beforeDestroy() {
+    document.body.classList.remove('problem');
   },
   methods: {
     ...mapActions(['changeDomTitle']),
@@ -543,6 +547,7 @@ export default {
       const hideRight = layout === 'vertical' && oppositePane.offsetWidth < 200;
       const hideBottom = layout === 'horizontal' && oppositePane.offsetHeight < 100;
 
+      this.layoutEditors();
       if (!hideLeft && !hideRight && !hideBottom) return;
 
       if (hideLeft) {
@@ -710,12 +715,19 @@ export default {
   },
 };
 </script>
-<style>
-.content-app {
-  padding: 0 !important;
+<style lang="less">
+body {
+  &.problem {
+    overflow: hidden;
+  }
+
+  .content-app {
+    padding: 0 !important;
+  }
 }
 </style>
 <style lang="less" scoped>
+
 .hide {
   display: none;
 }
