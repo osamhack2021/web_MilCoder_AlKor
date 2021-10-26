@@ -110,26 +110,24 @@
                   </Tooltip>
                   <input type="file" id="file-uploader" style="display: none" @change="handleUploadFileDone">
                 </div>
-                <div class="status" v-if="submission.sentOnce && submission.id">
-                  <template v-if="!this.contestID || (this.contestID && OIContestRealTimePermission)">
+                <div class="status" v-if="submission.sentOnce && submission.state !== undefined">
+                  <template v-if="problem.my_status === SUBMISSION_STATES.ACCEPTED">
+                    <Alert type="success" show-icon>
+                      {{ $t('m.You_have_solved_the_problem') }}
+                    </Alert>
+                  </template>
+                  <template v-else-if="!this.contestID || (this.contestID && OIContestRealTimePermission)">
                     <span>{{ $t('m.Status') }}</span>
-                    <Tag type="dot" :color="submissionStatus.color" @click.native="handleRoute('/status/' + submission.id)">
-                      {{ $t('m.' + submissionStatus.text.replace(/ /g, '_')) }}
+                    <Tag type="dot" :color="JUDGE_STATUS[submission.state].color" @click.native="handleRoute('/status/' + submission.id)">
+                      {{ $t('m.' + JUDGE_STATUS[submission.state].name.replace(/ /g, '_')) }}
                     </Tag>
                   </template>
                   <template v-else-if="this.contestID && !OIContestRealTimePermission">
                     <Alert type="success" show-icon>{{ $t('m.Submitted_successfully') }}</Alert>
                   </template>
-                  <template v-else-if="problem.my_status === SUBMISSION_STATES.ACCEPTED">
-                    <Alert type="success" show-icon>{{
-                        $t('m.You_have_solved_the_problem')
-                      }}
-                    </Alert>
-                  </template>
                   <template v-else-if="this.contestID && !OIContestRealTimePermission && submissionExists">
-                    <Alert type="success" show-icon>{{
-                        $t('m.You_have_submitted_a_solution')
-                      }}
+                    <Alert type="success" show-icon>
+                      {{ $t('m.You_have_submitted_a_solution') }}
                     </Alert>
                   </template>
                   <template v-if="contestEnded">
@@ -265,6 +263,7 @@ export default {
   mixins: [FormMixin],
   data() {
     return {
+      JUDGE_STATUS,
       showEditPostDialog: false,
       submissionExists: false,
       contestID: '',
@@ -663,13 +662,6 @@ export default {
     contestEnded() {
       return this.contestStatus === CONTEST_STATUS.ENDED;
     },
-    submissionStatus() {
-      const state = this.submission.state || 9;
-      return {
-        text: JUDGE_STATUS[state]['name'],
-        color: JUDGE_STATUS[state]['color'],
-      };
-    },
     mainEditor() {
       return this.$refs.editor;
     },
@@ -711,6 +703,9 @@ export default {
         bottom.style.height = '30%';
         bottom.style.height = null;
       }
+    },
+    submission(v) {
+      console.log(v);
     },
   },
 };
