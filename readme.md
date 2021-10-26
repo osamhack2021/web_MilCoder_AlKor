@@ -94,13 +94,14 @@
 
 ## 설치 안내 (Installation Process)
 ```shell
-docker-compose up -d
+sudo apt-get install docker-compose
+
+git clone https://github.com/osamhack2021/web_MilCoder_AlKor.git
 ```
 
 ## 프로젝트 사용법 (Getting Started)
 ```shell
-python3 manage.py runserver # API
-npm run dev # FRONT
+docker-compose up -d
 ```
 
 
